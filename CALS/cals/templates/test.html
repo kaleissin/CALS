@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% load comments %}
+{% block pagetitle %} Tests{% endblock pagetitle %}
+{% block content %}
+<dl>
+{% for entry in news %}
+<dt>{{ entry.pub_date }}: {{ entry.headline }}</dt>
+<dd>{{ entry.content|safe }}</dd>
+{% endfor %}
+</dl>
+{% endblock content %}

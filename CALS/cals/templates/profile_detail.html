@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block pagetitle %}{{ object.username }}'s page{% endblock pagetitle %}
+{% block submenu %}
+<ul>
+    <li><a href="../">All people</a></li>
+    <li><b>Details</b></li>
+    {% ifequal user.id object.id %}
+    <li><a href="./change">Change</a></li>
+    {% endifequal %}
+{% endblock submenu %}
+{% block content %}
+    <table>
+        <tr><th>Username:</th><td>{{ object.username }}</td></tr>
+        <tr><th>Display name:</th><td>{{ profile.display_name|default:"NA" }}</td>
+        </tr>
+        {% ifequal user.username object.username %}
+        <tr><th>Email:</th>
+            <td>{% if object.email %}{{ object.email }}{% else %}None registered{% endif %} 
+                <span class="message">Your email-address is only shown to you</span></td>
+        </tr>
+        {% comment %}
+        <tr><th>Secret:</th>
+            <td>{% if object.secret %}{{ object.secret }}{% else %}None registered{% endif %} 
+                <span class="message">Your secret is only shown to you</span></td>
+        </tr>
+        {% endcomment %}
+        {% endifequal %}
+        <tr>
+            <th>Homepage:</th>
+            <td>{% if profile.homepage %}<a href="{{ profile.homepage }}">{{ profile.homepage_title|default:profile.homepage }}</a>{% else %}None registered{% endif %}</td>
+        </tr>
+        <tr>
+            <th>Country:</th>
+            <td>{% if profile.country %}{{ profile.country }}{% else %}None registered{% endif %}</td>
+        </tr>
+        {% comment %}
+        {% for web20acc in user.web20.all %}
+        <tr>
+            <th>{{ web20acc.type }}:</th>
+            <td>{% if web20acc.username %}<a href="http://twitter.com/{{ web20acc.username }}">{{ web20acc.username }}</a>{% else %}None registered{% endif %}</td>
+        </tr>
+        {% endfor %}
+        {% if profile.twittername %} 
+        <tr><th>Latest tweet:</th>
+            <td class="tweet">
+                <ul id="twitter_update_list"></ul>
+            </td>
+        </tr>
+        {% endif %}
+        {% endcomment %}
+        <tr><th>Joined:</th>
+            <td>{{ profile.user.date_joined|date:"Y-m-d H:i T" }}</td>
+        </tr>
+        {% if object.languages.count %}
+        <tr><th>Languages added:</th>
+            <td>
+                <ul>
+                {% for language in object.languages.all %}
+                    <li><a href="/language/{{ language.slug }}">{{ language }}</a></li>
+                {% endfor %}
+                </ul>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <th colspan="2">No languages added</th>
+        </tr>
+        {% endif %}
+        {% if profile.manages.count %}
+        <tr><th>Manager for:</th>
+            <td>
+                <ul>
+                {% for language in profile.manages.all %}
+                    <li><a href="/language/{{ language.slug }}">{{ language }}</a></li>
+                {% endfor %}
+                </ul>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <th colspan="2">Manages no languages</th>
+        </tr>
+        {% endif %}
+        {% if profile.edits.all.count %}
+        <tr><th>Editor for:</th>
+            <td>
+                <ul>
+                {% for language in profile.edits.all %}
+                    <li><a href="/language/{{ language.slug }}">{{ language }}</a></li>
+                {% endfor %}
+                </ul>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <th colspan="2">Not an editor of any language</th>
+        </tr>
+        {% endif %}
+        <tr>
+            <th>Translations ({{ object.translations.count }}):</th>
+            <td>
+                <table>
+                {% for translation in object.translations.all %}
+                    <tr class="{% cycle odd,even %}">
+                        <th>{{ translation.exercise }}</th>
+                        <td>{{ translation.language }}</td>
+                        <td><a href="/language/{{ translation.language.slug }}/translations/">{{ translation }}</a></td>
+                    </tr>
+                {% endfor %}
+                </table>
+            </td>
+        </tr>
+    </table>
+    {% comment %}
+    {% if user.web20.type %}
+    <script type="text/javascript" src="http://twitter.com/javascripts/blogger.js"></script>
+    <script type="text/javascript" src="http://twitter.com/statuses/user_timeline/{{ profile.twittername }}.json?callback=twitterCallback2&count=1"></script>
+    {% endif %}
+    {% endcomment %}
+{% endblock content %}

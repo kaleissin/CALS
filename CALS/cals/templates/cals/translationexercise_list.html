@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load cals_tags %}
+{% block submenu %}
+<ul>
+    <li><b>All</b></li>
+    {% comment %}
+    <li><b>All</b></li>
+    {% endcomment %}
+</ul>
+{% endblock submenu %}
+{% block content %}
+{% for object in object_list %}
+<ul>
+    <li><a href="/translation/{{ object.slug }}/">{{ object }}</a> 
+    ({{ object.translations.count }} translation{{ object.translations.count|pluralize }})
+    </li>
+</ul>
+{% endfor %}
+{% endblock content %}

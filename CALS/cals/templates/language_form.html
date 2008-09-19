@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+{% load cals_tags %}
+{% block pagetitle %}Language: {% ifequal request.META.REQUEST_URI '/language/new' %}add{% else %}change{% endifequal %}{% endblock pagetitle %}
+{% block head %}
+{% comment %}
+<script type="text/javascript"
+    src="http://media.aldebaaran.uninett.no/CALS/js/jquery-1.2.5.js"></script>
+<script type="text/javascript">
+
+setMaxLength = function() {
+    var elem =  $("textarea#id_background");
+    var max = $("#background_max").text();
+    var countnodestr = '<p class="counter"><span id="background_counter">'+max+'</span> characters left</p>';
+    $("span.count").parent().append(countnodestr);
+//    checkMaxLength();
+    return elem;
+}
+
+/*
+checkMaxLength2 = function() {
+    var max = $("#background_max").html();
+    var counter = $("#background_counter");
+    var elem =  $("#id_background");
+    var currentLength = elem.html().length;
+    if (currentLength < 0) {
+        counter.addClass("negative");
+        elem.addClass("negative");
+    }
+    counter.text(max-currentLength);
+}
+
+checkMaxLength = function() {
+    var max = $("#background_max").html();
+    var counter = $("#background_counter");
+    var currentLength = this.value.length;
+    if (currentLength < 0) {
+        counter.addClass("negative");
+        this.addClass("negative");
+    }
+    counter.text(max-currentLength);
+}
+*/
+$(document).ready(function() {
+
+setMaxLength().keypress(checkMaxLength);
+
+$("#id_background").keyup(function() {
+        alert(this.value.length);
+        var currentLength = this.value.length;
+        if (currentLength < 0) {
+            counter.addClass("negative");
+            this.addClass("negative");
+        }   
+        $("#background_counter").text($("#background_max").text()-currentLength);
+
+    });
+});
+</script>
+{% endcomment %}
+{% endblock head %}
+{% block submenu %}
+<ul>  
+    <li><a href="../">All</a></li>
+    {% if user.is_authenticated %}
+    {% ifequal request.META.REQUEST_URI '/language/new' %}
+    <li><b>Add</b></li>
+    {% else %}
+    <li><a href="../new">Add</a></li>
+    <li><b>Change</b></li>
+    {% endifequal %}
+    {% endif %}
+    <hr />
+    {% for category in categories %}
+    <li><a href="#{{ category.name|slugify }}">{{ category.name }}</a></li>
+    {% endfor %}
+</ul>
+{% endblock submenu %}
+{% block content %}
+<form action="" method="post">
+<table>
+    {% comment %}
+    {% for field in form %}
+    {% if field.editable %}
+    <tr>
+        <th>{{ field.name }}{% if field.field.required %}<span class="required">*</span>{% endif %}</th>
+        <td>{{ field }}</td>
+    </tr>
+    {% endif %}
+    {% endfor %}
+    {% endcomment %}
+    <tr><th>External name
+            {% if form.name.field.required %}<span class="required">*</span>{% endif %}</th>
+        <td>{{ form.name }}</td>
+        <td class="help">{{ form.name.help_text }}
+        {% if form.name.errors %}<div class="error">{{ form.name.errors }}</div>{% endif %}</td>
+    </tr>
+    <tr>
+        <th>Internal name
+            {% if form.internal_name.field.required %}<span class="required">*</span>{% endif %}</th>
+        <td>{{ form.internal_name }}</td>
+        <td class="help">{{ form.internal_name.help_text }}
+        {% if form.internal_name.errors %}<div class="error">{{ form.internal_name.errors }}</div>{% endif %}</td>
+    </tr>
+    <tr>
+        <th>Author
+            {% if form.author.field.required %}<span class="required">*</span>{% endif %}</th>
+        <td>{{ form.author }}</td>
+        <td class="help">{{ form.author.help_text }}
+        {% if form.author.errors %}<div class="error">{{ form.author.errors }}</div>{% endif %}</td>
+    </tr>
+    <tr>
+        <th>Homepage
+            {% if form.homepage.field.required %}<span class="required">*</span>{% endif %}</th>
+        <td>{{ form.homepage }}</td>
+        <td class="help">{{ form.homepage.help_text }}
+        {% if form.homepage.errors %}<div class="error">{{ form.homepage.errors }}</div>{% endif %}</td>
+    </tr>
+    <tr>
+        <th>Background
+            {% if form.background.field.required %}<span class="required">*</span>{% endif %}</th>
+        <td>{{ form.background }}</td>
+        <td class="help">{{ form.background.help_text|safe }}
+        {% if form.background.errors %}<div class="error">{{ form.background.errors }}</div>{% endif %}</td>
+    </tr>
+    <tr>
+        <th>Greeting
+            {% if form.greeting.field.required %}<span class="required">*</span>{% endif %}</th>
+        <td>{{ form.greeting }}</td>
+        <td class="help">{{ form.greeting.help_text }}
+        {% if form.greeting.errors %}<div class="error">{{ form.greeting.errors }}</div>{% endif %}</td>
+    </tr>
+    <tr>
+        <th>Vocabulary size
+            {% if form.vocabulary_size.field.required %}<span class="required">*</span>{% endif %}</th>
+        <td>{{ form.vocabulary_size }}</td>
+        <td class="help">{{ form.vocabulary_size.help_text }}
+        {% if form.vocabulary_size.errors %}<div class="error">{{ form.vocabulary_size.errors }}</div>{% endif %}</td>
+    </tr>
+    <tr>
+        <th>Does the language originate on Earth?
+            {% if form.from_earth.field.required %}<span class="required">*</span>{% endif %}</th>
+        <td>{{ form.from_earth }}</td>
+        <td class="help">{{ form.from_earth.help_text }}
+        {% if form.from_earth.errors %}<div class="error">{{ form.from_earth.errors }}</div>{% endif %}</td>
+    </tr>
+    <tr>
+        <th>Tags
+            {% if form.tags.field.required %}<span class="required">*</span>{% endif %}</th>
+        <td>{{ form.tags }}</td>
+        <td class="help">{{ form.tags.help_text }}
+        {% if form.tags.errors %}<div class="error">{{ form.tags.errors }}</div>{% endif %}</td>
+    </tr>
+    {% ifequal user.get_profile form.instance.manager %}
+    <tr>
+        <th>Manager
+            {% if form.manager.field.required %}<span class="required">*</span>{% endif %}</th>
+        <td>{{ form.manager }}</td>
+        <td class="help">{{ form.manager.help_text }}
+        {% if form.manager.errors %}<div class="error">{{ form.manager.errors }}</div>{% endif %}</td>
+    </tr>
+    {% ifnotequal request.META.REQUEST_URI '/language/new' %}
+    <tr>
+        <th>Editors
+            {% if editorform.editors.field.required %}<span class="required">*</span>{% endif %}</th>
+        <td>{{ editorform.editors }}</td>
+        <td class="help">{{ editorform.editors.help_text }}
+        {% if form.editors.errors %}<div class="error">{{ editorform.editors.errors }}</div>{% endif %}</td>
+    </tr>
+    {% endifnotequal %}
+    {% else %}
+    {% ifnotequal request.META.REQUEST_URI '/language/new' %}
+    <tr>
+        <th>Manager</th>
+        <td>{{ form.instance.manager }}</td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <th>Editors</th>
+        <td>
+            <ul>{% for editor in form.instance.editors.all %}
+                <li>{{ editor }}</li>
+            {% endfor %}
+            </ul>
+        </td>
+        <td></td>
+        <td></td>
+    {% endifnotequal %}
+    </tr>
+    {% endifequal %}
+    <tr>
+        <th>Editable by all
+            {% if form.public.field.required %}<span class="required">*</span>{% endif %}</th>
+        <td>{{ form.public }}</td>
+        <td class="help">{{ form.public.help_text }}
+        {% if form.public.errors %}<div class="error">{{ form.public.errors }}</div>{% endif %}</td>
+    </tr>
+    <tr><td></td><td><input type="submit" /></td></tr>
+</table>
+<h2>Features:</h2>
+{% for category in categories %}
+<h3><a name="{{ category.name|slugify }}"></a><a href="#top">{{ category.name }}</a></h3>
+<table class="feature">
+        {% if category.features %}
+        {% for feature in category.features %}
+    <tr class="feature {% cycle odd,even %}">
+        <th>{{ feature.feature }} {% wals feature.feature.id %}</th>
+        <td>{{ feature.form.value }}
+        </td>
+    </tr>
+        {% endfor %}
+        {% endif %}
+    <tr><td></td><td><input type="submit" /></td></tr>
+</table>
+{% endfor %}
+</form>
+{% endblock content %}

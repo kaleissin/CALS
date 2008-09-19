@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block submenu %}
+<ul>
+    <li><b>All</b></li>
+    {% if user.is_authenticated %}
+    <li><a href="/language/new">Add</a></li>
+    {% endif %}
+</ul>
+{% endblock submenu %}
+{% block content %}
+    <h2>{{ tag }}</h2>
+    <ul>
+        {% for object in object_list %}
+        <li class="{% cycle odd,even %}">
+            <a href="/language/{{ object.slug }}/">{{ object }}</a>
+            {% if object.author %}by {{ object.author }}{% endif %} 
+            ({{ object.features.count }} features)</li>
+        {% endfor %}
+    </ul>
+{% endblock content %}

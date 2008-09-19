@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load cals_tags %}
+{% block pagetitle %} Language: {{ lang.name }}: {{ feature.feature.name }}: {{ feature.value.name }}{% endblock pagetitle %}
+{% block submenu %}
+<ul>
+    <li><a href="../../">All languages</a></li>
+    <li><a href="../">Back to overview</a></li>
+    {% if user.is_authenticated %}
+    {% ifequal user lang.added_by %}
+    <li><a href="./change">Change description</a></li>
+    {% endifequal %}
+    {% endif %}
+</ul>
+{% endblock submenu %}
+{% block content %}
+    <h1>{{ lang.name }}: {{ feature.feature.name }}: {{ feature.value.name }}</h1>
+    <table>
+        {% if description.freetext_xhtml %}
+        {{ description.freetext_xhtml|safe }}
+        {% else %}
+        <p>Local description missing.</p>
+        {% endif %}
+        {% if description.freetext_link %}
+        <p>Even more info at <a href="{{ description.freetext_link }}">{{ description.freetext_link }}</a></p>
+        {% endif %}
+    </table>
+{% endblock content %}

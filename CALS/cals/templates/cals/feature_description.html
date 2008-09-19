@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load cals_tags %}
+{% block pagetitle %} Feature: {{ object.name }}{% endblock pagetitle %}
+{% block submenu %}
+<ul>
+    <li><a href="../../">All features</a></li>
+    <li><a href="../">Back to overview</a></li>
+    {% if user.is_authenticated %}
+    {% if user.is_staff %}
+    <li><a href="./change">Change description</a></li>
+    {% endif %}
+    {% endif %}
+</ul>
+{% endblock submenu %}
+{% block content %}
+    <h1>{{ object.name }}</h1>
+    <table>
+        {% if object.description_xhtml %}
+        {{ object.description_xhtml|safe }}
+        {% else %}
+        <p>Local description missing.</p>
+        {% endif %}
+        {% if object.wals %}
+        <p>Even more info at {% wals object.id %}</a>
+        {% else %}
+        {% if object.description_link %}
+        <p>Even more info at <a href="{{ object.description_link }}">{{ object.description_link }}</a></p>
+        {% endif %}
+        {% endif %}
+    </table>
+{% endblock content %}

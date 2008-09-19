@@ -1,0 +1,10 @@
+{% load cals_tags %}
+<p>{{ obj.added_by }} added <a href="/language/{{ obj.slug }}/">{{ obj.name }}</a> to CALS.</p>
+
+{% if obj.greeting %}
+<p>{% greet_lang_in_lang obj %}
+(And that's how you greet someone in {{ obj.name }}.)</p>
+{% endif %}
+{% if obj.homepage %}
+<p>{{ obj.name }}'s homepage is at {{ obj.homepage|urlize }}.</p>
+{% endif %}

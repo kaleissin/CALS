@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load cals_tags %}
+{% block pagetitle %} Feature: {{ object.name }}{% endblock pagetitle %}
+{% block submenu %}
+<ul>
+    <li><a href="/feature/">All features</a></li>
+</ul>
+{% endblock submenu %}
+{% block content %}
+    <table>
+        <tr><th>Category:</th><td>{{ object.feature.category }}</td></tr>
+        <tr><th>Feature:</th><td><a href="/feature/{{ object.feature.id }}/">{{ object.feature }}</a> {% wals object.feature.id %}</td></tr>
+        <tr><th>Name:</th><td>{{ object }}</td></tr>
+        <tr><th colspan="2">Languages ({{ object.languagefeature_set.count }}):</th></tr>
+        {% for lf in object.languagefeature_set.all %}
+        <tr class="{% cycle odd,even %}">
+            <td></td>
+            <td><a href="/language/{{ lf.language.slug }}"> {{ lf.language.name }}</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock content %}

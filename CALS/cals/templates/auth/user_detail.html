@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}User: {{ object.username }}{% endblock title %}
+{% block content %}
+    <table>
+        <tr><th>Username:</th><td>{{ object.username }}</td></tr>
+        <tr><th>Email:</th><td>{{ object.email }}</td></tr>
+        <tr><th>Staff?</th><td>{{ object.is_staff }}</td></tr>
+    </table>
+{% endblock content %}

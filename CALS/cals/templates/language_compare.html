@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load cals_tags %}
+{% block pagetitle %}
+{% ifequal comparison_type 'same' %}
+Similarities: {{ langs|join:", " }}
+{% else %}
+{% ifequal comparison_type 'different' %}
+Differences: {{ langs|join:", " }}
+{% else %}
+Comparing: {{ langs|join:", " }}
+{% endifequal %}
+{% endifequal %}
+{% endblock pagetitle %}
+{% block submenu %}
+<ul>  
+    <li><a href="../">All</a></li>
+    {% if user.is_authenticated %}
+    <li><a href="../new">Add</a></li>
+    {% endif %}
+    {% comment %}
+    <hr />
+    {% for category in categories %}
+    <li><a href="#{{ category.name|slugify }}">{{ category.name }}</a></li>
+    {% endfor %}
+    {% endcomment %}
+    <hr />
+    {% for lang in langs %}
+    <li><a href="/language/{{ lang.slug }}/">{{ lang }}</a></li>
+    {% endfor %}
+</ul>
+{% endblock submenu %}
+{% block content %}
+<table>
+    <tr><th>External name:</th>{% for lang in langs %}<th><a href="/language/{{ lang.slug }}/">{{ lang }}</a></th>{% endfor %}</tr>
+    <tr><th>Internal name:</th>{% for lang in langs %}<td>{{ lang.internal_name }}</td>{% endfor %}</tr>
+    <tr><th>Author:</th></th>{% for lang in langs %}<td>{{ lang.author }}</td>{% endfor %}</tr>
+    <tr><th>Homepage:</th>{% for lang in langs %}<td>{% if lang.homepage %}<a class="ext" href="{{ lang.homepage }}">yes</a>{% else %}no{% endif %}</td>{% endfor %}</tr>
+    <tr><th>Greeting:</th>{% for lang in langs %}<td>{{ lang.greeting }}</td>{% endfor %}</tr>
+    <tr><th>Vocabulary size:</th>{% for lang in langs %}<td>{{ lang.vocabulary_size|default:"NA" }}</td>{% endfor %}</tr>
+    <tr><th>From earth:</th>{% for lang in langs %}<td>{{ lang.from_earth|yesno:"yes,no,unknown" }}</td>{% endfor %}</tr>
+    <tr><th>Averageness of features:</th>{% for lang in langs %}<td>{{ lang.average_score }}/100, 
+            {{ lang.num_avg_features }} of {{ lang.num_features }}</td>{% endfor %}</tr>
+    <tr><th>Number of features:</th>{% for lang in langs %}<td>{{ lang.num_features }}</td>{% endfor %}</tr>
+    <tr><th>Tags:</th>{% for lang in langs %}<td>{{ lang.tags }}</td>{% endfor %}</tr>
+    <tr><th>Editable by all:</th>{% for lang in langs %}<td>{{ lang.public|yesno:"yes,no" }}</td>{% endfor %}</tr>
+    {% if lang.added_by %}
+    <tr><th>Added by:</th>{% for lang in langs %}<td>{% showuser lang.added_by %}</td>{% endfor %}</tr>
+    {% endif %}
+    {% if lang.manager %}
+    <tr><th>Managed by:</th>{% for lang in langs %}<td>{% showuser lang.manager %}</td>{% endfor %}</tr>
+    {% endif %}
+    <tr><th>Editors:</th>
+        <td>
+            <ul>{% for editor in object.editors.all %}
+                <li>{{ editor }}</li>
+                {% endfor %}</ul>
+        </td>
+    </tr>
+    <tr><th>Added:</th>{% for lang in langs %}<td>{{ lang.created|date:"Y-m-d H:i" }}</td>{% endfor %}</tr>
+    <tr><th>Last change:</th>{% for lang in langs %}<td>{{ lang.last_modified|date:"Y-m-d H:i"}}</td>{% endfor %}</tr>
+</table>
+<h2>Features:</h2>
+<table class="feature">
+    <tr><td></td>{% for lang in langs %}<th><a href="/language/{{ lang.slug }}/">{{ lang }}</a></th>{% endfor %}</tr>
+    <tr class="even"><th>{{ comparison.1.0 }}</th>{% for num in comparison.1|slice:"1:" %}<td>{{ num }}</td>{% endfor %}</tr>
+    {% for line in comparison|slice:"2:" %}
+    <tr class="feature {% cycle odd,even %}">
+        <th>{{ line.0 }} {% wals line.0.id %}</th>
+        {% for value in line|slice:"1:" %}
+        <td>{{ value|default:"&#x2013;" }}</td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+</table>
+{% endblock content %}

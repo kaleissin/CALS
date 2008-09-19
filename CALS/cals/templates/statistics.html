@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% load cals_tags %}
+{% block pagetitle %}Statistics{% endblock pagetitle %}
+{% block no_submenu %}
+{% endblock no_submenu %}
+{% block content %}
+
+<h2>Quick numbers</h2>
+
+<table class="statistics">
+    <tr>
+        <td class="integer">{{ langs.number }}</td>
+        <td></td>
+        <td>conlangs</td>
+    </tr>
+    <tr>
+        <td class="integer">{{ langs.features_per_lang|integer }}</td>
+        <td class="fraction">.{{ langs.features_per_lang|fraction }}</td>
+        <td>features per language, on average</td>
+    </tr>
+    <tr>
+        <td class="integer">{{ langs.percentage_greetings|integer }}</td>
+        <td class="fraction">.{{ langs.percentage_greetings|fraction }}%</td>
+        <td>of all languages have a greeting</td>
+    </tr>
+    <tr>
+        <td class="integer">{{ langs.percentage_backgrounds|integer }}</td>
+        <td class="fraction">.{{ langs.percentage_backgrounds|fraction }}%</td>
+        <td>of all languages have a background</td>
+    </tr>
+    <tr>
+        <td class="integer">{{ langs.num_translations }}</td>
+        <td></td>
+        <td>translations</td>
+    </tr>
+    <tr>
+        <td class="integer">{{ users.number }}</td>
+        <td></td>
+        <td>people</td>
+    </tr>
+    <tr>
+        <td class="integer">{{ users.langs_per_user|integer }}</td>
+        <td class="fraction">.{{ users.langs_per_user|fraction }}</td>
+        <td>languages per person, on average</td>
+    </tr>
+    <tr>
+        <td class="integer">{{ users.percentage_countries|integer }}</td>
+        <td class="fraction">.{{ users.percentage_countries|fraction }}%</td>
+        <td>of all people have set a country</td>
+    </tr>
+    <tr>
+        <td class="integer">{{ features.number }}</td>
+        <td></td>
+        <td>features</td>
+    </tr>
+    <tr>
+        <td class="integer">{{ features.percentage_wals|integer }}</td>
+        <td class="fraction">.{{ features.percentage_wals|fraction }}%</td>
+        <td>of all features are from WALS</td>
+    </tr>
+</table>
+
+<h2>Milestones</h2>
+
+    <dl>
+        <dt>{{ milestones.lang100.created|date:"Y-m-d h:iO" }}</dt>
+        <dd>100 languages, number 100 is {% show_lang milestones.lang100 %} 
+        added by {% showuser milestones.lang100.added_by %}!</dd>
+        <dt>{{ milestones.user100.date_joined|date:"Y-m-d h:iO" }}</dt>
+        <dd>100 conlangers, number 100 is {% showuser milestones.user100 %}!</dd>
+    </dl>
+
+<h2>Most popular first letters of a language name</h2>
+<table>
+    <tr>
+        <td>
+            <h3>By frequency</h3>
+            <ol class="statistics">
+            {% for letter in langs.first_letters.letters %}
+                <li><span>{{ letter.char }} ({{ letter.percentage|floatformat:1 }}%)</li>
+            {% endfor %}
+            </ol>
+<p><img src="{{ langs.first_letters.chart }}" /></p>
+        </td>
+        <td>
+            <h3>Alphabetically</h3>
+            <ul class="statistics">
+            {% for letter in langs.alpha_letters.letters %}
+                <li><span>{{ letter.char }} ({{ letter.percentage|floatformat:1 }}%)</li>
+            {% endfor %}
+            </ul>
+<p><img src="{{ langs.alpha_letters.chart }}" /></p>
+        </td>
+    </tr>
+</table>
+
+
+<h2>Frequency of conlanger countries</h2>
+<ol class="statistics">
+{% for country in users.countries %}
+    <li>{{ country.country.printable_name }} {{ country.count|default:"0" }}</li>
+{% endfor %}
+</ol>
+
+<h2>Most popular features</h2>
+<table class="statistics">
+{% for feature in features.most_used %}
+<tr>
+    <td><a href="/value/{{ feature.value.id }}/">{{ feature.feature }}: {{ feature.value }}</a></td>
+    <td>{{ feature.languages }} language{{ feature.languages|pluralize }}</td>
+    <td>{{ feature.percentage|floatformat:1 }}%</td>
+</tr>
+{% endfor %}
+</table>
+
+<h2>Unused values for features ({{ features.num_not_used }})</h2>
+<ul class="statistics">
+{% for feature in features.not_used %}
+    <li><a href="/value/{{ feature.value.id }}/">{{ feature.feature }}: {{ feature.value }}</a></li>
+{% endfor %}
+</ul>
+
+<h2>Averageness of conlangs</h2>
+<p>Each conlang is compared to a set of the most popular values for each feature.</p>
+<p>0 is least average, 100 is completely average</p>
+<ol class="statistics">
+{% for lang in langs.most_average %}
+<li>
+    <span>{{ lang.average_score }}</span>
+    <span><a href="/language/{{ lang.slug }}/">{{ lang }}</a>
+        ({{ lang.num_avg_features }} of {{ lang.num_features }} feature{{ lang.num_features|pluralize }})</span>
+</li>
+{% endfor %}
+</ol>
+<p style="margin-left: 2em">&#x22ee;</p>
+<ol class="statistics" start="{{ langs.lma }}">
+{% for lang in langs.least_average %}
+<li>
+    <span>{{ lang.average_score }}</span>
+    <span><a href="/language/{{ lang.slug }}/">{{ lang }}</a>
+        ({{ lang.num_avg_features }} of {{ lang.num_features }} feature{{ lang.num_features|pluralize }})</span>
+</li>
+{% endfor %}
+</ol>
+{% endblock content %}

@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+{% load cals_tags %}
+{% block pagetitle %}
+Home
+{% endblock pagetitle %}
+{% block head %}
+<link rel="alternate" type="application/rss+xml" title="Recently added conlangs" href="/feeds/languages/newest/rss" />
+<link rel="alternate" type="application/rss+xml" title="Recently changed conlangs" href="/feeds/languages/last_modified/rss" />
+<link rel="alternate" type="application/rss+xml" title="Recently joined people" href="/feeds/people/recent/rss" />
+<meta name="y_key" content="0f4f0fec0e8eceb3" />
+<!--
+<script language="javascript" type="text/javascript">
+
+function flipsignup(donew)
+{
+var url = '/inc_entrybox.php?newaccount=' + donew;
+basic_ajax_updater(url, '', 'entrybox');
+}
+
+function focusOnSignup()
+{
+if (document.signup)
+    {
+    document.signup.formusername.focus();
+    document.signup.formusername.selectionStart = 0;
+    document.signup.formusername.selectionEnd = document.signup.formusername.textLength;
+    }   
+}
+
+</script>
+-->
+{% endblock head %}{% block no_submenu %}{% endblock no_submenu %}
+{% block loginbox %}
+    <form method="post" action=".">
+        <fieldset class="loginbox">
+            <legend>Log in/sign up</legend>
+            <table>
+                <tr>
+                    <th><label for="id_username">Username:</label></th>
+                    <td><input id="id_username" type="text" name="username" maxlength="30" /></td>
+                </tr>
+                <tr>
+                    <th><label for="id_password">Password:</label></th>
+                    <td><input id="id_password" type="password" name="password" maxlength="30" /></td>
+                </tr>
+                <tr><td></td>
+                    <td>
+                        <button type="submit" name="login"
+                            value="login">Log in</button>&nbsp;<a
+                            href="/signup/">Sign up</a>
+                       <!-- <button type="submit" name="signup" value="signup">Sign up</button> -->
+                    </td>
+                </tr>
+                <tr><td></td><td><a href="/password/reset/">Reset my password</a></td></tr>
+            </table>
+            <input type="hidden" name="next" value="{{ next }}" />
+        </fieldset>
+    </form>
+{% if form.errors %}
+<p>Your username and password didn't match. Please try again.</p>
+{% endif %}
+{% endblock loginbox %}
+
+{% block content %}
+
+<div id="sidebar">
+{% if language_cloud %}
+    <div class="cloud">
+        {% for tag in language_cloud %}
+        <span class="tagsize{{ tag.font_size }}"><a
+                href="/language/tag/{{ tag.name }}/" 
+                rel="tag">{{ tag.name|nbr }}</a>
+            {% ifnotequal tag.count 1 %} ({{ tag.count }}){% endifnotequal %}
+        </span>
+        {% endfor %}
+    </div>
+{% endif %}
+
+    <h3>
+                <a href="http://cals.conlang.org/feeds/people/recent/rss"><img src="{{ MEDIA_URL }}CALS/img/feed-icon-14x14.png" alt="Feed: Recently joined"/></a>
+    Recently joined</h3>
+    <ul>
+    {% for person in people %}
+    <li>{% showuser person %}</li>
+    {% endfor %}
+    </ul>
+</div>
+
+<div id="content">
+
+    <h1>Latest news</h1>
+    <dl>
+    {% for entry in news %}
+    <dt><h2>{{ entry.pub_date|date:"Y-m-d H:i" }} {{ entry.headline }}</h2></dt>
+    <dd>{{ entry.content|safe }}</dd>
+    {% endfor %}
+    </dl>
+
+<h1>What defines your conlang?</h1>
+<p>By adding your language here, and answering the questions by choosing
+a single value for each <em title="It's not a goal to answer every single one of them!">relevant</em> WALS-feature (e.g. it's not a
+goal to answer every single one of them!), you might discover new
+things in your conlang, or grammar gaps that need to be filled somehow.
+By reading the descriptions of each feature at WALS, you also get a
+crash course in linguistic typology and universals &ndash; but be
+warned, some of those papers are <em>overly</em> scholarly...</p>
+
+<h1>CALS challenges</h1>
+<ul>
+<li>Pick some features and values at random, then try to make a language
+out of that.</li>
+<li>What would the most average conlang look like? Should it be
+updated to <em>stay</em> the most average?</li>
+<li>Contrary, would a conlang with many rare and unusual features be
+usable at all?</li>
+</ul>
+
+<table id="modifications">
+    <tr>
+        <td>
+            <h3>
+                <a href="http://cals.conlang.org/feeds/languages/newest/rss"><img src="{{ MEDIA_URL }}CALS/img/feed-icon-14x14.png" alt="Feed: Recently joined"/></a>
+                Newly added</h3>
+            <ul>
+            {% for lang in langs_newest %}
+            <li>{% show_lang lang %}</li>
+            {% endfor %}
+            </ul>
+        </td>
+        <td>
+            <h3>
+                <a href="http://cals.conlang.org/feeds/languages/last_modified/rss"><img src="{{ MEDIA_URL }}CALS/img/feed-icon-14x14.png" alt="Feed: Recently joined"/></a>
+                Last modified</h3>
+            <ul>
+            {% for lang in langs_modified %}
+            <li>{% show_lang lang %}</li>
+            {% endfor %}
+            </ul>
+        </td>
+    </tr>
+</table>
+
+<h2>Development-stuff</h2>
+
+<p>There is a single, official place to <a href="http://trac.aldebaaran.uninett.no/cals/newticket">report
+    bugs</a>. That site will work when this site is impossible, as long
+as the net-connection haven't been <a class="ext" href="http://en.wikipedia.org/wiki/Backhoe#Backhoe_fade" title="Plenty of stupid people
+    with backhoes out there...">severed</a>.</p>
+
+<p><a href="/changes/">New stuff and changes</a> have been moved to its
+own page. See also the link in the footer.</p>
+
+{{ sql_queries }}
+
+</div>
+{% endblock content %}

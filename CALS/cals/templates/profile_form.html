@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block pagetitle %}Changing {{ user }}{% endblock pagetitle %}
+{% block submenu %}
+<ul>
+    <li><a href="../">All people</a></li>
+    <li><a href="./">Details</a></li>
+    <li><b>Change</b></li>
+</ul>
+{% endblock submenu %}
+{% block content %}
+<form action="" method="post">
+<table>
+    {% for field in uform %}
+    <tr>
+        <th>{{ field.label }}{% if field.field.required %}<span class="required">*</span>{% endif %}:</th>
+        <td>{{ field }}</td>
+        <td class="help">{{ field.help_text }}</td>
+        <td class="errors">{{ field.errors }}</td>
+    </tr>
+    {% endfor %}
+    {% for field in pform %}
+    <tr>
+        <th>{{ field.label }}{% if field.field.required %}<span class="required">*</span>{% endif %}:</th>
+        <td>{{ field }}</td>
+        <td class="help">{{ field.help_text }}</td>
+        <td class="errors">{{ field.errors }}</td>
+    </tr>
+    {% endfor %}
+    <tr><td><a href="/password/change/">Change password</a></td></tr>
+    <tr><td></td><td><input type="submit" name="general" /></td></tr>
+</table>
+</form>
+{% comment %}
+<form action="" method="post">
+    <fieldset><legend>Other places on the web</legend>
+<table>
+    {% for w20 in w20forms %}
+<form action="" method="post">
+    <tr>
+        <th>{{ w20.instance.place }} username{% if w20.place.field.required %}<span class="required">*</span>{% endif %}:</th>
+        <td>{{ w20.username }}</td>
+        <td class="help">{{ w20.username.help_text }}</td>
+        <td class="errors">{{ w20.username.errors }}</td>
+        <td><input type="submit" name="web20" value="Change {{ w20.instance.place }} username"/></td>
+    </tr>
+</form>
+    {% endfor %}
+    <tr>
+        <th>{{ new_w20.place }} username{% if w20.username.field.required %}<span
+                class="required">*</span>{% endif %}:</th>
+        <td>{{ new_w20.username }}</td>
+        <td class="help">{{ new_w20.username.help_text }}</td>
+        <td class="errors">{{ new_w20.username.errors }}</td><td><input
+            type="submit" name="web20" value="Add"/></td>
+    </tr>
+</table>
+</fieldset>
+{% endcomment %}
+{% endblock content %}

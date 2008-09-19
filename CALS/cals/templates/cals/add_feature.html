@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load cals_tags %}
+{% block pagetitle %}Add a feature{% endblock pagetitle %}
+{% block content %}
+
+<p>As I would rather spend my time making this site good than getting
+carpal tunnel from punching in the values of every single of the 142
+features in WALS, I hope you'll help me be doing it for me ;). Here's
+how:</p>
+
+<p>Go to: 
+<ul>
+<li><a href="#how">Add a missing feature</a></li>
+<li><a href="#missing">The following WALS features are currently missing from CALS!</a></li>
+<li><a href="#after">What happens when all 142 features are in</a></li>
+</ul>
+</p>
+
+<h2><a name="how"></a>Add a missing feature</h2>
+<p>Send an email to <a href="mailto:taliesin+calsfeature@nvg.org">taliesin+calsfeature@nvg.org</a> with the following contents:</p>
+
+<ol>
+    <li>On the first line: the feature-number from <a
+        href="http://wals.info/">WALS</a>.</li>
+    <li>On subsequent lines: the values, as spelled at WALS, one per
+    line.</li>
+</ol>
+<p>An example follows:</p>
+<pre>1
+Small
+Moderately small
+Average
+Moderately large
+Large
+</pre>
+<p>You can put several features in the same mail, like so:</p>
+<pre>1
+Small
+Moderately small
+Average
+Moderately large
+Large
+19
+None
+Clicks
+Labial-velars
+Pharyngeals
+'Th' sounds
+Clicks, pharyngeals, and 'th'
+Pharyngeals and 'th'
+</pre>
+
+<p>I'll read over it and batch-convert it into something the database
+can import, and add the name of the first feature-sender to the <a
+    href="/thank_you">thanks-page</a>.</p>
+
+<h2><a name="missing"></a>The following <span class="highlight">{{ missing.count }}</span> WALS features
+    are currently missing from CALS!</h2>
+
+<ul>
+    {% for feature in missing %}
+    <li><a href="http://wals.info/feature/{{ feature.id }}">{{ feature.id }} {{ feature.name }}</a></li>
+    {% endfor %}
+</ul>
+
+<h2><a name="after"></a>What happens when all 142 features are in</h2>
+
+<p>This page disappears, the email-address disappears (and becomes a
+spam-trap) and we can start using CALS for real!</p>
+
+{% endblock content %}

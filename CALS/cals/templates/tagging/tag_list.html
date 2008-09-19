@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load tagging_tags %}
+{% block pagetitle %}Language tags{% endblock pagetitle %}
+{% block submenu %}
+<ul>
+    <li><b>All</b></li>
+</ul>
+{% endblock submenu %}
+{% block content %}
+{% tags_for_model cals.Language as tags with counts %}
+    <ul>
+        {% for object in tags %}
+        <li class="{% cycle odd,even %}">
+            <a href="{{ object.name }}/">{{ object }}</a>
+            ({{ object.count }} languages)
+        {% endfor %}
+    </ul>
+{% endblock content %}

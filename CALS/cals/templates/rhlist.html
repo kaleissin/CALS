@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load cals_tags %}
+{% block submenu %}
+<ul>
+    <li><a href="/language/">All</a></li>
+    {% comment %}
+    <li><b>All</b></li>
+    {% if user.is_authenticated %}
+    <li><a href="../new">Add</a></li>
+    {% endif %}
+    {% endcomment %}
+</ul>
+{% endblock submenu %}
+{% block content %}
+    {% for object in object_list %}
+    <p><b><a href="/language/{{ object.slug }}/">{{ object }}</a></b>: 
+    {{ object.background }}</p>
+    <p>Translations:</p>
+    {% for trans in object.background_translated_to.all %}
+    <p>About {{ object }} in 
+    <a href="/language/{{ trans.translated_from.slug }}/">{{ trans.translated_from }}</a>: 
+    {{ trans }}</p>
+    {% endfor %}
+    {% endfor %}
+{% endblock content %}

@@ -1,0 +1,5 @@
+{% load cals_tags %}
+<p>{{ obj }}</p>
+{% if obj.latitude and obj.longitude %}
+<georss:point>{{ obj.latitude }} {{obj.longitude}}</georss:point>
+{% endif %}

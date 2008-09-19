@@ -1,0 +1,18 @@
+{% block content %}
+<table>
+    <tr><th>Name:</th><td>{{ object.name }}</td></tr>
+    <tr><th colspan="2">Features:</th></tr>
+    <tr>
+        <td colspan="2">
+            <table>
+                {% for feature in object.features.all %}
+                <tr>
+                    <th><a href="http://wals.info/feature/{{ feature.feature_id }}">{{ feature.feature }}</a></th>
+                    <td>{{ feature.name }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </td>
+    </tr>
+</table>
+{% endblock content %}

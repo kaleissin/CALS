@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load cals_tags %}
+{% block pagetitle %} Language: {{ object.name }}{% endblock pagetitle %}
+{% block submenu %}
+<ul>
+    <li><a href="../">All</a></li>
+    {% if user.is_authenticated %}
+    <li><a href="../new">Add</a></li>
+        {% if object.public %}
+    <li><a href="./change">Change</a></li>
+        {% else %}
+            {% ifequal user object.manager %}
+    <li><a href="./change">Change</a></li>
+            {% endifequal %}
+        {% endif %}
+    {% endif %}
+</ul>
+{% endblock submenu %}
+{% block content %}
+    <table>
+        <tr><th>External name:</th><td>{{ object.name }}</td></tr>
+        <tr><th>Internal name:</th><td>{{ object.internal_name }}</td></tr>
+        <tr><th>Author:</th><td>{{ object.author }}</td></tr>
+        <tr><th>Homepage:</th><td><a class="ext" href="{{ object.homepage }}">{{ object.homepage }}</a></td></tr>
+        <tr><th>Greeting:</th><td>{{ object.greeting }}</td></tr>
+        <tr><th>From earth:</th><td>{{ object.from_earth|yesno:"yes,no,unknown" }}</td></tr>
+        <tr><th>Tags:</th><td>{{ object.tags }}</td></tr>
+        <tr><th>Editable by all:</th><td>{{ object.public|yesno:"yes,no" }}</td></tr>
+        {% if object.added_by %}
+        <tr><th>Added by:</th><td>{% showuser object.added_by %}</td></tr>
+        {% endif %}
+        {% if object.manager %}
+        <tr><th>Managed by:</th><td>{% showuser object.manager %}</td></tr>
+        {% endif %}
+        <tr><th>Editors:</th>
+            <td>
+                <ul>{% for editor in object.editors %}
+                    <li>{{ editor }}</li>
+                    {% endfor %}</ul>
+            </td>
+        </tr>
+        <tr><th>Added:</th><td>{{ object.created|date:"Y-m-d H:i" }}</td></tr>
+        <tr><th>Last change:</th><td>{{ object.last_modified|date:"Y-m-d H:i"}}</td></tr>
+    </table>
+    <h2>Features:</h2>
+    <table>
+        {% for feature in object.features.all %}
+        <tr class="{% cycle odd,even %}">
+            <th><a href="/feature/{{ feature.feature.id }}">{{ feature.feature }}</a> {% wals feature.feature_id %}</th>
+            <td>{{ feature.value }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock content %}

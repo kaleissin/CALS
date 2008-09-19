@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block submenu %}
+<ul>
+    <li><b>All</b></li>
+    {% if user.is_authenticated %}
+    <li><a href="../new">Add</a></li>
+    {% endif %}
+</ul>
+{% endblock submenu %}
+{% block content %}
+    <h1>Last modified per year</h1>
+    <h2>{{ year }}</h2>
+    <table>
+        <tr><th>Language</th><th>Author</th><th>Features</th><th>Last modified</th></tr>
+        {% for object in object_list %}
+        <tr class="{% cycle odd,even %}">
+            <td><a href="/language/{{ object.slug }}/">{{ object }}</a></td>
+            <td>{% if object.author %}{{ object.author }}{% endif %}</td>
+            <td>{{ object.features.count }}</td>
+            <td>{{ object.last_modified|date:"F j" }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock content %}

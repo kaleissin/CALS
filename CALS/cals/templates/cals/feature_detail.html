@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load cals_tags %}
+{% block pagetitle %} Feature: {{ object.name }}{% endblock pagetitle %}
+{% block submenu %}
+<ul>
+    <li><a href="../">All features</a></li>
+    {% if user.is_authenticated %}
+    <li><a href="./description/">Description</a></li>
+    {% endif %}
+</ul>
+{% endblock submenu %}
+{% block content %}
+    <table>
+        <tr><th>Name:</th><td>{{ object.name }} {% walsfeature object.id %}</td></tr>
+        {% if object.description_xhtml %}
+        <tr><th>Description:</th><td>{{ object.description_xhtml|safe }}</td></tr>
+        {% endif %}
+        {% if object.wals %}
+        <tr><th>In-depth description:</th><td>Only at {% wals object.id %}</td></tr>
+        {% else %}
+        {% if object.description_link %}
+        <tr><th>In-depth description:</th><td><a href="{{ object.description_link }}">{{ object.description_link }}</a></td></tr>
+        {% endif %}
+        {% endif %}
+        <tr>
+            <th colspan="2">Values:</th>
+            <td rowspan="{{ object.featurevalue_set.count|add:1 }}" class="graph">{% feature_graph object %}</td>
+        </tr>
+        {% for value in object.featurevalue_set.all %}
+        <tr class="{% cycle odd,even %}">
+            <td></td>
+            <td><a href="/value/{{ value.id }}">{{ value.name }}</a> 
+                ({{ value.languagefeature_set.count }} language{{ value.languagefeature_set.count|pluralize }})</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock content %}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block submenu %}
+<ul>
+    <li><b>All features</b></li>
+    <li><a href="http://trac.aldebaaran.uninett.no/cals/wiki/CALSFeatures">Add a feature</a></li>
+    <hr />
+    {% for category in object_list %}
+    <li><a href="#{{ category|slugify }}">{{ category }}</a></li>
+    {% endfor %}
+</ul>
+{% endblock submenu %}
+{% block content %}
+    <ul class="treelist">
+        {% for category in object_list %}
+        <li><a name="{{ category|slugify }}" id="{{ category|slugify }}"></a>
+            <a href="#top" class="category">{{ category }}</a>
+        <ul>
+            {% for feature in category.feature_set.all %}
+            <li class="{% cycle odd,even %}">
+                <a class="feature" href="../{{ feature.id }}">{{ feature }}</a>
+                ({{ feature.languages.count }} language{{ feature.languages.count|pluralize }})
+                ({{ feature.featurevalue_set.count }} value{{ feature.featurevalue_set.count|pluralize }})
+                {% if feature.featurevalue_set.count %}
+                <ul>
+                {% for fv in feature.featurevalue_set.all %}
+                <li>
+                    <a href="/value/{{ fv.id }}">{{ fv }}</a>
+                    ({{ fv.languagefeature_set.count }} language{{ fv.languagefeature_set.count|pluralize }})
+                </li>
+                {% endfor %}
+                </ul>
+                {% else %}
+                <p>No values registered</p>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul></li>
+        {% endfor %}
+    </ul>
+{% endblock content %}

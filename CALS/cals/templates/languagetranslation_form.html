@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block pagetitle %}Changing {{ user }}{% endblock pagetitle %}
+{% block submenu %}
+<ul>
+    <li><a href="/language/">All</a></li>
+    <li><a href="../../">Details</a></li>
+    <li><b>Change</b></li>
+    <li><a href="./delete">Delete</a></li>
+</ul>
+{% endblock submenu %}
+{% block content %}
+<h2>Translating "{{ exercise.name }}" ({{ exercise.category }})</h2>
+
+<form action="" method="post">
+<table>
+    <tr>
+        <th>Original:</th>
+        <th>{{ exercise.exercise }}</th>
+        <td colspan="2"></td>
+    </tr>
+    <tr>
+        <th>{{ form.translation.label }}:</th>
+        <td>{{ form.translation }}</td>
+        <td class="help">{{ form.translation.help_text }}</td>
+        <td class="errors">{{ form.translation.errors }}</td>
+    </tr>
+    <tr><td></td><td><input type="submit" /></td></tr>
+</table>
+{{ form.errors }}
+</form>
+{% endblock content %}

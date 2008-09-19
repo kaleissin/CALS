@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load cals_tags %}
+{% block pagetitle %}
+Thanks, all!
+{% endblock pagetitle %}
+{% block no_submenu %}
+{% endblock no_submenu %}
+{% block content %}
+<h2>Thank you </h2>
+<h3>... to all the people behind <a href="http://wals.info/">WALS</a></h3>
+<p>That is: all the people listed at the <a
+    href="https://dev.livingreviews.org/projects/wals/wiki/WalsPeople">WALS
+credits</a>, the authors of the book and probably many more.</p>
+<h3>... to the adders of features:</h3>
+<dl>
+    <dt>1-29</dt> <dd>{% showuser 2 %}</dd>
+    <dt>30-140, 142</dt> <dd>{% showuser 37 %}</dd>
+    <dt>141</dt> <dd>This will be added once WALS' own feature 141 is
+    complete, it currently lacks maps</dd>
+</dl>
+<h3>... for the ideas to new website features:</h3>
+<ul>
+    <li>{% showuser 3 %}<!-- arj --></li>
+    <li>{% showuser 27 %}<!-- saizai --></li>
+    <li>{% showuser 30 %}<!-- alexfink --></li>
+    <li>{% showuser 37 %}<!-- arthaey --></li>
+    <li>deramoz</li>
+    <li>{% showuser 123 %}<!-- tsketar --></li>
+    <li>{% showuser 52 %}<!--Henrik Theiling --></li>
+    <li>wycoval</li>
+    <li>anonymous</li>
+</ul>
+
+<h3>... submitters of useful bugreports</h3>
+<ul>
+    <li>{% showuser 3 %}</li>
+    <li>{% showuser 30 %}</li>
+    <li>{% showuser 32 %}<!-- paul.w.bennet --></li>
+    <li>deramoz</li>
+    <li>{% showuser 87 %}<!-- Qwynegold--></li>
+    <li>{% showuser 52 %}<!--Henrik Theiling --></li>
+    <li>R. Forkel</li>
+    <li>wycoval</li>
+    <li>anonymous</li>
+</ul>
+
+{% endblock content %}

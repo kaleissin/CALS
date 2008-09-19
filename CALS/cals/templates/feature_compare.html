@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% load cals_tags %}
+{% block pagetitle %} Comparing features: {{ features.0.name }}, {{ features.1.name }}{% endblock pagetitle %}
+{% block submenu %}
+<ul>
+    <li><a href="/feature/">All features</a></li>
+    <hr />
+    {% for f in features %}
+    <li><a href="/feature/{{ f.id }}/">{{ f.id }}: {{ f }}</a></li>
+    {% endfor %}
+</ul>
+{% endblock submenu %}
+{% block content %}
+<h1>Comparison of features 
+    <a href="/feature/{{ features.0.id }}/">{{ features.0.id }}: {{ features.0.name }}</a>
+    and 
+    <a href="/feature/{{ features.1.id }}/">{{ features.1.id }}: {{ features.1.name }}</a></h1>
+    <table>
+        <tr>
+            <th></th>
+        {% for f1 in fvs.0 %}
+            <th><a href="/value/{{ f1.id }}/">{{ f1 }}</a></th>
+        {% endfor %}
+        </tr>
+        {% for f2 in comparison %}
+        <tr>
+            <th><a href="/value/{{ f2.fv.id }}/">{{ f2.fv }}</a></th>
+        {% for c in f2.counts %}
+            <td class="number">{{ c|default:"&#x2013;" }}</td>
+        {% endfor %}
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock content %}

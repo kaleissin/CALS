@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block pagetitle %}
+Home
+{% endblock pagetitle %}
+{% block content %}
+{% if form.has_errors %}
+<p>Your username and password didn't match. Please try again.</p>
+{% endif %}
+
+<h2>Success!</h2>
+
+<p>You are now logged in to CALS. Have fun!</p>
+{% endblock content %}

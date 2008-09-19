@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load cals_tags %}
+{% block submenu %}
+<ul>
+    <li><b>All people</b></li>
+</ul>
+{% endblock submenu %}
+{% block content %}
+    <table class="list">
+        <tr>
+            <th rowspan="2">Conlanger</th>
+            <th rowspan="2">Joined</th>
+            <th colspan="3">Languages</th>
+        </tr>
+        <tr>
+            <th>added</th>
+            <th>managed</th>
+            <th>edited</th>
+        </tr>
+        {% for object in object_list %}
+        {% if object.is_visible %}
+        <tr class="{% cycle odd,even %}">
+            <td>{% showuser object %}</td>
+            <td>{{ object.user.date_joined|date:"Y-m-d" }}</td>
+            <td class="right">{{ object.user.languages.count }}</td>
+            <td class="right">{{ object.manages.count }}</td>
+            <td class="right">{{ object.edits.all.count }}</td>
+        </tr>
+        {% endif %}
+        {% endfor %}
+    </table>
+{% endblock content %}

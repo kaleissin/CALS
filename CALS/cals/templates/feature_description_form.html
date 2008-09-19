@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load cals_tags %}
+{% block pagetitle %}Feature description: change{% endblock pagetitle %}
+{% block submenu %}
+<ul>  
+    <li><a href="../../">All features</a></li>
+    <li><a href="../">Back to overview</a></li>
+    {% if user.is_authenticated %}
+    <li><b>Change description</b></li>
+    {% endif %}
+</ul>
+</ul>
+{% endblock submenu %}
+{% block content %}
+<form action="" method="post">
+    <h2>{{ feature.category.name }}: {{ feature.name }}</h2>
+    <h3>Description</h3>
+    <p>You can use <a href="http://hobix.com/textile/" class="ext">Textile-markup</a> to markup
+    the text.</p>
+    {{ form.description }}
+    <p>{{ form.description.errors }}</p>
+    {% if feature.wals %}
+    <p>Link to even more info: {% wals feature.id %}</p>
+    {% else %}
+    <p>Link to even more info:{{ form.description_link }}{{ form.description_link.errors }}</p>
+    {% endif %}
+    <input type="submit" />
+</form>
+{% endblock content %}
