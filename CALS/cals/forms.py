@@ -134,16 +134,6 @@ class PasswordResetForm(forms.Form):
     username = forms.CharField(label='Username', max_length=30, min_length=2)
     secret = forms.CharField(label='Secret', max_length=64, required=False)
 
-class Web20Form(forms.ModelForm):
-    place = forms.ChoiceField(required=False,
-            choices=Web20Account.WEB20_CHOICES, 
-            widget=forms.Select(attrs={'class':'smallopt'}))
-    username = forms.CharField(required=False)
-
-    class Meta:
-        model = Web20Account
-        exclude = ('user',)
-
 class UserForm(forms.ModelForm):
     username = forms.CharField(max_length=16, min_length=3)
     first_name = forms.CharField(label='Real name', max_length=30, required=False)

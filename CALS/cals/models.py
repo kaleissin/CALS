@@ -368,32 +368,6 @@ class UTC(dt.tzinfo):
     def dst(self, dt):
         return self.ZERO
 
-class Web20Account(models.Model):
-    WEB20_CHOICES = (
-            ('AIM', 'AIM'),
-            ('CONLANG-L', 'CONLANG-L'),
-            ('Facebook', 'Facebook'),
-            ('Flickr', 'Flickr'),
-            ('FrathWiki', 'FrathWiki'),
-            ('GTalk', 'GTalk'),
-            ('ICQ', 'ICQ'),
-            ('Jabber', 'Jabber'),
-            ('LiveJournal', 'LiveJournal'),
-            ('MSN', 'MSN'),
-            ('MySpace', 'MySpace'),
-            ('Twitter', 'Twitter'),
-            ('WikiPedia', 'WikiPedia'),
-            ('YIM', 'YIM'),
-            ('ZBB', 'ZBB'),
-            )
-
-    user = models.ForeignKey(User, related_name='web20')
-    username = models.CharField(max_length=64)
-    place = models.CharField(max_length=20, choices=WEB20_CHOICES)
-
-    class Meta:
-        db_table = 'cals_web20account'
-
 class TranslationExerciseCategory(models.Model):
     name = models.CharField(max_length=64, unique=True)
 
