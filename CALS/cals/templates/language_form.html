@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load cals_tags %}
-{% block pagetitle %}Language: {% ifequal request.META.REQUEST_URI '/language/new' %}add{% else %}change{% endifequal %}{% endblock pagetitle %}
+{% block title %}Language: {% ifequal request.META.REQUEST_URI '/language/new' %}add{% else %}change{% endifequal %}{% endblock title %}
 {% block head %}
 {% comment %}
 <script type="text/javascript"

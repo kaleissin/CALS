@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load cals_tags %}
-{% block pagetitle %}
+{% block title %}
 {% ifequal comparison_type 'same' %}
 Similarities: {{ langs|join:", " }}
 {% else %}
@@ -10,7 +10,7 @@ Differences: {{ langs|join:", " }}
 Comparing: {{ langs|join:", " }}
 {% endifequal %}
 {% endifequal %}
-{% endblock pagetitle %}
+{% endblock title %}
 {% block submenu %}
 <ul>  
     <li><a href="../">All</a></li>
