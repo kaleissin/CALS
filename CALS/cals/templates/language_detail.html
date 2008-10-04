@@ -88,7 +88,8 @@
         {% if category.features %}
         {% for feature in category.features %}
     <tr class="feature {% cycle odd,even %}">
-        <th><a href="/language/{{ object.slug }}/feature/{{ feature.feature.id }}/">{{ feature.feature }}</a> {% wals feature.feature.id %}</th>
+        {#<th><a href="/language/{{ object.slug }}/feature/{{ feature.feature.id }}/">{{ feature.feature }}</a> {% wals feature.feature.id %}</th>#}
+        <th><b>{{ feature.feature }}</b> {% wals feature.feature.id %}</th>
         <td>{{ feature.value }}
         </td>
     </tr>
