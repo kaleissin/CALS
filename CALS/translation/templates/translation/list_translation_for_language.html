@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Translations of "{{ trans.exercise.name }}" for {{ lang }}{% endblock title %}
+{% block submenu %}
+<ul>
+    <li><a href="/translation/{{ exercise.slug }}/">All translations of <b>{{ exercise }}</b></a></li>
+    <li><a href="/language/">All languages</a></li>
+    <li><a href="/language/{{ lang.slug }}/">{{ lang }}</a></li>
+    <li><b>Details</b></li>
+</ul>
+{% endblock submenu %}
+{% block content %}
+<h2>Translations of "{{ exercise.name }}" ({{ exercise.category }}) for {{ lang }}</h2>
+
+
+<table>
+    <tr>
+        <th>Translation</th>
+        <th>Translator</th>
+    {% for object in object_list %}
+    <tr class="{% cycle odd,even %}">
+        <td>{% ifequal object.translator request.user %}
+            <a href="/translation/{{ object.exercise.slug }}/language/{{ object.language.slug }}/change">{{ object }}</a>
+            {% else %}
+            {{ object }}
+            {% endifequal %}
+            {% if object.interlinear %}{{ object.il_xhtml|safe }}{% endif %}
+        </td>
+        <td><a href="{{ object.translator.username }}/">{{ object.translator }}</a></td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock content %}

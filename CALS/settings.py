@@ -15,7 +15,8 @@ MANAGERS = ADMINS
 # although not all choices may be available on all operating systems.
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
-TIME_ZONE = 'Europe/Oslo'
+TIME_ZONE = 'UTC'
+#TIME_ZONE = 'Europe/Oslo'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -45,8 +46,8 @@ ADMIN_MEDIA_PREFIX = 'http://media.aldebaaran.uninett.no/admin/'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
-    'django.template.loaders.app_directories.load_template_source',
     'django.template.loaders.filesystem.load_template_source',
+    'django.template.loaders.app_directories.load_template_source',
 #     'django.template.loaders.eggs.load_template_source',
 )
 
@@ -58,13 +59,13 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
 )
 
-ROOT_URLCONF = 'cals.urls'
+ROOT_URLCONF = 'CALS.urls'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    '/home/django-sites/cals/templates/',
+    '/home/django-sites/CALS/templates/',
 )
 
 INSTALLED_APPS = (
@@ -75,12 +76,15 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.flatpages',
     'django.contrib.comments',
+    'translation',
     'cals',
     'tagging',
     'countries',
 #    'profiles',
     'nano.blog',
     'nano.user',
+#    'nano.web20',
+    'webalizer',
 )
 
 #AUTHENTICATION_BACKENDS = (
@@ -114,10 +118,18 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 #OPENID_RETURN_HOST = [The host of the request]
 
 #Setting to turn off OpenID iNames
-OPENID_DISALLOW_INAMES = False
+#OPENID_DISALLOW_INAMES = False
 
 #The CSS class to use for the openid_url form field
-LOGIN_OPENID_URL_CLASS = 'openid'
+#LOGIN_OPENID_URL_CLASS = 'openid'
 
 
 FORCE_LOWERCASE_TAGS = True
+
+
+# Nano-settings
+NANO_LOG_FILE = '/tmp/cals.log'
+NANO_USER_EMAIL_SENDER = 'calsbot@gmail.com'
+
+# Webalizer
+WEBALIZER_DIR = '/home/www/webalizer/CALS/'

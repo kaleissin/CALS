@@ -18,6 +18,7 @@ from django.core.mail import send_mail
 from django.http import HttpResponseRedirect, HttpResponseNotFound, HttpResponseForbidden
 from django.shortcuts import get_object_or_404
 from django.template import loader, Context
+from django.template.loader import render_to_string
 from django.views.generic.list_detail import object_list
 from django.views.generic.create_update import delete_object
 from django.utils.encoding import smart_unicode
@@ -30,10 +31,14 @@ from cals.models import *
 from cals.forms import *
 from cals.statistics import *
 
+from translation.models import TranslationExercise, Translation
+
 from nano.tools import *
 from nano.blog.models import Entry
 
-show_error = loader.get_template('error.html')
+_error_forbidden_msg = "You don't have the necessary permissions to edit here."
+error_forbidden = render_to_string('error.html', 
+        {'error_message': _error_forbidden_msg })
 
 class CALSError(Exception):
     pass
@@ -50,6 +55,9 @@ def _get_exercise(*args, **kwargs):
 
 def _get_profile(*args, **kwargs):
     return get_object_or_404(User, id=kwargs.get('object_id', None))
+
+def _get_user(*args, **kwargs):
+    return get_object_or_404(User, username=kwargs.get('user', None))
 
 def _get_url_pieces(name='slug', **kwargs):
     LOG.error('Url-pieces: %s' % kwargs)
@@ -249,22 +257,20 @@ def create_language(request, *args, **kwargs):
         else:
             cats.append({'name': category.name})
 
-    greetingexercise = TranslationExercise.objects.get(id=1)
     if request.method == 'POST':
         langform = LanguageForm(data=request.POST, initial=request.POST)
         if langform.is_valid():
             lang = langform.save(commit=False)
             lang.added_by = request.user
+            lang.last_modified_by = request.user.get_profile()
             lang.save(solo=False)
             # greeting
-            greeting = langform.cleaned_data[u'greeting']
-            if greeting:
-                trans = Translation(translation=greeting,language=lang,
+            if lang.greeting:
+                # use signal instead?
+                greetingexercise = TranslationExercise.objects.get(id=1)
+                trans = Translation(translation=lang.greeting,language=lang,
                         translator=request.user,exercise=greetingexercise)
                 trans.save()
-            else:
-                trans = None
-            lang.greeting = trans
             # values
             for value_id in request.POST.getlist(u'value'):
                 if not value_id:
@@ -314,18 +320,10 @@ def change_language(request, *args, **kwargs):
 
     may_edit, (is_admin, is_manager) = may_edit_lang(user, lang)
     if not may_edit:
-        error_message = "You don't have the necessary permissions to edit %s." % lang.name
-        c = Context({ 'error_message': error_message,})
-        return HttpResponseForbidden(show_error.render(c))
+        return HttpResponseForbidden(error_forbidden)
 
-    LOG.critical('Stopped here')
-    try:
-        greeting = lang.greeting
-    except Translation.DoesNotExist:
-        greeting = ''
-    langform = LanguageForm(instance=lang, initial={'greeting': greeting})
+    langform = LanguageForm(instance=lang)
     #profile = user.get_profile()
-    #is_manager = user.get_profile() == lang.manager
     if is_manager:
         editorform = EditorForm(instance=lang)
     else:
@@ -361,18 +359,13 @@ def change_language(request, *args, **kwargs):
         else:
             cats.append({'name': category.name})
 
-    greetingexercise = TranslationExercise.objects.get(id=1)
-#     try:
-#         greeting = Translation.objects.get(language=lang, exercise=greetingexercise)
-#     except Translation.DoesNotExist:
-#         pass
     if request.method == 'POST':
         langform = LanguageForm(data=request.POST, instance=lang, initial=request.POST)
         if langform.is_valid():
             editorform = EditorForm(data=request.POST, instance=lang)
             old_manager = lang.manager
             old_editors = lang.editors
-            old_greeting = lang.greeting #translations.get(exercise=greetingexercise)
+            lang.last_modified_by = request.user.get_profile()
             lang = langform.save()
             # editors and managers
             if not 'manager' in langform.cleaned_data:
@@ -381,26 +374,24 @@ def change_language(request, *args, **kwargs):
                 editors = editorform.save()
                 LOG.error('editors: %s' % editors)
             # greeting
-            new_greeting = langform.cleaned_data.get(u'greeting', None)
-            if new_greeting: 
-                greeting = Translation(language=lang,
-                        exercise=greetingexercise,
-                        translation=greeting,
+            greetingexercise = TranslationExercise.objects.get(id=1)
+            new_greeting = lang.greeting
+            try:
+                greetingtrans = Translation.objects.get(language=lang, exercise=greetingexercise,
                         translator=request.user)
-                if old_greeting and old_greeting != new_greeting:
-                    try:
-                        old_greeting.translator = request.user
-                        old_greeting.translation = new_greeting
-                        old_greeting.save()
-                    except Translation.DoesNotExist:
-                        greeting.save()
-                        lang.greeting = greeting
+            except Translation.DoesNotExist:
+                greetingtrans = None
+            if new_greeting:
+                if greetingtrans:
+                    if new_greeting != greetingtrans.translation:
+                        greetingtrans.translation = new_greeting
                 else:
-                    greeting.save()
-                    lang.greeting = greeting
+                    Translation.objects.create(language=lang,
+                            exercise=greetingexercise, translator=request.user,
+                            translation=new_greeting)
             else:
-                if old_greeting:
-                    Translation.objects.filter(id=old_greeting.id).delete()
+                if greetingtrans:
+                    greetingtrans.delete()
             # values
             for value_id in request.POST.getlist(u'value'):
                 if not value_id:
@@ -549,8 +540,8 @@ def change_profile(request, *args, **kwargs):
     LOG.error('Profile: %s', profile)
     uform = UserForm(instance=user)
     pform = ProfileForm(instance=profile)
-    w20forms = [Web20Form(instance=w20) for w20 in web20acc]
-    new_w20 = Web20Form(prefix="new_w20")
+    #w20forms = [Web20Form(instance=w20) for w20 in web20acc]
+    #new_w20 = Web20Form(prefix="new_w20")
     if request.method == 'POST':
         LOG.error('POST %s', request.POST)
         uform = UserForm(data=request.POST, instance=user)
@@ -691,106 +682,106 @@ def auth_login(request, *args, **kwargs):
 #             'error':error}
 #     return render_page(request, template, data)
 
-def show_languagetranslations(request, *args, **kwargs):
-    me = 'language'
-    error = pop_error(request)
-    template = 'cals/languagetranslation_list.html'
-    lang = _get_lang(*args, **kwargs)
-    trans = lang.translations.exclude(translation__isnull=True).exclude(translation='')
-    if request.user.is_authenticated():
-        exercises = TranslationExercise.objects.exclude(
-                translations__language=lang,
-                translations__translator=request.user)
-    else:
-        exercises = TranslationExercise.objects.exclude(translations__language=lang)
-    extra_context = {'lang': lang,
-            'exercises': exercises, 
-            'me': me,
-            'error': error,}
-    return object_list(request, queryset=trans, template_name=template,
-            extra_context=extra_context)
-
-@login_required
-def add_languagetranslations(request, *args, **kwargs):
-    me = 'language'
-    error = pop_error(request)
-    template = 'languagetranslation_form.html'
-    help_message = ''
-    lang = _get_lang(*args, **kwargs)
-    exercise = _get_exercise(*args, **kwargs)
-    form = LanguageTranslationForm()
-    if request.method == 'POST':
-        form = LanguageTranslationForm(request.POST)
-        if form.is_valid():
-            trans = Translation()
-            trans.translation = form.cleaned_data['translation']
-            trans.translator = request.user
-            trans.language = lang
-            trans.exercise = exercise
-            trans.save()
-            request.session['error'] = None
-            return HttpResponseRedirect('..')
-        else:
-            error = 'Form not valid'
-            request.session['error'] = error
-    trans = lang.translations.exclude(translation__isnull=True).exclude(translation='')
-    data = {'form': form,
-            'exercise': exercise, 
-            'help_message': help_message,
-            'error': error, 
-            'me': me}
-    return render_page(request, template, data)
-
-@login_required
-def change_languagetranslations(request, *args, **kwargs):
-    me = 'language'
-    error = pop_error(request)
-    template = 'languagetranslation_form.html'
-    help_message = ''
-    lang = _get_lang(*args, **kwargs)
-    exercise = _get_exercise(*args, **kwargs)
-    trans = Translation.objects.get(language=lang, translator=request.user, exercise=exercise)
-    form = LanguageTranslationForm(initial={'translation': trans})
-    if request.method == 'POST':
-        form = LanguageTranslationForm(data=request.POST, initial={'translation': trans})
-        if form.is_valid():
-            trans.translation = form.cleaned_data.get('translation', '')
-            trans.save()
-            request.session['error'] = None
-            return HttpResponseRedirect('..')
-    data = {'form': form,
-            'exercise': exercise, 'help_message': help_message,
-            'error':error, 'me': me}
-    return render_page(request, template, data)
-
-def show_translationexercise(request, *args, **kwargs):
-    me = 'translation'
-    error = pop_error(request)
-    exercises = TranslationExercise.objects.all()
-    extra_context={'me': me, 'error': error,}
-    return object_list(request, queryset=exercises, 
-            extra_context=extra_context)
-
-def show_translation(request, *args, **kwargs):
-    me = 'translation'
-    error = pop_error(request)
-    exercise = _get_exercise(*args, **kwargs)
-    trans = exercise.translations.exclude(translation__isnull=True).exclude(translation='').order_by('language')
-    extra_context={'me': me, 'error': error,}
-    return object_list(request, queryset=trans, #template_name=template,
-            extra_context=extra_context)
-
-@login_required
-def delete_languagetranslations(request, *args, **kwargs):
-    me = 'language'
-    template = 'delete.html'
-    error = pop_error(request)
-    lang = _get_lang(*args, **kwargs)
-    exercise = _get_exercise(*args, **kwargs)
-    trans = Translation.objects.get(language=lang, translator=request.user, exercise=exercise)
-    extra_context={'me': me, 'error': error,}
-    return delete_object(request, model=Translation, object_id=trans.id,
-            post_delete_redirect="..", extra_context=extra_context)
+# def show_languagetranslations(request, *args, **kwargs):
+#     me = 'language'
+#     error = pop_error(request)
+#     template = 'cals/languagetranslation_list.html'
+#     lang = _get_lang(*args, **kwargs)
+#     trans = lang.translations.exclude(translation__isnull=True).exclude(translation='')
+#     if request.user.is_authenticated():
+#         exercises = TranslationExercise.objects.exclude(
+#                 translations__language=lang,
+#                 translations__translator=request.user)
+#     else:
+#         exercises = TranslationExercise.objects.exclude(translations__language=lang)
+#     extra_context = {'lang': lang,
+#             'exercises': exercises, 
+#             'me': me,
+#             'error': error,}
+#     return object_list(request, queryset=trans, template_name=template,
+#             extra_context=extra_context)
+# 
+# @login_required
+# def add_languagetranslations(request, *args, **kwargs):
+#     me = 'language'
+#     error = pop_error(request)
+#     template = 'languagetranslation_form.html'
+#     help_message = ''
+#     lang = _get_lang(*args, **kwargs)
+#     exercise = _get_exercise(*args, **kwargs)
+#     form = LanguageTranslationForm()
+#     if request.method == 'POST':
+#         form = LanguageTranslationForm(request.POST)
+#         if form.is_valid():
+#             trans = Translation()
+#             trans.translation = form.cleaned_data['translation']
+#             trans.translator = request.user
+#             trans.language = lang
+#             trans.exercise = exercise
+#             trans.save()
+#             request.session['error'] = None
+#             return HttpResponseRedirect('..')
+#         else:
+#             error = 'Form not valid'
+#             request.session['error'] = error
+#     trans = lang.translations.exclude(translation__isnull=True).exclude(translation='')
+#     data = {'form': form,
+#             'exercise': exercise, 
+#             'help_message': help_message,
+#             'error': error, 
+#             'me': me}
+#     return render_page(request, template, data)
+# 
+# @login_required
+# def change_languagetranslations(request, *args, **kwargs):
+#     me = 'language'
+#     error = pop_error(request)
+#     template = 'languagetranslation_form.html'
+#     help_message = ''
+#     lang = _get_lang(*args, **kwargs)
+#     exercise = _get_exercise(*args, **kwargs)
+#     trans = Translation.objects.get(language=lang, translator=request.user, exercise=exercise)
+#     form = LanguageTranslationForm(initial={'translation': trans})
+#     if request.method == 'POST':
+#         form = LanguageTranslationForm(data=request.POST, initial={'translation': trans})
+#         if form.is_valid():
+#             trans.translation = form.cleaned_data.get('translation', '')
+#             trans.save()
+#             request.session['error'] = None
+#             return HttpResponseRedirect('..')
+#     data = {'form': form,
+#             'exercise': exercise, 'help_message': help_message,
+#             'error':error, 'me': me}
+#     return render_page(request, template, data)
+# 
+# def show_translationexercise(request, *args, **kwargs):
+#     me = 'translation'
+#     error = pop_error(request)
+#     exercises = TranslationExercise.objects.all()
+#     extra_context={'me': me, 'error': error,}
+#     return object_list(request, queryset=exercises, 
+#             extra_context=extra_context)
+# 
+# def show_translation(request, *args, **kwargs):
+#     me = 'translation'
+#     error = pop_error(request)
+#     exercise = _get_exercise(*args, **kwargs)
+#     trans = exercise.translations.exclude(translation__isnull=True).exclude(translation='').order_by('language')
+#     extra_context={'me': me, 'error': error,}
+#     return object_list(request, queryset=trans, #template_name=template,
+#             extra_context=extra_context)
+# 
+# @login_required
+# def delete_languagetranslations(request, *args, **kwargs):
+#     me = 'language'
+#     template = 'delete.html'
+#     error = pop_error(request)
+#     lang = _get_lang(*args, **kwargs)
+#     exercise = _get_exercise(*args, **kwargs)
+#     trans = Translation.objects.get(language=lang, translator=request.user, exercise=exercise)
+#     extra_context={'me': me, 'error': error,}
+#     return delete_object(request, model=Translation, object_id=trans.id,
+#             post_delete_redirect="..", extra_context=extra_context)
 
 def test(request, *args, **kwargs):
     error = pop_error(request)

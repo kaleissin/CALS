@@ -39,11 +39,10 @@ class LanguageForm(forms.ModelForm):
             widget=forms.Textarea(attrs={'cols': '64', 'rows': '4'}),
             help_text="""Maximum <span class="count" id="background_max">256</span> characters, formatting included.""")
     #manager = forms.MultipleChoiceField(queryset=Profile.objects.filter)
-    greeting = forms.CharField(max_length=64, required=False)
 
     class Meta:
         model = Language
-        exclude = ('editors', 'greeting')
+        exclude = ('created', 'editors', 'last_modified_by')
 
 #     def save(self, commit=True, user=None):
 #         if user:

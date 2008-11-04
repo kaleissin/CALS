@@ -252,10 +252,8 @@ class Language(models.Model):
             help_text="""Example: Klingon and Barsoomian (from Mars!) would set 'No' here, while
             Brithenig and Esperanto would set 'Yes'. As for Sindarin, it
             depends on whether you consider Arda to be the Earth""")
-#     greeting3 = models.CharField(max_length=64, blank=True,
-#             db_column='greeting3')
-    greeting = models.ForeignKey('Translation', blank=True, null=True,
-            editable=False, related_name='languagegreeting')
+    greeting = models.CharField(max_length=64, blank=True,
+            db_column='greeting')
     vocabulary_size = models.PositiveIntegerField(null=True, blank=True,
             help_text="Estimated vocabulary size")
     # Denormalization, real-time average-score is expensive
@@ -277,9 +275,9 @@ class Language(models.Model):
             makes it possible to hand a language over to another
             person.""")
     editors = models.ManyToManyField(Profile, blank=True, null=True, related_name='edits')
-    created = models.DateTimeField(auto_now_add=True)
-    last_modified = models.DateTimeField(blank=True, null=True,
-            editable=False, default=datetime.now) #auto_now=True)
+    created = models.DateTimeField(default=datetime.now)
+    last_modified = models.DateTimeField(blank=True, null=True, editable=False, default=datetime.now)
+    last_modified_by = models.ForeignKey(Profile, editable=False, blank=True, null=True, related_name='languages_modified')
 
     # Managers
     objects = models.Manager()
@@ -322,6 +320,15 @@ class Language(models.Model):
 
     def set_num_features(self):
         self.num_features = LanguageFeature.objects.filter(language=self).count()
+
+    def can_change(self, profile):
+        if isinstance(profile, User):
+            profile = profile.get_profile()
+        if self.manager == profile:
+            return True
+        if len(self.editors.filter(id=profile.id)):
+            return True
+        return False
 
     def get_name(self):
         if self.internal_name:
@@ -368,68 +375,6 @@ class UTC(dt.tzinfo):
     def dst(self, dt):
         return self.ZERO
 
-class TranslationExerciseCategory(models.Model):
-    name = models.CharField(max_length=64, unique=True)
-
-    class Meta:
-        verbose_name_plural = 'translation-exercise categories'
-        db_table = 'cals_translationcategory'
-
-    def __unicode__(self):
-        return self.name
-
-class TranslationExercise(models.Model):
-    name = models.CharField(max_length=64, unique=True,
-            help_text="A short name to refer to the translation excrcise")
-    slug = models.SlugField(max_length=64, unique=True, editable=False)
-    exercise = models.TextField(unique=True)
-    comment = models.TextField(blank=True, null=True)
-    category = models.ForeignKey(TranslationExerciseCategory,
-            related_name='exercises')
-    added_by = models.ForeignKey(User, related_name='translation_exercises')
-    added = models.DateTimeField(default=datetime.now, editable=False)
-
-    class Meta:
-        db_table = 'cals_translationexercise'
-
-    def __unicode__(self):
-        return self.name
-
-    def save(self, user=None, *args, **kwargs):
-        if not self.id:
-            self.slug = slugify(self.name)
-            if user:
-                self.added_by = user
-        self.added = datetime.now()
-        super(TranslationExercise, self).save(*args, **kwargs)
-
-# class EsperantoBackgroundManager(models.Manager):
-#     # For Rick Harrison
-#     def get_query_set(self):
-#         esperanto = Language.objects.get(slug='esperanto')
-#         return super(EsperantoBackgroundManager,
-#                 self).get_query_set().filter(background_translated_from__translated_to=esperanto)
-
-class Translation(models.Model):
-    translation = models.TextField()
-    exercise = models.ForeignKey(TranslationExercise, related_name='translations')
-    language = models.ForeignKey(Language, related_name='translations')
-    translator = models.ForeignKey(User, related_name='translations')
-    added = models.DateTimeField(default=datetime.now, editable=False)
-    last_modified = models.DateTimeField(default=datetime.now, editable=False)
-
-    class Meta:
-        db_table = 'cals_translation'
-
-    def __unicode__(self):
-        return self.translation
-
-    def save(self, user=None, *args, **kwargs):
-        if not self.id and user:
-            self.translator = user
-        self.last_modified = datetime.now()
-        super(Translation, self).save(*args, **kwargs)
-
 class BackgroundTranslation(models.Model):
     translation = models.CharField(max_length=512, blank=True,
             help_text="""A translation of the short summary of the history/background of
@@ -454,5 +399,5 @@ class BackgroundTranslation(models.Model):
         if not self.id and user:
             self.translator = user
         self.last_modified = datetime.now()
-        super(Translation, self).save(*args, **kwargs)
+        super(BackgroundTranslation, self).save(*args, **kwargs)
 

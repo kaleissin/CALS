@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load cals_tags %}
+{% block submenu %}
+<ul>
+    <li><b>All</b></li>
+    {% comment %}
+    <li><b>All</b></li>
+    {% endcomment %}
+</ul>
+{% endblock submenu %}
+{% block content %}
+{% for object in object_list %}
+<dl>
+    <dt class="{% cycle 'odd' 'even' %}"><a href="/translation/{{ object.slug }}/">{{ object }}</a> 
+    ({{ object.translations.count }} translation{{ object.translations.count|pluralize }})
+    </dt>
+    {% if object.translations.count %}
+    <dd>
+        <table>
+        {% for translation in object.translations.all %}
+            <tr>
+                <td class="langname"><a href="{{ object.slug }}/language/{{ translation.language.slug }}/">{{ translation.language }}</a>:</td>
+                <td>
+                {% ifequal translation.translator user %}
+                <a href="/translation/{{ translation.exercise.slug }}/language/{{ translation.language.slug }}/change">{{ translation }}</a>
+                {% else %}
+                {{ translation }}
+                {% endifequal %}
+                </td>
+            </tr>
+        {% endfor %}
+        </table>
+    </dd>
+    {% endif %}
+</dl>
+{% endfor %}
+{% endblock content %}

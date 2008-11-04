@@ -1,9 +1,10 @@
 from django.conf.urls.defaults import *
-from django.contrib import admin
 from django.views.generic.simple import direct_to_template
+
 from CALS.feeds.feeds import *
 
-admin.autodiscover()
+from django.contrib import admin
+#admin.autodiscover()
 
 language_feeds_rss = {
         'last_modified': RSSUpdatedLanguages,
@@ -61,9 +62,9 @@ todo_params = {
 
 urlpatterns = patterns('',
     (r'^admin/doc/',            include('django.contrib.admindocs.urls')),
+    (r'^admin/webalizer/',      include('webalizer.urls')),
     (r'^admin/(.*)',            admin.site.root),
 
-    (r'^news/',                include('nano.blog.urls')),
 
     (r'^thankyou$',             direct_to_template, thankyou_params),
 
@@ -73,11 +74,14 @@ urlpatterns = patterns('',
     (r'^password/reset/$',      'nano.user.views.password_reset', {'project_name': 'CALS'}),
     (r'^password/change/$',     'nano.user.views.password_change'),
 
+
     (r'^feeds/languages/(?P<url>.*)/rss$', 'django.contrib.syndication.views.feed', {'feed_dict': language_feeds_rss}),
     (r'^feeds/people/(?P<url>.*)/rss$', 'django.contrib.syndication.views.feed', {'feed_dict': people_feeds_rss}),
 
+    (r'^news/',                include('nano.blog.urls')),
     (r'^comments/',             include('django.contrib.comments.urls')),
 
+    (r'^translation/',          include('translation.urls')),
     (r'^',                      include('cals.urls')),
 
 
