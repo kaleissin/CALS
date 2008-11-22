@@ -2,11 +2,8 @@
 {% load cals_tags %}
 {% block submenu %}
 <ul>
-    <li><a href="/language/">All</a></li>
+    <li><a href="/language/">All languages</a></li>
     <li><a href="../">Overview of {{ lang }}</a></li>
-    {% comment %}
-    <li><b>All</b></li>
-    {% endcomment %}
 </ul>
 {% endblock submenu %}
 {% block content %}
@@ -17,22 +14,15 @@
             <th>Translation</th>
             <th>Original</th>
             <th>{{ lang }}</th>
+            <th>Interlinear?</th>
             <th>Translator</th>
         </tr>
         {% for object in object_list %}
         <tr class="{% cycle odd,even %}">
-            <th>{% if user.is_authenticated %}
-                {% ifequal object.translator user %}
-                <a href="./{{ object.exercise.slug }}/change">{{ object.exercise }}</a>
-                {% else %}
-                {{ object.exercise }}
-                {% endifequal %}
-                {% else %}
-                {{ object.exercise }}
-                {% endif %}
-            </th>
+            <th><a href="./{{ object.exercise.slug }}/{{ object.translator.username }}/">{{ object.exercise }}</a></th>
             <td>{{ object.exercise.exercise }}</td>
             <td>{{ object }}</td>
+            <td>{% if object.interlinear %}Yes{% else %}No{% endif %}</td>
             <td>{% showuser object.translator.get_profile %}</td>
         </tr>
         {% endfor %}

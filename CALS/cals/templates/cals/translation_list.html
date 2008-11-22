@@ -3,19 +3,23 @@
 {% block submenu %}
 <ul>
     <li><a href="/translation/">All</a></li>
-    <li><b>{{ object_list.0.exercise }}</b></li>
+    <li><b>{{ exercise }}</b></li>
     {% comment %}
     <li><b>All</b></li>
     {% endcomment %}
 </ul>
 {% endblock submenu %}
 {% block content %}
-<h2>{{ object_list.0.exercise }}</h2>
-<p>{{ object_list.0.exercise.exercise }}</p>
+<h2>{{ exercise }}</h2>
+<p>{{ exercise.exercise }}</p>
+{% if exercise.comment %}
+<p><small>({{ exercise.comment }})</small></p>
+{% endif %}
 <table>
         <tr>
             <th>Language</th>
             <th>Translation</th>
+            <th>Interlinear?</th>
             <th>Translator</th>
         </tr>
         {% for object in object_list %}
@@ -28,6 +32,7 @@
                 {{ object }}
                 {% endifequal %}
             </td>
+            <td>{% if object.interlinear %}Yes{% else %}No{% endif %}</td>
             <td>{% showuser object.translator.get_profile %}</td>
         </tr>
         {% endfor %}
