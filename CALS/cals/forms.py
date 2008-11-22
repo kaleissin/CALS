@@ -158,6 +158,3 @@ class ProfileForm(forms.ModelForm):
         exclude = ('user', 'is_visible', 'date_format', 'secret',
                 'altitude')
 
-class LanguageTranslationForm(forms.Form):
-    translation = forms.CharField()
-

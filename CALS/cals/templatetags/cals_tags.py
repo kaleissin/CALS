@@ -15,7 +15,8 @@ from pygooglechart import StackedVerticalBarChart, Axis
 from nano.tools import getLogger
 LOG = getLogger('cals.templatetags')
 
-from cals.models import Language, Feature, Profile, Translation
+from cals.models import Language, Feature, Profile
+from translation.models import Translation
 
 MWF = Feature.MAX_WALS_FEATURE
 
@@ -124,7 +125,7 @@ def greet_link(lang, ahref_to_object):
     if not greeting_trans:
         return 'Hello, %s!' % ahref_to_object
     else:
-        if not lang.greeting.translation.strip():
+        if not lang.greeting.strip():
             return 'Hello, %s!' % ahref_to_object
     _link = u'<a href="/language/%%(slug)s/">%%(%s)s</a>'
     _link1 = _link % u'greeting'
@@ -133,7 +134,7 @@ def greet_link(lang, ahref_to_object):
     _langlink1 = u'%s&nbsp;%%(objectlink)s!' % _link1
     _langlink2 = u'%s%%(objectlink)s%s' % (_link_front, _link_back)
     langd = {'slug': lang.slug, 
-            'greeting': lang.greeting.translation,
+            'greeting': lang.greeting,
             'objectlink': ahref_to_object}
     if '$' in langd['greeting']:
         front, back = langd['greeting'].split('$', 1)
@@ -149,9 +150,7 @@ def greet(user, lang):
 
 @register.simple_tag
 def greetings(user):
-    langs = [lang 
-            for lang in Language.objects.select_related(depth=1).exclude(greeting__isnull=True)
-            if Translation.objects.filter(language=lang, id=lang.greeting_id)]
+    langs = [trans.language for trans in Translation.objects.filter(exercise__id=1, translation__isnull=False)]
     lang = choice(tuple(langs))
     greeting = greet(user, lang)
     return greeting
