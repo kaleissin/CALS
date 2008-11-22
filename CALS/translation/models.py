@@ -95,6 +95,7 @@ class Translation(Interlinear):
     class Meta:
         db_table = 'cals_translation'
         ordering = ('exercise', 'language', 'translator')
+        unique_together = (('language', 'translator', 'exercise'),)
 
     def __unicode__(self):
         return self.translation
