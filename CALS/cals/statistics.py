@@ -19,6 +19,7 @@ from pygooglechart import StackedVerticalBarChart, Axis
 
 from cals.models import *
 from cals.forms import *
+from translation.models import Translation
 
 def get_languagefeature_descriptions(lang=None, feature=None, lf=None):
     assert (lang and feature) or lf
@@ -168,6 +169,18 @@ def compare_languages(langs, same=True, different=True):
     LOG.info('4: a %s b %s c %s d %s' % (a, b, c, d))
     return comparison
 
+def country_most_common():
+    count_countries = """SELECT country_id, count(country_id) 
+    FROM "cals_profile" 
+    WHERE country_id IS NOT NULL 
+    GROUP BY country_id
+    ORDER BY count DESC"""
+
+    cursor = connection.cursor()
+    cursor.execute(count_countries)
+    return [{'country': Country.objects.get(iso=country[0]), 'count': country[1]} 
+            for country in cursor.fetchall()]
+
 def feature_usage(feature_order=False, max_count=None, limit=0):
     feature_usage = """SELECT fv.*, count(lf.id) AS languages
     FROM "cals_featurevalue" AS fv 
@@ -225,18 +238,6 @@ def language_most_average_internal():
                 c = languages
                 max_values[feature] = {'value': value, 'count': languages}
     return max_values
-
-def country_most_common():
-    count_countries = """SELECT country_id, count(country_id) 
-    FROM "cals_profile" 
-    WHERE country_id IS NOT NULL 
-    GROUP BY country_id
-    ORDER BY count DESC"""
-
-    cursor = connection.cursor()
-    cursor.execute(count_countries)
-    return [{'country': Country.objects.get(iso=country[0]), 'count': country[1]} 
-            for country in cursor.fetchall()]
 
 def most_popular_values():
     # TODO, replaces language_most_average_internal
@@ -310,15 +311,17 @@ def generate_global_stats():
     num_translations = Translation.objects.count();
     num_countries = users.filter(country__isnull=False).count()
 
-    most_average = langs.order_by('-average_score', '-num_features')
+    most_average = langs.exclude(num_features=0).order_by('-average_score', '-num_features')
     lma = most_average.count()
     least_average = tuple(most_average)[-10:]
-    most_average = most_average[:10]
+    most_average = most_average[:20]
 
     features_mu = feature_usage(limit=20)
     not_used = feature_usage(feature_order=True, max_count=0)
 
     countries = country_most_common()
+
+    skeleton_langs = langs.filter(num_features=0)
 
     data = {}
     data['milestones'] = { 
@@ -343,6 +346,7 @@ def generate_global_stats():
             'most_average': most_average,
             'least_average': least_average,
             'lma': lma-10,
+            'skeleton_langs': skeleton_langs,
             }
     data['users'] = { 
             'number': num_users,

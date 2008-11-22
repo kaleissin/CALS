@@ -142,4 +142,12 @@
 </li>
 {% endfor %}
 </ol>
+
+<h2>Conlangs with no features</h2>
+<ul>
+{% for lang in langs.skeleton_langs %}
+<li><a href="/language/{{ lang.slug }}/">{{ lang }}</a></li>
+{% endfor %}
+</ul>
+
 {% endblock content %}
