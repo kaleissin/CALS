@@ -1,72 +1,151 @@
-from django.contrib.syndication.feeds import Feed
-from django.utils import feedgenerator
+import atom
+from nano.blog.models import Entry
 from cals.models import Language, Profile
-from django.contrib.auth.models import User
+from django.template.loader import render_to_string
 
-class RSSUpdatedLanguages(Feed):
-    #feed_type = feedgenerator.Atom1Feed
-    title = "CALS: recently modified languages"
-    title_template = 'feeds/languages_title.html'
+STANDARD_AUTHORS = ({'name': 'admin'},)
 
-    description = "Recently modified languages at CALS"
-    description_template = 'feeds/languages_description.html'
-    #subtitle = description
+class AbstractFeed(atom.Feed):
+    feed_icon = "http://media.aldebaaran.uninett.no/CALS/img/favicon.ico"
+    feed_authors = STANDARD_AUTHORS
 
-    link = "http://cals.conlang.org/feeds/languages/"
+class AllFeed(AbstractFeed):
+    feed_title = 'CALS news'
+    feed_id = 'http://cals.conlang.org/feeds/all/'
+
+    def items(self):
+        return Entry.objects.order_by('-pub_date')
+
+    def item_id(self, item):
+        return str(item.id)
+
+    def item_title(self, item):
+        return item.headline
+
+    def item_content(self, item):
+        return {"type": "html",}, item.content
+
+    def item_updated(self, item):
+        return item.pub_date
+
+class UpdatedLanguagesFeed(AbstractFeed):
+    feed_title = "CALS: recently modified languages"
+    feed_id = 'http://cals.conlang.org/feeds/languages/'
+
+    #description = "Recently modified languages at CALS"
+
+    _item_template = 'feeds/languages_description.html'
 
     def items(self):
         return Language.objects.exclude(slug__startswith='testarossa').order_by('-last_modified')[:15]
 
-    def item_author_name(self, item):
-        return item.added_by
+    def item_id(self, item):
+        return '%s-%s' % (item.slug, item.last_modified)
 
-class RSSNewestLanguages(Feed):
-    #feed_type = feedgenerator.Atom1Feed
-    title = "CALS: recently added languages"
-    title_template = 'feeds/languages_newest_title.html'
+    def item_title(self, item):
+        return 'Changed language: %s' % item.name
 
-    description = "Recently added languages at CALS"
-    description_template = 'feeds/languages_newest_description.html'
-    #subtitle = description
+    def item_content(self, item):
+        d = {'obj': item}
+        return {"type": "html",}, render_to_string(self._item_template, d)
 
-    link = "http://cals.conlang.org/feeds/languages/"
+    def item_authors(self, item):
+        return ({'name': unicode(item.added_by)},)
+
+    def item_updated(self, item):
+        return item.last_modified
+
+    def item_published(self, item):
+        return item.created
+
+class NewestLanguagesFeed(AbstractFeed):
+    feed_title = "CALS: recently added languages"
+    feed_id = 'http://cals.conlang.org/feeds/languages/'
+
+    _item_template = 'feeds/languages_newest_description.html'
+
+    #description = "Recently added languages at CALS"
 
     def items(self):
         return Language.objects.exclude(slug__startswith='testarossa').order_by('-created')[:15]
 
-    def item_author_name(self, item):
-        return item.added_by
+    def item_id(self, item):
+        return '%s-created-%s' % (item.slug, item.created)
 
-class RSSAllPeople(Feed):
-    #feed_type = feedgenerator.Atom1Feed
-    title = "CALS: all people"
-    title_template = 'feeds/people_title_all.html'
+    def item_title(self, item):
+        return 'New language: %s' % item.name
 
-    description = "The people of CALS"
-    description_template = 'feeds/people_description_all.html'
-    #subtitle = description
+    def item_content(self, item):
+        d = {'obj': item}
+        return {"type": "html",}, render_to_string(self._item_template, d)
 
-    link = "http://cals.conlang.org/feeds/people/"
+    def item_authors(self, item):
+        return ({'name': unicode(item.added_by.get_profile().display_name)},)
+
+    def item_updated(self, item):
+        return item.created
+
+    def item_published(self, item):
+        return item.created
+
+class AllPeopleFeed(AbstractFeed):
+    feed_title = "CALS: all people"
+    feed_id = "http://cals.conlang.org/feeds/people/"
+    #title_template = 'feeds/people_title_all.html'
+
+    #description = "The people of CALS"
+    _item_template = 'feeds/people_description_all.html'
 
     def items(self):
         return Profile.objects.filter(user__is_active=True).exclude(username='countach').order_by('display_name')
 
-    def item_author_name(self, item):
+    def item_id(self, item):
         return item.display_name
 
-class RSSRecentlyJoined(Feed):
-    #feed_type = feedgenerator.Atom1Feed
-    title = "CALS: recently joined people"
-    title_template = 'feeds/people_title.html'
+    def item_title(self, item):
+        return item.display_name
+        #return 'New conlanger: %s' % item.display_name
 
-    description = "The people that most recently joined CALS"
-    description_template = 'feeds/people_description.html'
-    #subtitle = description
+    def item_content(self, item):
+        d = {'obj': item.user}
+        return {"type": "html",}, render_to_string(self._item_template, d)
 
-    link = "http://cals.conlang.org/feeds/people/"
+    def item_authors(self, item):
+        return ({'name': unicode(item.display_name)},)
+
+    def item_updated(self, item):
+        return item.user.last_login
+
+    def item_published(self, item):
+        return item.user.date_joined
+
+class RecentlyJoinedFeed(AbstractFeed):
+    feed_title = "CALS: recently joined people"
+    feed_id = "http://cals.conlang.org/feeds/people/"
+    #title_template = 'feeds/people_title_all.html'
+
+#     description = "The people that most recently joined CALS"
+    _item_template = 'feeds/people_description.html'
 
     def items(self):
-        return User.objects.exclude(username='countach').order_by('-date_joined')[:15]
+        return Profile.objects.exclude(username='countach').order_by('-user__date_joined')[:15]
 
-    def item_author_name(self, item):
-        return item.username
+    def item_id(self, item):
+        return item.display_name
+
+    def item_title(self, item):
+        return '%s just joined!' % item.display_name
+
+    def item_content(self, item):
+        d = {'obj': item}
+        return {"type": "html",}, render_to_string(self._item_template, d)
+
+    def item_authors(self, item):
+        return ({'name': unicode(item.display_name)},)
+
+    def item_updated(self, item):
+        return item.user.date_joined
+
+    def item_published(self, item):
+        return item.user.date_joined
+

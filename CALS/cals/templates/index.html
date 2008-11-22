@@ -4,9 +4,10 @@
 Home
 {% endblock title %}
 {% block head %}
-<link rel="alternate" type="application/rss+xml" title="Recently added conlangs" href="/feeds/languages/newest/rss" />
-<link rel="alternate" type="application/rss+xml" title="Recently changed conlangs" href="/feeds/languages/last_modified/rss" />
-<link rel="alternate" type="application/rss+xml" title="Recently joined people" href="/feeds/people/recent/rss" />
+<link rel="alternate" type="application/atom+xml" title="Latest news" href="/feeds/all/" />
+<link rel="alternate" type="application/atom+xml" title="Recently added conlangs" href="/feeds/languages/newest/" />
+<link rel="alternate" type="application/atom+xml" title="Recently changed conlangs" href="/feeds/languages/last_modified/" />
+<link rel="alternate" type="application/atom+xml" title="Recently joined people" href="/feeds/people/recent/" />
 <meta name="y_key" content="0f4f0fec0e8eceb3" />
 <!--
 <script language="javascript" type="text/javascript">
@@ -77,7 +78,7 @@ if (document.signup)
 {% endif %}
 
     <h3>
-                <a href="http://cals.conlang.org/feeds/people/recent/rss"><img src="{{ MEDIA_URL }}CALS/img/feed-icon-14x14.png" alt="Feed: Recently joined"/></a>
+                <a href="http://cals.conlang.org/feeds/people/recent/"><img src="{{ MEDIA_URL }}CALS/img/feed-icon-14x14.png" alt="Feed: Recently joined"/></a>
     Recently joined</h3>
     <ul>
     {% for person in people %}
@@ -88,10 +89,13 @@ if (document.signup)
 
 <div id="content">
 
-    <h1>Latest news</h1>
+    <h1>Latest news
+    <small><a href="http://cals.conlang.org/news/latest/">Older
+    news</a></small>
+    </h1>
     <dl>
     {% for entry in news %}
-    <dt><h2>{{ entry.pub_date|date:"Y-m-d H:i" }} {{ entry.headline }}</h2></dt>
+    <dt><h3>{{ entry.pub_date|date:"Y-m-d H:i" }} {{ entry.headline }}</h3></dt>
     <dd>{{ entry.content|safe }}</dd>
     {% endfor %}
     </dl>
@@ -119,7 +123,7 @@ usable at all?</li>
     <tr>
         <td>
             <h3>
-                <a href="http://cals.conlang.org/feeds/languages/newest/rss"><img src="{{ MEDIA_URL }}CALS/img/feed-icon-14x14.png" alt="Feed: Recently joined"/></a>
+                <a href="http://cals.conlang.org/feeds/languages/newest/"><img src="{{ MEDIA_URL }}CALS/img/feed-icon-14x14.png" alt="Feed: Recently joined"/></a>
                 Newly added</h3>
             <ul>
             {% for lang in langs_newest %}
@@ -129,7 +133,7 @@ usable at all?</li>
         </td>
         <td>
             <h3>
-                <a href="http://cals.conlang.org/feeds/languages/last_modified/rss"><img src="{{ MEDIA_URL }}CALS/img/feed-icon-14x14.png" alt="Feed: Recently joined"/></a>
+                <a href="http://cals.conlang.org/feeds/languages/last_modified/"><img src="{{ MEDIA_URL }}CALS/img/feed-icon-14x14.png" alt="Feed: Recently joined"/></a>
                 Last modified</h3>
             <ul>
             {% for lang in langs_modified %}

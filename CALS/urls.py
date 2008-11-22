@@ -4,18 +4,16 @@ from django.views.generic.simple import direct_to_template
 from CALS.feeds.feeds import *
 
 from django.contrib import admin
-#admin.autodiscover()
+admin.autodiscover()
 
-language_feeds_rss = {
-        'last_modified': RSSUpdatedLanguages,
-        'newest': RSSNewestLanguages,
-        #'languages-atom': AtomUpdatedLanguages,
+language_feeds = {
+        'last_modified': UpdatedLanguagesFeed,
+        'newest': NewestLanguagesFeed,
 }
 
-people_feeds_rss = {
-        'recent': RSSRecentlyJoined,
-        'all': RSSAllPeople,
-        #'languages-atom': AtomUpdatedLanguages,
+people_feeds = {
+        'recent': RecentlyJoinedFeed,
+        'all': AllPeopleFeed,
 }
 
 thankyou_params = {
@@ -62,7 +60,7 @@ todo_params = {
 
 urlpatterns = patterns('',
     (r'^admin/doc/',            include('django.contrib.admindocs.urls')),
-    (r'^admin/webalizer/',      include('webalizer.urls')),
+#    (r'^admin/webalizer/',      include('webalizer.urls')),
     (r'^admin/(.*)',            admin.site.root),
 
 
@@ -75,8 +73,9 @@ urlpatterns = patterns('',
     (r'^password/change/$',     'nano.user.views.password_change'),
 
 
-    (r'^feeds/languages/(?P<url>.*)/rss$', 'django.contrib.syndication.views.feed', {'feed_dict': language_feeds_rss}),
-    (r'^feeds/people/(?P<url>.*)/rss$', 'django.contrib.syndication.views.feed', {'feed_dict': people_feeds_rss}),
+    (r'^feeds/languages/(.*)/$', 'django.contrib.syndication.views.feed', {'feed_dict': language_feeds}),
+    (r'^feeds/people/(.*)/$', 'django.contrib.syndication.views.feed', {'feed_dict': people_feeds}),
+    (r'^feeds/(.*)/$', 'django.contrib.syndication.views.feed', {'feed_dict': {'all': AllFeed,},}),
 
     (r'^news/',                include('nano.blog.urls')),
     (r'^comments/',             include('django.contrib.comments.urls')),
