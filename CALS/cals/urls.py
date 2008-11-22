@@ -82,20 +82,12 @@ jrklist = {
         'extra_context': { 'me': 'language' },
         }
 
-rhlist = { 
-        'queryset':
-        Language.objects.filter(background_translated_from__isnull=False).order_by('name'),
-        'template_name': 'rhlist.html',
-        'extra_context': { 'me': 'language' },
-        }
-
 urlpatterns = patterns('tagging.views',
         (r'^language/tag/(?P<tag>[- \w\d]+)/$', 'tagged_object_list', tags_language_dict),
 )
 
 urlpatterns += patterns('django.views.generic',
         (r'^jrklist/$',                             'list_detail.object_list', jrklist),
-        (r'^rhlist/$',                              'list_detail.object_list', rhlist),
         (r'^language/tag/$',                        'list_detail.object_list', taglist_language_dict),
         (r'^language/$',                            'simple.redirect_to', {'url': '/language/p1/'}),
         (r'^language/p(?P<page>[0-9]+)/$',          'list_detail.object_list', dict(language_list_dict)),
