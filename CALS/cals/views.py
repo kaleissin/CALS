@@ -537,7 +537,7 @@ def change_profile(request, *args, **kwargs):
         profile = user.get_profile()
     except Profile.DoesNotExist:
         return HttpResponseNotFound()
-    web20acc = user.web20.all()
+    #web20acc = user.web20.all()
 
     LOG.error('User: %s', user)
     LOG.error('Profile: %s', profile)
@@ -557,8 +557,8 @@ def change_profile(request, *args, **kwargs):
             LOG.error('Country:', profile.country)
             request.session['error'] = None
             return HttpResponseRedirect('/people/%i' % user.id)
-    data = {'w20forms': w20forms, 
-            'new_w20': new_w20, 
+    data = {#'w20forms': w20forms, 
+            #'new_w20': new_w20, 
             'uform': uform,
             'pform': pform, 
             'me': me, 
@@ -628,163 +628,6 @@ def auth_login(request, *args, **kwargs):
             'messages': messages}
     return render_page(request, 'index.html', data)
 
-# @login_required
-# def password_change(request, *args, **kwargs):
-#     error = pop_error(request)
-#     template_name = 'password_change_form.html'
-#     if request.method == "POST":
-#         form = PasswordChangeForm(request.POST)
-#         if form.is_valid():
-#             password = form.cleaned_data[u'password2']
-#             user = request.user
-#             user.set_password(password)
-#             user.save()
-#             request.session['error'] = None
-#             return HttpResponseRedirect('/password/change/done/')
-#     else:
-#         form = PasswordChangeForm()
-#     data = { 'form': form,
-#             'error': error,}
-#     return render_page(request, template_name, data)
-# 
-# def password_reset(request, *args, **kwargs):
-#     error = pop_error(request)
-#     template = 'password_reset_form.html'
-#     help_message = None
-#     e_subject = 'CALS password assistance'
-#     e_message = """Your new password is: 
-# 
-# %s
-# 
-# It is long deliberately, so change it to 
-# something you'll be able to remember.
-# 
-# 
-# CALS' little password-bot
-# """
-#     e_from = 'kaleissin+cals@gmail.com'
-#     form = PasswordResetForm()
-#     if request.method == 'POST':
-#         form = PasswordResetForm(request.POST)
-#         if form.is_valid():
-#             user = get_object_or_404(User, username=form.cleaned_data['username'])
-#             if user.email:
-#                 tmp_pwd = random_password()
-#                 user.set_password(tmp_pwd)
-#                 result = send_mail(subject=e_subject, from_email=e_from, message=e_message % tmp_pwd, recipient_list=(user.email,))
-#                 user.save()
-#                 request.session['error'] = None
-#                 return HttpResponseRedirect('/password/reset/sent/')
-#             else:
-#                 error = """There's no email-address registered for '%s',
-# the password can't be reset. Try leaving a ticket at <a href="http://trac.aldebaaran.uninett.no/cals/">Bugs and features</a>."""
-#                 request.session['error'] = error
-#                 
-#     data = {'form': form,
-#             'help_message': help_message,
-#             'error':error}
-#     return render_page(request, template, data)
-
-# def show_languagetranslations(request, *args, **kwargs):
-#     me = 'language'
-#     error = pop_error(request)
-#     template = 'cals/languagetranslation_list.html'
-#     lang = _get_lang(*args, **kwargs)
-#     trans = lang.translations.exclude(translation__isnull=True).exclude(translation='')
-#     if request.user.is_authenticated():
-#         exercises = TranslationExercise.objects.exclude(
-#                 translations__language=lang,
-#                 translations__translator=request.user)
-#     else:
-#         exercises = TranslationExercise.objects.exclude(translations__language=lang)
-#     extra_context = {'lang': lang,
-#             'exercises': exercises, 
-#             'me': me,
-#             'error': error,}
-#     return object_list(request, queryset=trans, template_name=template,
-#             extra_context=extra_context)
-# 
-# @login_required
-# def add_languagetranslations(request, *args, **kwargs):
-#     me = 'language'
-#     error = pop_error(request)
-#     template = 'languagetranslation_form.html'
-#     help_message = ''
-#     lang = _get_lang(*args, **kwargs)
-#     exercise = _get_exercise(*args, **kwargs)
-#     form = LanguageTranslationForm()
-#     if request.method == 'POST':
-#         form = LanguageTranslationForm(request.POST)
-#         if form.is_valid():
-#             trans = Translation()
-#             trans.translation = form.cleaned_data['translation']
-#             trans.translator = request.user
-#             trans.language = lang
-#             trans.exercise = exercise
-#             trans.save()
-#             request.session['error'] = None
-#             return HttpResponseRedirect('..')
-#         else:
-#             error = 'Form not valid'
-#             request.session['error'] = error
-#     trans = lang.translations.exclude(translation__isnull=True).exclude(translation='')
-#     data = {'form': form,
-#             'exercise': exercise, 
-#             'help_message': help_message,
-#             'error': error, 
-#             'me': me}
-#     return render_page(request, template, data)
-# 
-# @login_required
-# def change_languagetranslations(request, *args, **kwargs):
-#     me = 'language'
-#     error = pop_error(request)
-#     template = 'languagetranslation_form.html'
-#     help_message = ''
-#     lang = _get_lang(*args, **kwargs)
-#     exercise = _get_exercise(*args, **kwargs)
-#     trans = Translation.objects.get(language=lang, translator=request.user, exercise=exercise)
-#     form = LanguageTranslationForm(initial={'translation': trans})
-#     if request.method == 'POST':
-#         form = LanguageTranslationForm(data=request.POST, initial={'translation': trans})
-#         if form.is_valid():
-#             trans.translation = form.cleaned_data.get('translation', '')
-#             trans.save()
-#             request.session['error'] = None
-#             return HttpResponseRedirect('..')
-#     data = {'form': form,
-#             'exercise': exercise, 'help_message': help_message,
-#             'error':error, 'me': me}
-#     return render_page(request, template, data)
-# 
-# def show_translationexercise(request, *args, **kwargs):
-#     me = 'translation'
-#     error = pop_error(request)
-#     exercises = TranslationExercise.objects.all()
-#     extra_context={'me': me, 'error': error,}
-#     return object_list(request, queryset=exercises, 
-#             extra_context=extra_context)
-# 
-# def show_translation(request, *args, **kwargs):
-#     me = 'translation'
-#     error = pop_error(request)
-#     exercise = _get_exercise(*args, **kwargs)
-#     trans = exercise.translations.exclude(translation__isnull=True).exclude(translation='').order_by('language')
-#     extra_context={'me': me, 'error': error,}
-#     return object_list(request, queryset=trans, #template_name=template,
-#             extra_context=extra_context)
-# 
-# @login_required
-# def delete_languagetranslations(request, *args, **kwargs):
-#     me = 'language'
-#     template = 'delete.html'
-#     error = pop_error(request)
-#     lang = _get_lang(*args, **kwargs)
-#     exercise = _get_exercise(*args, **kwargs)
-#     trans = Translation.objects.get(language=lang, translator=request.user, exercise=exercise)
-#     extra_context={'me': me, 'error': error,}
-#     return delete_object(request, model=Translation, object_id=trans.id,
-#             post_delete_redirect="..", extra_context=extra_context)
 
 def test(request, *args, **kwargs):
     error = pop_error(request)
