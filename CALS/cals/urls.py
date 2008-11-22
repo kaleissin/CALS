@@ -107,20 +107,13 @@ urlpatterns += patterns('django.views.generic',
 urlpatterns += patterns('cals.views',
         (r'^language/new$',                         'create_language'),
         (r'^language/(?P<lang>[-\w]+)/$',           'show_language'), 
-        (r'^language/(?P<lang>[-\w]+)/translations/(?P<exercise>[-\w]+)/new$', 'add_languagetranslations'), 
-        (r'^language/(?P<lang>[-\w]+)/translations/(?P<exercise>[-\w]+)/change$', 'change_languagetranslations'), 
-        (r'^language/(?P<lang>[-\w]+)/translations/(?P<exercise>[-\w]+)/delete$', 'delete_languagetranslations'), 
-        (r'^language/(?P<lang>[-\w]+)/translations/$', 'show_languagetranslations'), 
-        (r'^language/(?P<lang>[-\w]+)/feature/(?P<object_id>[0-9]+)/$', 'show_languagefeature'), 
-        (r'^language/(?P<lang>[-\w]+)/feature/(?P<object_id>[0-9]+)/change$', 'describe_languagefeature'), 
+#XXX: versioning is no good
+#        (r'^language/(?P<lang>[-\w]+)/feature/(?P<object_id>[0-9]+)/$', 'show_languagefeature'), 
+#        (r'^language/(?P<lang>[-\w]+)/feature/(?P<object_id>[0-9]+)/change$', 'describe_languagefeature'), 
         (r'^language/(?P<lang>[-\w]+)/change$',     'change_language'),
         (r'^language/(?P<slugs>[-+\w]+)/(?P<opt>[^/]*?)/?$',      'compare_language'), 
 )
 
-urlpatterns += patterns('cals.views',
-        (r'^translation/$', 'show_translationexercise'),
-        (r'^translation/(?P<exercise>[-\w]+)/$', 'show_translation'),
-)
 
 urlpatterns += patterns('cals.views',
         (r'^people/map$',                           'show_people_map'),
