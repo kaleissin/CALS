@@ -42,8 +42,7 @@
         <a {% ifequal me 'translation' %}class="me" {% endifequal %}href="/translation/">Translations</a> |
         <a {% ifequal me 'people' %}class="me" {% endifequal %}href="/people/">People</a> |
         <a {% ifequal me 'statistics' %}class="me" {% endifequal %}href="/statistics/">Statistics</a> |
-        <a {% ifequal me 'bugs' %}class="me" {% endifequal %}href="http://trac.aldebaaran.uninett.no/cals/">Bugs and features</a> |
-        <a {% ifequal request.path '/thankyou' %}class="me" {% endifequal %}href="/thankyou">Thanks</a>
+        <a {% ifequal me 'bugs' %}class="me" {% endifequal %}href="http://trac.aldebaaran.uninett.no/cals/">Bugs and features</a>
     </div>
     {% block error %}
     {% if request.session.error %}
@@ -83,10 +82,12 @@
 {% block footer %}
         <div class="nav right">
             Devel-clock: {% now "H:i O" %}
+            <a {% ifequal request.path '/about/' %}class="me"{% endifequal %} href="/about/">About</a> | 
             <a {% ifequal request.path '/privacy/' %}class="me"{% endifequal %} href="/privacy/">Privacy</a> | 
             <a {% ifequal request.path '/terms/' %}class="me"{% endifequal %} href="/terms/">Terms of service</a> |
             <a {% ifequal request.path '/copyright/' %}class="me"{% endifequal %} href="/copyright/">Copyright</a> |
-            <a {% ifequal request.path '/changes/' %}class="me"{% endifequal %} href="/changes/">Changes</a>
+            <a {% ifequal request.path '/thankyou' %}class="me" {% endifequal %}href="/thankyou">Thanks</a> |
+            <a {% ifequal me 'news' %}class="me"{% endifequal %} href="/news/latest/">News</a>
             <a href="http://validator.w3.org/check?uri=referer"><img
                     src="http://media.aldebaaran.uninett.no/CALS/img/valid-xhtml10.png"
                     alt="Valid XHTML 1.0 Strict" height="31" width="88" /></a>
