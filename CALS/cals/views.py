@@ -123,7 +123,7 @@ def compare_language(request, *args, **kwargs):
     comparison_type = kwargs.get('opt', None)
     LOG.error('Will compare %s' % langslugs)
     if not langslugs:
-        raise Http404
+        return HttpResponseForbidden(error_forbidden)
     if len(langslugs) == 1:
         kwargs['slug'] = langslugs[0]
         return show_language(request, *args, **kwargs)
@@ -475,6 +475,9 @@ def describe_languagefeature(request, *args, **kwargs):
     lang = _get_lang(*args, **kwargs)
     feature = get_object_or_404(Feature, id=kwargs.get('object_id', None))
     lf = get_object_or_404(LanguageFeature, language=lang, feature=feature)
+    may_edit, (is_admin, is_manager) = may_edit_lang(request.user, lang)
+    if not may_edit:
+        return HttpResponseForbidden(error_forbidden)
     descriptions = get_languagefeature_descriptions(lf=lf)
     if descriptions:
         description = descriptions[0]
