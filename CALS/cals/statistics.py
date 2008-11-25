@@ -21,13 +21,6 @@ from cals.models import *
 from cals.forms import *
 from translation.models import Translation
 
-def get_languagefeature_descriptions(lang=None, feature=None, lf=None):
-    assert (lang and feature) or lf
-    if not lf:
-        lf = get_object_or_404(LanguageFeature, language=lang, feature=feature)
-    lf_type = ContentType.objects.get_for_model(lf)
-    return Description.objects.filter(content_type=lf_type, object_id=lf.id).order_by('-version')
-
 def language_alphabetic_letters(num = 10):
     top_letters = """SELECT 
     substr(upper(slug), 1, 1) AS char, 
