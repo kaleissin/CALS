@@ -30,6 +30,7 @@ from pygooglechart import StackedVerticalBarChart, Axis
 from cals.models import *
 from cals.forms import *
 from cals.statistics import *
+from cals.tools import *
 
 from translation.models import TranslationExercise, Translation
 
@@ -488,7 +489,10 @@ def describe_languagefeature(request, *args, **kwargs):
         else:
             form = DescriptionForm(data=request.POST)
         if form.is_valid():
-            lf = form.save()
+            lfd = form.save(commit=False)
+            lfd.content_type = ContentType.objects.get_for_model(lf)
+            lfd.object_id = lf.id
+            lfd.save(user=request.user)
             request.session['error'] = None
             return HttpResponseRedirect(link)
     else:

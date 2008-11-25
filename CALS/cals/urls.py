@@ -108,8 +108,8 @@ urlpatterns += patterns('cals.views',
         (r'^language/new$',                         'create_language'),
         (r'^language/(?P<lang>[-\w]+)/$',           'show_language'), 
 #XXX: versioning is no good
-#        (r'^language/(?P<lang>[-\w]+)/feature/(?P<object_id>[0-9]+)/$', 'show_languagefeature'), 
-#        (r'^language/(?P<lang>[-\w]+)/feature/(?P<object_id>[0-9]+)/change$', 'describe_languagefeature'), 
+        (r'^language/(?P<lang>[-\w]+)/feature/(?P<object_id>[0-9]+)/$', 'show_languagefeature'), 
+        (r'^language/(?P<lang>[-\w]+)/feature/(?P<object_id>[0-9]+)/change$', 'describe_languagefeature'), 
         (r'^language/(?P<lang>[-\w]+)/change$',     'change_language'),
         (r'^language/(?P<slugs>[-+\w]+)/(?P<opt>[^/]*?)/?$',      'compare_language'), 
 )

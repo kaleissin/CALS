@@ -3,8 +3,9 @@
 {% block title %}Language description: change{% endblock title %}
 {% block submenu %}
 <ul>  
-    <li><a href="../../">All languages</a></li>
-    <li><a href="../">Back to overview</a></li>
+    <li><a href="/language/">All languages</a></li>
+    <li><a href="../../">Back to {{ feature.language }}</a></li>
+    <li><a href=".">Back to overview</a></li>
     {% if user.is_authenticated %}
     <li><b>Change description</b></li>
     {% endif %}

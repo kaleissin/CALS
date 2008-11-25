@@ -67,7 +67,7 @@ class Freetext(models.Model):
         abstract = True
 
     def __unicode__(self):
-        return unicode(self.freetext_xhtml, 'UTF-8')
+        return self.freetext_xhtml
 
     def save(self, *args, **kwargs):
         self.freetext = strip_tags(self.freetext)
@@ -81,8 +81,12 @@ class Freetext(models.Model):
             self.freetext_xhtml = u'<pre>'+self.freetext.strip()+u'</pre>'
         super(Freetext, self).save(*args, **kwargs)
 
+class DescriptionManager(models.Manager):
+    def get_query_set(self):
+        return super(DescriptionManager, self).get_query_set().filter(current=True)
+
 class Description(Freetext):
-    version = models.PositiveIntegerField(default=0)
+    #version = models.PositiveIntegerField(default=0)
     last_modified = models.DateTimeField(default=datetime.now, editable=False)
     last_modified_by = models.ForeignKey(User, editable=False, blank=True, null=True, related_name='descriptions')
     current = models.BooleanField(default=True)
@@ -91,19 +95,30 @@ class Description(Freetext):
     object_id = models.PositiveIntegerField()
     content_object = generic.GenericForeignKey()
 
+    objects = DescriptionManager()
+    archive = models.Manager()
+
     class Meta:
-        unique_together = ('version', 'content_type', 'object_id')
+        #unique_together = ('version', 'content_type', 'object_id')
         db_table = 'cals_description'
 
     def save(self, user=None, *args, **kwargs):
+        self.id = next_id(self.__class__)
         self.last_modified = datetime.now()
-        if not self.version:
-            self.version = 0
-        self.version += 1
+        #v = self.version
+#         try:
+#             d = Description.objects.get(object_id=self.object_id)
+#             self.version = d.version
+#             #assert False, 'B %i %i' % (v, self.version)
+#         except Description.DoesNotExist:
+#             self.version = 0
+#         self.version += 1
+        #assert False, 'A %i %i' % (v, self.version)
         if user:
             self.added_by = user
-        Description.objects.filter(object_id=self.object_id, current=True).update(current=False)
-        super(Description, self).save(force_insert=True, *args)
+        Description.objects.filter(object_id=self.object_id).update(current=False)
+        #assert False, self.id
+        super(Description, self).save(force_insert=True, *args, **kwargs)
 
 class Category(models.Model):
     name = models.CharField(max_length=20, unique=True)

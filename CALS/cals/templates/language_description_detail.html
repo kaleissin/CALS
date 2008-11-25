@@ -3,8 +3,9 @@
 {% block title %} Language: {{ lang.name }}: {{ feature.feature.name }}: {{ feature.value.name }}{% endblock title %}
 {% block submenu %}
 <ul>
-    <li><a href="../../">All languages</a></li>
-    <li><a href="../">Back to overview</a></li>
+    <li><a href="/language/">All languages</a></li>
+    <li><a href="../../">Back to {{ lang }}</a></li>
+    <li><b>Overview</b></li>
     {% if user.is_authenticated %}
     {% ifequal user lang.added_by %}
     <li><a href="./change">Change description</a></li>
