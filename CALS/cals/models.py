@@ -83,8 +83,9 @@ class Freetext(models.Model):
 
 class Description(Freetext):
     version = models.PositiveIntegerField(default=0)
-    added = models.DateTimeField(default=datetime.now)
-    added_by = models.ForeignKey(User,editable=False,blank=True,null=True, related_name='descriptions')
+    last_modified = models.DateTimeField(default=datetime.now, editable=False)
+    last_modified_by = models.ForeignKey(User, editable=False, blank=True, null=True, related_name='descriptions')
+    current = models.BooleanField(default=True)
 
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField()
@@ -95,12 +96,14 @@ class Description(Freetext):
         db_table = 'cals_description'
 
     def save(self, user=None, *args, **kwargs):
+        self.last_modified = datetime.now()
+        if not self.version:
+            self.version = 0
         self.version += 1
-        if self.id:
-            self.id = next_id(Description)
         if user:
             self.added_by = user
-        super(Description, self).save(*args, **kwargs)
+        Description.objects.filter(object_id=self.object_id, current=True).update(current=False)
+        super(Description, self).save(force_insert=True, *args)
 
 class Category(models.Model):
     name = models.CharField(max_length=20, unique=True)
