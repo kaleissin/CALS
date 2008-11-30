@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {# {% load nano_web20_tags %} #}
+{% load cals_tags %}
 {% block title %}{{ object.username }}'s page{% endblock title %}
 {% block submenu %}
 <ul>
@@ -8,6 +9,16 @@
     {% ifequal user.id object.id %}
     <li><a href="./change">Change</a></li>
     {% endifequal %}
+</ul>
+<hr />
+<ul>
+    {% ifequal user.id object.id %}
+    <li><a href="./pm/archive/">Archived messages</a></li>
+    <li><a href="./pm/sent/">Sent messages</a></li>
+    {% else %}
+    <li><a href="./pm/add">Send {{ object.username }} a message</a></li>
+    {% endifequal %}
+</ul>
 {% endblock submenu %}
 {% block content %}
     <table>
@@ -15,9 +26,9 @@
         <tr><th>Display name:</th><td>{{ profile.display_name|default:"NA" }}</td>
         </tr>
         {% ifequal user.username object.username %}
-        <tr><th>Email:</th>
+        <tr class="private"><th>Email:</th>
             <td>{% if object.email %}{{ object.email }}{% else %}None registered{% endif %} 
-                <span class="message">Your email-address is only shown to you</span></td>
+                {# <span class="message">Your email-address is only shown to you</span></td> #}
         </tr>
         {% comment %}
         <tr><th>Secret:</th>
@@ -115,6 +126,27 @@
                 </table>
             </td>
         </tr>
+        {% ifequal user.username object.username %}
+        <tr class="private">
+            <th>Private messages</th>
+            <td>
+            {% if pms %}
+            {% for pm in pms %}
+            <div class="pm">
+            {{ pm.text }}
+            <div class="pm-footer">
+            sent by {% showuser pm.sender %} at {{ pm.sent }} 
+            | <a href="{% url archive_pm object_id=pm.recipient.id,msgid=pm.id %}">archive</a></a>
+            | <a href="{% url delete_pm object_id=pm.recipient.id,msgid=pm.id %}">delete</a></a>
+            </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            None here, {{ pms_archived.count }} in the archive.
+            {% endif %}
+            </td>
+        </tr>
+        {% endifequal %}
     </table>
     {% comment %}
     {% if user.web20.type %}

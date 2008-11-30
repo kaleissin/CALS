@@ -517,6 +517,9 @@ def show_profile(request, *args, **kwargs):
     data = {'object': user, 
             'profile': profile, 
             'me': me, 
+            'pms': user.pms_received.received(user),
+            'pms_archived': user.pms_received.archived(user),
+            'pms_sent': user.pms_sent.sent(user),
             'error': error}
     return render_page(request, 'profile_detail.html', data)
 

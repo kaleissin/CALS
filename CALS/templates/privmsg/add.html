@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load cals_tags %}
+{% block title %} Send {{ recipient.get_profile.display_name }} a private message{% endblock title %}
+{% block submenu %}
+<ul>
+<li>Back to {% showuser recipient %}</li>
+</ul>
+{% endblock submenu %}
+{% block content %}
+<label for="id_text"><h2>Private message to {{ recipient.get_profile.display_name }}</h2></label>
+<form method="post" action="">
+<p>{{ form.text }}</p>
+<input type="submit" value="Send" />
+</form>
+{% endblock content %}
+
