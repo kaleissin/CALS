@@ -70,6 +70,36 @@
         <dd>100 conlangers, number 100 is {% showuser milestones.user100 %}!</dd>
     </dl>
 
+<h2>Size of vocabulary</h2>
+<table class="statistics">
+    <tr>
+        <td>Smallest vocab</td>
+        <td class="integer">{{ langs.vocabulary.min }}</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Biggest vocab</td>
+        <td class="integer">{{ langs.vocabulary.max }}</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Mean</td>
+        <td class="integer">{{ langs.vocabulary.average|integer }}</td>
+        <td class="fraction">.{{ langs.vocabulary.average|fraction }}%</td>
+    </tr>
+    <tr>
+        <td>Median</td>
+        <td class="integer">{{ langs.vocabulary.median }}</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Mode</td>
+        <td class="integer">{{ langs.vocabulary.mode }}</td>
+        <td></td>
+    </tr>
+</table>
+<p><img src="{{ langs.vocabulary.chart }}" /></p>
+
 <h2>Most popular first letters of a language name</h2>
 <table>
     <tr>

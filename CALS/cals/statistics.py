@@ -15,7 +15,7 @@ from django.db import connection
 from django.http import HttpResponseNotFound, HttpResponseForbidden
 from django.shortcuts import render_to_response, get_object_or_404
 
-from pygooglechart import StackedVerticalBarChart, Axis
+from pygooglechart import StackedVerticalBarChart, Axis, SimpleLineChart
 
 from cals.models import *
 from cals.forms import *
@@ -284,6 +284,69 @@ def languages_ranked_by_averageness():
         i += len(unranked[key])
     return sorted(tuple(ranked.items()))
 
+def vocab_size():
+    mode = """SELECT vocabulary_size, count(*) AS c 
+    FROM cals_language
+    WHERE vocabulary_size IS NOT NULL AND id != 80 
+    GROUP BY vocabulary_size 
+    ORDER BY c DESC LIMIT 1"""
+
+    cursor = connection.cursor()
+    cursor.execute(mode)
+    for row in cursor.fetchall():
+        mode = row[0]
+        break
+
+    avg_max_min = """SELECT AVG(vocabulary_size),
+    MAX(vocabulary_size),
+    MIN(vocabulary_size)
+    FROM cals_language
+    WHERE vocabulary_size IS NOT NULL AND id != 80"""
+
+    cursor.execute(avg_max_min)
+    for row in cursor.fetchall():
+        avg, max, min = row
+        break
+
+    curve = """SELECT vocabulary_size 
+    FROM cals_language
+    WHERE vocabulary_size IS NOT NULL AND id != 80 
+    ORDER BY vocabulary_size DESC"""
+
+    cursor.execute(curve)
+    rows = [row[0] for row in cursor.fetchall()]
+
+    chart = SimpleLineChart(400, 200, y_range=(0, max))
+    chart.add_data(rows)
+    chart.set_axis_labels(Axis.LEFT, ['0', '2000', '4000',
+    '6000', '8000', '10000', '12000', '14000', str(int(max))])
+    chart_url = chart.get_url()
+#     median = """SELECT vocabulary_size as median FROM
+#         (SELECT l1.id, l1.vocabulary_size, COUNT(l1.vocabulary_size) AS rank
+#         FROM cals_language AS l1, cals_language AS l2
+#         WHERE l1.vocabulary_size < l2.vocabulary_size
+#             OR (l1.vocabulary_size = l2.vocabulary_size AND l1.id <= l2.id)
+#         GROUP BY l1.id, l1.vocabulary_size
+#         ORDER BY l1.vocabulary_size DESC) AS l3
+#     WHERE rank = (SELECT (COUNT(*)+1 DIV 2 FROM cals_language)"""
+#     
+#     cursor.execute(median)
+#     for row in cursor.fetchall():
+#         median = row
+#         break
+    num_rows = len(rows)
+    middle = num_rows / 2
+    if num_rows % 2:
+        median = rows[middle-1]
+    else:
+        median = (rows[middle] + rows[middle+1]) / 2
+    return {'average': avg, 
+            'min': min, 
+            'max': max, 
+            'median': median, 
+            'chart': chart_url,
+            'mode': mode }
+
 def generate_global_stats():
     "Used by the statistics-view"
     features = Feature.objects.all()
@@ -340,6 +403,7 @@ def generate_global_stats():
             'least_average': least_average,
             'lma': lma-10,
             'skeleton_langs': skeleton_langs,
+            'vocabulary': vocab_size(),
             }
     data['users'] = { 
             'number': num_users,
