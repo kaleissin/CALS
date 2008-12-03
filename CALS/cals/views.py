@@ -36,6 +36,7 @@ from translation.models import TranslationExercise, Translation
 
 from nano.tools import *
 from nano.blog.models import Entry
+from nano.privmsg.models import PM
 
 _error_forbidden_msg = "You don't have the necessary permissions to edit here."
 error_forbidden = render_to_string('error.html', 
@@ -514,12 +515,17 @@ def show_profile(request, *args, **kwargs):
         profile = user.get_profile()
     except Profile.DoesNotExist:
         return HttpResponseNotFound()
+    pms, pms_archived, pms_sent = (), (), ()
+    if request.user == user:
+        pms = PM.objects.received(user)
+        pms_archived = PM.objects.archived(user)
+        pms_sent = PM.objects.sent(user)
     data = {'object': user, 
             'profile': profile, 
             'me': me, 
-            'pms': user.pms_received.received(user),
-            'pms_archived': user.pms_received.archived(user),
-            'pms_sent': user.pms_sent.sent(user),
+            'pms': pms,
+            'pms_archived': pms_archived,
+            'pms_sent': pms_sent,
             'error': error}
     return render_page(request, 'profile_detail.html', data)
 
