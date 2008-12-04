@@ -47,9 +47,10 @@
     {% block error %}
     {% if request.session.error %}
     <div class="error">{{ request.session.error }}</div>
-    {% endif %}
+    {% else %}
     {% if error %}
     <div class="error">{{ error }}</div>
+    {% endif %}
     {% endif %}
     {% if error_message %}
     <div class="error">Error: {{ error_message }}</div>
