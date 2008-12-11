@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 # vim: set fileencoding=utf-8 :
 
@@ -13,6 +12,7 @@ from django.contrib.sessions.models import Session
 from pygooglechart import StackedVerticalBarChart, Axis
 
 from nano.tools import getLogger
+from nano.privmsg.models import PM
 LOG = getLogger('cals.templatetags')
 
 from cals.models import Language, Feature, Profile
@@ -22,7 +22,8 @@ MWF = Feature.MAX_WALS_FEATURE
 
 register = template.Library()
 
-_wals_img_src = 'http://media.aldebaaran.uninett.no/CALS/img/WALS.png'
+_img_src = 'http://media.aldebaaran.uninett.no/CALS/img/'
+_wals_img_src = _img_src + 'WALS.png'
 _wals_img = '<img src="%s" alt="WALS" />' % _wals_img_src
 _wals_path = 'http://wals.info/feature'
 _wals_description = '<sup class="wals"><a href="%s/description/%%i" target="_blank">WALS</a></sup>' % _wals_path
@@ -171,6 +172,16 @@ def latest_modified_languages(num_lang):
     except ValueError:
         raise template.TemplateSyntaxError, 'must be integer'
     return ''
+
+@register.simple_tag
+def messages_for_user(user):
+    count = PM.objects.received(user).count()
+    icon = u'mail_generic.png'
+    if count:
+        imgstring = u'(%%s <img class="icon" src="%s%s" alt="PMs:" />) ' % (_img_src, icon)
+        return imgstring % count
+    else:
+        return u''
 
 # --------------- Filters
 

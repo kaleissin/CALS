@@ -30,7 +30,7 @@
         <tr>
             <td></td>
             <td colspan="2" class="right">
-                {% greetings user %}&nbsp;(<a href="/logout">Log&nbsp;out</a>)
+                {% greetings user %}&nbsp;{% messages_for_user user %}(<a href="/logout">Log&nbsp;out</a>)
             </td>
         </tr>
         {% endif %}
