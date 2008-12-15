@@ -39,14 +39,19 @@
         </tr>
         {% endcomment %}
         {% endifequal %}
+        {% if profile.homepage %}
         <tr>
             <th>Homepage:</th>
-            <td>{% if profile.homepage %}<a href="{{ profile.homepage }}">{{ profile.homepage_title|default:profile.homepage }}</a>{% else %}None registered{% endif %}</td>
+            <td><a href="{{ profile.homepage }}">{{ profile.homepage_title|default:profile.homepage }}</a></td>
         </tr>
+        {% endif %}
+        {% if profile.country %}
         <tr>
             <th>Country:</th>
-            <td>{% if profile.country %}{{ profile.country }}{% else %}None registered{% endif %}</td>
+            <td>{{ profile.country }}
+            </td>
         </tr>
+        {% endif %}
         {% comment %}
         {% for web20acc in user.web20.all %}
         <tr>
@@ -79,10 +84,6 @@
                 </ul>
             </td>
         </tr>
-        {% else %}
-        <tr>
-            <th colspan="2">No languages added</th>
-        </tr>
         {% endif %}
         {% if profile.manages.count %}
         <tr><th>Manager for:</th>
@@ -93,10 +94,6 @@
                 {% endfor %}
                 </ul>
             </td>
-        </tr>
-        {% else %}
-        <tr>
-            <th colspan="2">Manages no languages</th>
         </tr>
         {% endif %}
         {% if profile.edits.all.count %}
@@ -109,11 +106,8 @@
                 </ul>
             </td>
         </tr>
-        {% else %}
-        <tr>
-            <th colspan="2">Not an editor of any language</th>
-        </tr>
         {% endif %}
+        {% if object.translations.count %}
         <tr>
             <th>Translations ({{ object.translations.count }}):</th>
             <td>
@@ -128,6 +122,7 @@
                 </table>
             </td>
         </tr>
+        {% endif %}
         {% ifequal user.username object.username %}
         <tr class="private">
             <th>Private messages</th>
