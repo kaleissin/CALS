@@ -246,13 +246,6 @@ class Profile(models.Model):
 #         return ('profiles_profile_detail', (), { 'username': self.user.username })
 #     get_absolute_url = models.permalink(get_absolute_url)
 
-class EsperantoBackgroundManager(models.Manager):
-    # For Rick Harrison
-    def get_query_set(self):
-        esperanto = Language.objects.get(slug='esperanto')
-        return super(EsperantoBackgroundManager,
-                self).get_query_set().filter(background_translated_from__translated_to=esperanto)
-
 class Language(models.Model):
     name = models.CharField('External name', max_length=64, 
             help_text=u'Anglified name, safe for computing. ASCII!')
@@ -299,7 +292,6 @@ class Language(models.Model):
 
     # Managers
     objects = models.Manager()
-    esperanto_background = EsperantoBackgroundManager()
 
     class Meta:
         ordering = ['name']
@@ -353,20 +345,6 @@ class Language(models.Model):
             return self.internal_name
         return self.name
 
-    def get_background_translation(self, lang):
-        return self.background_translated_from.filter(translated_to=lang)
-
-    def get_esperanto_background(self):
-        esperanto = Language.objects.get(slug='esperanto')
-        return self.get_background_translation(esperanto)
-
-    def has_background_translation(self, lang):
-        return self.get_background_translation(lang).count()
-
-    def has_esperanto_background(self):
-        esperanto = Language.objects.get(slug='esperanto')
-        return self.has_background_translation(esperanto)
-
 class LanguageFeature(models.Model):
     language = models.ForeignKey(Language, related_name='features')
     feature = models.ForeignKey(Feature, related_name='languages')
@@ -392,30 +370,4 @@ class UTC(dt.tzinfo):
         return self.ZERO
     def dst(self, dt):
         return self.ZERO
-
-class BackgroundTranslation(models.Model):
-    translation = models.CharField(max_length=512, blank=True,
-            help_text="""A translation of the short summary of the history/background of
-            a language. 8 lines (512 letters) inc. formatting, no HTML.
-            (It is quite common that a translation is longer than
-            the original.)""")
-    translated_from = models.ForeignKey(Language,
-            related_name='background_translated_from')
-    translated_to = models.ForeignKey(Language,
-            related_name='background_translated_to')
-    translator = models.ForeignKey(User, related_name='background_translations')
-    added = models.DateTimeField(default=datetime.now, editable=False)
-    last_modified = models.DateTimeField(default=datetime.now, editable=False)
-
-    class Meta:
-        db_table = 'cals_backgroundtranslation'
-
-    def __unicode__(self):
-        return self.translation
-
-    def save(self, user=None, *args, **kwargs):
-        if not self.id and user:
-            self.translator = user
-        self.last_modified = datetime.now()
-        super(BackgroundTranslation, self).save(*args, **kwargs)
 
