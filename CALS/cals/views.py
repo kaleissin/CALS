@@ -235,13 +235,28 @@ def add_entry_to_blog(object, headline, template, date_field=None):
     pub_date = object.__dict__.get(date_field or 'last_modified', datetime.now())
     blog_entry = Entry.objects.create(content=template,headline=headline,pub_date=pub_date)
 
-@login_required()
-def create_language(request, *args, **kwargs):
-    me = 'language'
-    error = pop_error(request)
-    langform = LanguageForm()
+def set_language_feature_value(lang, feature_id, value_id):
+    feature = Feature.objects.get(id=feature_id)
+    try:
+        lf = LanguageFeature.objects.get(language=lang, feature=feature)
+    except LanguageFeature.DoesNotExist:
+        lf = None
+    try:
+        fv = FeatureValue.objects.get(id=int(value_id or 0))
+    except FeatureValue.DoesNotExist:
+        fv = None
+    if fv:
+        if lf:
+            if lf.value != fv: # change
+                lf.value = fv
+                lf.save()
+        else: # new
+            lf_new = LanguageFeature.objects.create(language=lang, feature=feature, value=fv) 
+    else:
+        if lf: # delete
+            lf.delete()
 
-    # sort values into categories
+def make_feature_list_for_lang(lang=None):
     categories = Category.objects.all().select_related().order_by('id')
     cats = []
     for category in categories:
@@ -253,11 +268,32 @@ def create_language(request, *args, **kwargs):
         f = []
         for feature in features:
             form = FeatureValueForm(feature=feature)
+            if lang:
+                try:
+                    lf = LanguageFeature.objects.get(language=lang, feature=feature)
+                    form = FeatureValueForm(feature=feature,
+                            initial={'value': '%s_%s' % (feature.id, lf.value.id)})
+                            #instance=lf.value, initial={'name': lf.value.id})
+                except LanguageFeature.DoesNotExist:
+                    pass
             f.append({'feature': feature, 'form':form})
         if f:
             cats.append({'name': category.name, 'features': f})
         else:
             cats.append({'name': category.name})
+    return cats
+
+@login_required()
+def create_language(request, *args, **kwargs):
+    me = 'language'
+    state = 'new'
+    error = pop_error(request)
+    langform = LanguageForm()
+
+    editorform = EditorForm()
+
+    # sort values into categories
+    cats = make_feature_list_for_lang()
 
     if request.method == 'POST':
         langform = LanguageForm(data=request.POST, initial=request.POST)
@@ -266,6 +302,9 @@ def create_language(request, *args, **kwargs):
             lang.added_by = request.user
             lang.last_modified_by = request.user.get_profile()
             lang.save(solo=False)
+            editorform = EditorForm(data=request.POST, instance=lang)
+            if editorform.is_valid():
+                editorform.save()
             # greeting
             if lang.greeting:
                 # use signal instead?
@@ -274,13 +313,11 @@ def create_language(request, *args, **kwargs):
                         translator=request.user,exercise=greetingexercise)
                 trans.save()
             # values
-            for value_id in request.POST.getlist(u'value'):
+            for value in request.POST.getlist(u'value'):
+                feature_id, value_id = value.split('_')
                 if not value_id:
                     continue
-                fv = FeatureValue.objects.get(id=int(value_id))
-                feature = Feature.objects.get(id=fv.feature_id)
-                lf = LanguageFeature.objects.create(language=lang, feature=feature, value=fv)
-                lf.save()
+                set_language_feature_value(lang, feature_id, value_id)
             freq = get_averageness_for_lang(lang, scale=100)
             LOG.error('Freq now: %s' % repr(freq))
             lang.num_features = LanguageFeature.objects.filter(language=lang).count()
@@ -297,13 +334,13 @@ def create_language(request, *args, **kwargs):
     data = {'form': langform, 
             'categories': cats, 
             'me': me, 
+            'editorform': editorform,
+            'state': state,
             'error': error}
     return render_page(request, 'language_form.html', data)
 
 def may_edit_lang(user, language):
     standardreturn = (True, (False, False))
-    if language.public:
-        return standardreturn
     if user.is_superuser:
         return True, (True, True)
     profile = user.get_profile()
@@ -311,11 +348,14 @@ def may_edit_lang(user, language):
         return True, (False, True)
     if profile in language.editors.all():
         return standardreturn
+    if language.public:
+        return standardreturn
     return False, (False, False)
 
 @login_required()
 def change_language(request, *args, **kwargs):
     me = 'language'
+    state = 'change'
     error = pop_error(request)
     lang = _get_lang(*args, **kwargs)
     user = request.user
@@ -332,34 +372,7 @@ def change_language(request, *args, **kwargs):
         editorform = None
     LOG.error('User is manager: %s' % request.user == lang.manager.user)
     # sort values into categories
-    categories = Category.objects.all().select_related().order_by('id')
-    cats = []
-    for category in categories:
-        try:
-            fvs = FeatureValue.objects.filter(feature__category=category)
-        except FeatureValue.DoesNotExist:
-            continue
-        features = Feature.objects.filter(category=category)
-        f = []
-        for feature in features:
-            lf = None
-            try:
-                lf = LanguageFeature.objects.get(language=lang, feature=feature)
-            except LanguageFeature.DoesNotExist:
-                pass
-            if lf:
-                print feature, 'exists:', lf.value
-                form = FeatureValueForm(feature=feature,
-                        initial={'value': lf.value.id})
-                        #instance=lf.value, initial={'name': lf.value.id})
-            else:
-                form = FeatureValueForm(feature=feature)
-            f.append({'feature': feature, 'form':form})
-            lf = None
-        if f:
-            cats.append({'name': category.name, 'features': f})
-        else:
-            cats.append({'name': category.name})
+    cats = make_feature_list_for_lang(lang)
 
     if request.method == 'POST':
         langform = LanguageForm(data=request.POST, instance=lang, initial=request.POST)
@@ -395,21 +408,9 @@ def change_language(request, *args, **kwargs):
                 if greetingtrans:
                     greetingtrans.delete()
             # values
-            for value_id in request.POST.getlist(u'value'):
-                if not value_id:
-                    print 'skip'
-                    continue
-                print 'Value:', value_id
-                fv = FeatureValue.objects.get(id=int(value_id))
-                feature = Feature.objects.get(id=fv.feature_id)
-                try:
-                    lf_old = LanguageFeature.objects.get(language=lang, feature=feature)
-                except LanguageFeature.DoesNotExist:
-                    lf_new = LanguageFeature.objects.create(language=lang, feature=feature, value=fv)
-                else:
-                    if lf_old.value != fv:
-                        lf_old.value = fv
-                        lf_old.save()
+            for value in request.POST.getlist(u'value'):
+                feature_id, value_id = value.split('_')
+                set_language_feature_value(lang, feature_id, value_id)
             freq = get_averageness_for_lang(lang, scale=100)
             lang.num_features = LanguageFeature.objects.filter(language=lang).count()
             lang.num_avg_features = freq
@@ -428,6 +429,7 @@ def change_language(request, *args, **kwargs):
             'categories': cats, 
             'editorform': editorform, 
             'me': me, 
+            'state': state,
             'error': error}
     return render_page(request, 'language_form.html', data)
 

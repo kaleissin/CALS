@@ -60,12 +60,12 @@ $("#id_background").keyup(function() {
 {% endblock head %}
 {% block submenu %}
 <ul>  
-    <li><a href="../">All</a></li>
+    <li><a href="/language/">All</a></li>
     {% if user.is_authenticated %}
     {% ifequal request.META.REQUEST_URI '/language/new' %}
     <li><b>Add</b></li>
     {% else %}
-    <li><a href="../new">Add</a></li>
+    <li><a href="/language/new">Add</a></li>
     <li><b>Change</b></li>
     {% endifequal %}
     {% endif %}
@@ -148,8 +148,24 @@ $("#id_background").keyup(function() {
             {% if form.tags.field.required %}<span class="required">*</span>{% endif %}</th>
         <td>{{ form.tags }}</td>
         <td class="help">{{ form.tags.help_text }}
-        {% if form.tags.errors %}<div class="error">{{ form.tags.errors }}</div>{% endif %}</td>
+        {% if form.tags.errors %}<div class="error">{{ form.tags.errors }}</div>{% endif %}{{ request.META.REQUEST_URI }}</td>
     </tr>
+    {% ifequal state 'new' %}
+    <tr>
+        <th>Manager
+            {% if form.manager.field.required %}<span class="required">*</span>{% endif %}</th>
+        <td>{{ form.manager }}</td>
+        <td class="help">{{ form.manager.help_text }}
+        {% if form.manager.errors %}<div class="error">{{ form.manager.errors }}</div>{% endif %}</td>
+    </tr>
+    <tr>
+        <th>Editors
+            {% if editorform.editors.field.required %}<span class="required">*</span>{% endif %}</th>
+        <td>{{ editorform.editors }}</td>
+        <td class="help">{{ editorform.editors.help_text }}
+        {% if form.editors.errors %}<div class="error">{{ editorform.editors.errors }}</div>{% endif %}</td>
+    </tr>
+    {% else %}
     {% ifequal user.get_profile form.instance.manager %}
     <tr>
         <th>Manager
@@ -158,7 +174,6 @@ $("#id_background").keyup(function() {
         <td class="help">{{ form.manager.help_text }}
         {% if form.manager.errors %}<div class="error">{{ form.manager.errors }}</div>{% endif %}</td>
     </tr>
-    {% ifnotequal request.META.REQUEST_URI '/language/new' %}
     <tr>
         <th>Editors
             {% if editorform.editors.field.required %}<span class="required">*</span>{% endif %}</th>
@@ -166,14 +181,11 @@ $("#id_background").keyup(function() {
         <td class="help">{{ editorform.editors.help_text }}
         {% if form.editors.errors %}<div class="error">{{ editorform.editors.errors }}</div>{% endif %}</td>
     </tr>
-    {% endifnotequal %}
     {% else %}
-    {% ifnotequal request.META.REQUEST_URI '/language/new' %}
     <tr>
         <th>Manager</th>
         <td>{{ form.instance.manager }}</td>
-        <td></td>
-        <td></td>
+        <td class="help">Only a manager can change who is a manager</td>
     </tr>
     <tr>
         <th>Editors</th>
@@ -183,10 +195,9 @@ $("#id_background").keyup(function() {
             {% endfor %}
             </ul>
         </td>
-        <td></td>
-        <td></td>
-    {% endifnotequal %}
+        <td class="help">Only a manager can change who gets to edit</td>
     </tr>
+    {% endifequal %}
     {% endifequal %}
     <tr>
         <th>Editable by all

@@ -63,17 +63,17 @@ class FeatureForm(forms.ModelForm):
         model = Feature
 
 class FeatureValueForm(forms.Form):
+    value = forms.ChoiceField(required=False, choices=())
 
     def __init__(self, feature=None, *args, **kwargs):
         super(FeatureValueForm, self).__init__(*args, **kwargs)
         initial = kwargs.get('initial', None)
         if feature:
             fvs = FeatureValue.objects.filter(feature=feature).order_by('id')
-            self.fields['value'].choices = [('','----------')]+[(fv.id, fv.name) for fv in fvs]
+            self.fields['value'].choices = [('%s_0' %
+            feature.id,'----------')]+[('%s_%s' % (feature.id, fv.id), fv.name) for fv in fvs]
             if initial:
                 self.fields['value'].initial = initial.get('value', None)
-
-    value = forms.ChoiceField(required=False, choices=())
 
 class DescriptionForm(forms.ModelForm):
     freetext = forms.CharField(widget=forms.Textarea(attrs={'rows': '20', 'cols':'60'}))
