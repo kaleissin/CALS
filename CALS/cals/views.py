@@ -341,8 +341,6 @@ def create_language(request, *args, **kwargs):
 
 def may_edit_lang(user, language):
     standardreturn = (True, (False, False))
-    if user.is_superuser:
-        return True, (True, True)
     profile = user.get_profile()
     if profile == language.manager:
         return True, (False, True)
@@ -350,6 +348,8 @@ def may_edit_lang(user, language):
         return standardreturn
     if language.public:
         return standardreturn
+    if user.is_superuser:
+        return True, (True, True)
     return False, (False, False)
 
 @login_required()
@@ -377,17 +377,18 @@ def change_language(request, *args, **kwargs):
     if request.method == 'POST':
         langform = LanguageForm(data=request.POST, instance=lang, initial=request.POST)
         if langform.is_valid():
-            editorform = EditorForm(data=request.POST, instance=lang)
-            old_manager = lang.manager
-            old_editors = lang.editors
+            # editors and managers
+            if is_manager:
+                editorform = EditorForm(data=request.POST, instance=lang)
+                old_manager = lang.manager
+                editors = lang.editors
+                if not 'manager' in langform.cleaned_data:
+                    lang.manager = old_manager
+                if editorform.is_valid():
+                    editors = editorform.save()
+                    LOG.error('editors: %s' % editors)
             lang.last_modified_by = request.user.get_profile()
             lang = langform.save()
-            # editors and managers
-            if not 'manager' in langform.cleaned_data:
-                lang.manager = old_manager
-            if is_manager and editorform.is_valid():
-                editors = editorform.save()
-                LOG.error('editors: %s' % editors)
             # greeting
             greetingexercise = TranslationExercise.objects.get(id=1)
             new_greeting = lang.greeting
