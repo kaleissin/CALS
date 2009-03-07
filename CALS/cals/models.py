@@ -23,6 +23,7 @@ from django.utils.translation import ugettext_lazy as _
 import tagging
 from tagging.fields import TagField
 from countries.models import Country
+from nano.link.models import Link
 
 # Create your models here.
 FEATURE_GROUPS_CHOICES = (
@@ -164,6 +165,7 @@ class Feature(models.Model):
 #                 self.description_xhtml = xhtml
 #         super(Feature, self).save()
 
+
 class FeatureValueManager(models.Manager):
     def _value_counts(self):
         return self.extra(select={
@@ -282,10 +284,13 @@ class Language(models.Model):
             blank=True,
             null=True,
             related_name='manages',
-            help_text=u"""The person who gets to change the language. This
-            makes it possible to hand a language over to another
-            person.""")
-    editors = models.ManyToManyField(Profile, blank=True, null=True, related_name='edits')
+            help_text=u"""The person who controls who gets to
+            change the description of this language. This makes 
+            it possible to hand a language over to another person.""")
+    editors = models.ManyToManyField(Profile, blank=True, null=True, 
+            related_name='edits',
+            help_text=u"""People who get to change the description of
+            this language.""")
     created = models.DateTimeField(default=datetime.now)
     last_modified = models.DateTimeField(blank=True, null=True, editable=False, default=datetime.now)
     last_modified_by = models.ForeignKey(Profile, editable=False, blank=True, null=True, related_name='languages_modified')
@@ -371,3 +376,18 @@ class UTC(dt.tzinfo):
     def dst(self, dt):
         return self.ZERO
 
+class ExternalInfo(models.Model):
+    EXTERNALINFO_TYPES = (
+            ('homepage', 'Homepage'),
+            ('dictionary', 'Dictionary'),
+    )
+
+    language = models.ForeignKey(Language, related_name='externalinfo')
+    category = models.CharField(max_length=20,
+            choices=EXTERNALINFO_TYPES)
+    on_request = models.BooleanField(default=False)
+    link = models.ForeignKey(Link, blank=True, null=True)
+
+    def __unicode__(self):
+        return u"%s %s: on request: %s, link: %s" % (self.language,
+                self.category, self.on_request, self.link or 'No')
