@@ -148,7 +148,7 @@ $("#id_background").keyup(function() {
             {% if form.tags.field.required %}<span class="required">*</span>{% endif %}</th>
         <td>{{ form.tags }}</td>
         <td class="help">{{ form.tags.help_text }}
-        {% if form.tags.errors %}<div class="error">{{ form.tags.errors }}</div>{% endif %}{{ request.META.REQUEST_URI }}</td>
+        {% if form.tags.errors %}<div class="error">{{ form.tags.errors }}</div>{% endif %}</td>
     </tr>
     {% ifequal state 'new' %}
     <tr>
