@@ -62,7 +62,7 @@ def _get_user(*args, **kwargs):
     return get_object_or_404(User, username=kwargs.get('user', None))
 
 def _get_url_pieces(name='slug', **kwargs):
-    LOG.error('Url-pieces: %s' % kwargs)
+    LOG.debug('Url-pieces: %s' % kwargs)
     if name in kwargs:
         # split on +, remove empty pieces
         pieces = filter(None, kwargs[name].split('+'))
