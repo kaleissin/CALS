@@ -8,6 +8,7 @@ from math import modf, floor
 from django import template
 from django.contrib.auth.models import User
 from django.contrib.sessions.models import Session
+from django.conf import settings
 
 from pygooglechart import StackedVerticalBarChart, Axis
 
@@ -19,6 +20,10 @@ from cals.models import Language, Feature, Profile
 from translation.models import Translation
 
 MWF = Feature.MAX_WALS_FEATURE
+
+MEDIA_URL = ''
+if settings.MEDIA_URL:
+    MEDIA_URL = settings.MEDIA_URL
 
 register = template.Library()
 
@@ -54,6 +59,7 @@ def _make_langlink(lang, internal=False):
         langname = lang.get_name()
     return u'<a href="/language/%s/">%s</a>' % (lang.slug, langname) 
 
+
 @register.simple_tag
 def currently_logged_in():
     now = datetime.now()
@@ -70,6 +76,11 @@ def currently_logged_in():
     for user in users:
         out.append(_make_userlink(user.user))
     return u','.join(out)
+
+@register.simple_tag
+def graphline(barsize):
+    string = u'<img src="%sCALS/img/background.jpg" width="%%i" height="16" />' % MEDIA_URL
+    return string % (int(barsize) * 10)
 
 @register.simple_tag
 def feature_graph(feature):
