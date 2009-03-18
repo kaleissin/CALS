@@ -23,8 +23,8 @@ from translation.models import Translation
 
 def language_alphabetic_letters(num = 10):
     top_letters = """SELECT 
-    substr(upper(slug), 1, 1) AS char, 
-    count(substr(upper(slug), 1, 1)) 
+    substr(upper(name), 1, 1) AS char, 
+    count(substr(upper(name), 1, 1)) 
     FROM cals_language GROUP BY char ORDER BY char, count DESC
     """
 
@@ -33,30 +33,20 @@ def language_alphabetic_letters(num = 10):
     cursor.execute(top_letters)
     max_count = 0
     rows = []
-    row_counts = []
-    letters = []
     for row in cursor.fetchall():
         count = row[1]
         rows.append({'char': row[0], 'count': count, 'percentage':
             row[1]/float(num_langs)*100})
-        row_counts.append(count)
-        letters.append(row[0])
         if count > max_count:
             max_count = count
     num_letters = len(rows)
     cursor.close()
-    chart = StackedVerticalBarChart(num_letters*15, 100, y_range=(0, max_count))
-    chart.set_bar_width(10)
-    chart.add_data(row_counts)
-    chart.set_axis_labels(Axis.BOTTOM, letters)
-    chart.set_axis_labels(Axis.LEFT, ['0', '', str(int(max_count))])
-    chart_url = chart.get_url()
-    return {'letters':rows, 'chart':chart_url}
+    return {'letters':rows}
 
 def language_first_letters(num = 10):
     top_letters = """SELECT 
-    substr(upper(slug), 1, 1) AS char, 
-    count(substr(upper(slug), 1, 1)) 
+    substr(upper(name), 1, 1) AS char, 
+    count(substr(upper(name), 1, 1)) 
     FROM cals_language GROUP BY char ORDER BY count DESC, char
     """
 
@@ -65,25 +55,15 @@ def language_first_letters(num = 10):
     cursor.execute(top_letters)
     max_count = 0
     rows = []
-    row_counts = []
-    letters = []
     for row in cursor.fetchall():
         count = row[1]
         rows.append({'char': row[0], 'count': count, 'percentage':
             row[1]/float(num_langs)*100})
-        row_counts.append(count)
-        letters.append(row[0])
         if count > max_count:
             max_count = count
     num_letters = len(rows)
     cursor.close()
-    chart = StackedVerticalBarChart(num_letters*15, 100, y_range=(0, max_count))
-    chart.set_bar_width(10)
-    chart.add_data(row_counts)
-    chart.set_axis_labels(Axis.BOTTOM, letters)
-    chart.set_axis_labels(Axis.LEFT, ['0', '', str(int(max_count))])
-    chart_url = chart.get_url()
-    return {'letters':rows, 'chart':chart_url}
+    return {'letters':rows}
 
 def compare_value_sets(values1, values2):
     v1 = set(values1)

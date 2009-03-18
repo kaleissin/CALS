@@ -129,21 +129,29 @@
     <tr>
         <td>
             <h4>By frequency</h4>
-            <ol class="statistics">
+            <table class="statistics">
             {% for letter in langs.first_letters.letters %}
-                <li><span>{{ letter.char }} ({{ letter.percentage|floatformat:1 }}%)</li>
+                <tr>
+                    <td>{{ letter.char }}</td>
+                    <td>{{ letter.count }}</td>
+                    <td>{{ letter.percentage|floatformat:1 }}%</td>
+                    <td>{% graphline letter.count %}</td>
+                </tr>
             {% endfor %}
-            </ol>
-<p><img src="{{ langs.first_letters.chart }}" /></p>
+            </table>
         </td>
         <td>
             <h4>Alphabetically</h4>
-            <ul class="statistics">
+            <table class="statistics">
             {% for letter in langs.alpha_letters.letters %}
-                <li><span>{{ letter.char }} ({{ letter.percentage|floatformat:1 }}%)</li>
+                <tr>
+                    <td>{{ letter.char }}</td>
+                    <td>{{ letter.count }}</td>
+                    <td>{{ letter.percentage|floatformat:1 }}%</td>
+                    <td>{% graphline letter.count %}</td>
+                </tr>
             {% endfor %}
-            </ul>
-<p><img src="{{ langs.alpha_letters.chart }}" /></p>
+            </table>
         </td>
     </tr>
 </table>

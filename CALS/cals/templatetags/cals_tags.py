@@ -92,6 +92,8 @@ def feature_graph(feature):
         if count > max_count:
             max_count = count
     num_values = len(values)
+    if not num_values or max_count == 0:
+        return u''
     chart = StackedVerticalBarChart((num_values+1)*15, 100, y_range=(0, max_count))
     chart.set_bar_width(10)
     chart.add_data(values)
