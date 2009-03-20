@@ -96,7 +96,7 @@ urlpatterns += patterns('django.views.generic',
 
 urlpatterns += patterns('cals.views',
         (r'^language/([?](?P<action>[a-z]+))?$', 'list_languages'),
-        (r'^jrklist/$',                             'language_jrk'),
+        (r'^jrklist/$',                             'language_jrklist'),
         (r'^language/p(?P<page>[0-9]+)/$',          'language_list'),
         (r'^language/new$',                         'create_language'),
         (r'^language/(?P<lang>[-\w]+)/$',           'show_language'), 
