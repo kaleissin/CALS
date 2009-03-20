@@ -386,7 +386,7 @@ class ExternalInfo(models.Model):
     category = models.CharField(max_length=20,
             choices=EXTERNALINFO_TYPES)
     on_request = models.BooleanField(default=False)
-    link = models.ForeignKey(Link, blank=True, null=True)
+    link = models.URLField(blank=True, null=True)
 
     def __unicode__(self):
         return u"%s %s: on request: %s, link: %s" % (self.language,
