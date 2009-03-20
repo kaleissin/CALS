@@ -45,12 +45,3 @@ class ProfileAdmin(admin.ModelAdmin):
     ordering = ('display_name',)
 admin.site.register(Profile, ProfileAdmin)
 
-class TranslationAdmin(admin.ModelAdmin):
-    model = Translation
-    ordering = ('exercise', 'translator', 'translation')
-    list_display = ('exercise', 'translation', 'translator')
-admin.site.register(Translation, TranslationAdmin)
-
-admin.site.register(TranslationExercise)
-admin.site.register(TranslationExerciseCategory)
-
