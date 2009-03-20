@@ -5,11 +5,6 @@ from tagging.models import Tag
 
 from cals.models import Language, Feature, FeatureValue, Category, Profile
 
-language_list_dict = {
-        'queryset': Language.objects.all().order_by('name'),
-        'extra_context': { 'me': 'language' },
-}
-
 # language_detail_dict = {
 #         'queryset': Language.objects.all().select_related(),
 #         'extra_context': { 'me': 'language' },
@@ -76,34 +71,33 @@ language_by_date = {
         'extra_context': { 'me': 'language' },
         }
 
-jrklist = { 
-        'queryset': Language.objects.exclude(background='').order_by('name'),
-        'template_name': 'jrklist.html',
-        'extra_context': { 'me': 'language' },
-        }
-
 urlpatterns = patterns('tagging.views',
         (r'^language/tag/(?P<tag>[- \w\d]+)/$', 'tagged_object_list', tags_language_dict),
 )
 
 urlpatterns += patterns('django.views.generic',
-        (r'^jrklist/$',                             'list_detail.object_list', jrklist),
         (r'^language/tag/$',                        'list_detail.object_list', taglist_language_dict),
-        (r'^language/$',                            'simple.redirect_to', {'url': '/language/p1/'}),
-        (r'^language/p(?P<page>[0-9]+)/$',          'list_detail.object_list', dict(language_list_dict)),
 # #        (r'^language/latest/$', 'date_based.archive_index', language_by_date),
 # #        (r'^language/(?P<year>\d{4})/$',            'date_based.archive_year', language_by_year),
         #(r'^language/(?P<year>\d{4})/w(?P<week>[a-z]{3})/$', 'date_based.archive_week', language_by_week),
+)
 
+urlpatterns += patterns('django.views.generic',
         (r'^feature/$',                             'simple.redirect_to', {'url': '/feature/p1/'}),
         (r'^feature/p(?P<page>[0-9]+)/$',           'list_detail.object_list', dict(feature_list_dict)),
         #(r'^feature/(?P<object_id>[0-9]+)/$',       'list_detail.object_detail', dict(feature_detail_dict)),
+)
+
+urlpatterns += patterns('django.views.generic',
         (r'^people/$',                              'simple.redirect_to', {'url': '/people/p1/'}),
         (r'^people/p(?P<page>[0-9]+)/$',            'list_detail.object_list', dict(people_list_dict)),
         (r'^value/(?P<object_id>[0-9]+)/$',         'list_detail.object_detail', dict(value_detail_dict)),
 )
 
 urlpatterns += patterns('cals.views',
+        (r'^language/([?](?P<action>[a-z]+))?$', 'list_languages'),
+        (r'^jrklist/$',                             'language_jrk'),
+        (r'^language/p(?P<page>[0-9]+)/$',          'language_list'),
         (r'^language/new$',                         'create_language'),
         (r'^language/(?P<lang>[-\w]+)/$',           'show_language'), 
 #XXX: versioning is no good

@@ -644,6 +644,51 @@ def auth_login(request, *args, **kwargs):
             'messages': messages}
     return render_page(request, 'index.html', data)
 
+def page_in_kwargs_or_get(request, kwargs):
+    """If an url has the key-value-pair page=<page> in kwargs or
+    GET, return the value, else return False."""
+    return kwargs.get(u'page', 0) or request.GET.get(u'page', False)
+
+def in_kwargs_or_get(request, kwargs, key, value):
+    """If an url has the key-value-pair key=<value> in kwargs or
+    the key <value> in GET, return the value, else return False."""
+    assert value, '"value" cannot be empty/false'
+    if kwargs.get(key, '') == value or value in request.GET:
+        return True
+    return False
+
+def list_languages(request, *args, **kwargs):
+    if in_kwargs_or_get(request, kwargs, 'action', 'cloud'):
+        return language_cloud(request, *args, **kwargs)
+    for value in ('jrk', 'jrklist'):
+        if in_kwargs_or_get(request, kwargs, 'action', value):
+            return language_jrklist(request, *args, **kwargs)
+    if not kwargs or kwargs.get('action', None) is None:
+        return language_list(request, *args, **kwargs)
+
+def language_cloud(request, *args, **kwargs):
+    me = 'language'
+    queryset = Language.objects.all().order_by('name')
+    langs = []
+    for lang in queryset:
+        langs.append({'slug': lang.slug,
+                'size': int(round(lang.get_infodensity() * 6)) + 1,
+                'name': lang.name,
+        })
+    data = {'me': me, 'langs': langs}
+    return render_page(request, 'cals/language_cloud.html',
+            data)
+
+def language_jrklist(request, *args, **kwargs):
+    queryset = Language.objects.exclude(background='').order_by('name')
+    return object_list(request, queryset, 
+            template_name='jrklist.html',
+            extra_context={'me': 'language'})
+
+def language_list(request, *args, **kwargs):
+    queryset = Language.objects.all().order_by('name')
+    return object_list(request, queryset, 
+            extra_context={'me': 'language'})
 
 def test(request, *args, **kwargs):
     error = pop_error(request)

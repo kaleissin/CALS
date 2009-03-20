@@ -350,6 +350,30 @@ class Language(models.Model):
             return self.internal_name
         return self.name
 
+    def get_infodensity(self):
+        feature_weight = 0.95
+        density = 0
+        num_features = Feature.objects.count()
+        singles = 7.0
+        if self.greeting:
+            density += 1
+        if self.background:
+            density += 1
+        if self.vocabulary_size:
+            density += 1
+        if self.internal_name:
+            density += 1
+        if self.tags:
+            density += 1
+        if self.homepage:
+            density += 1
+        # TODO: trans should be weighed higher
+        if self.translations.count() > 1:
+            density += 1
+        weighted_num_features = self.num_features * feature_weight
+        density = (weighted_num_features + density) / (num_features + singles)
+        return density
+
 class LanguageFeature(models.Model):
     language = models.ForeignKey(Language, related_name='features')
     feature = models.ForeignKey(Feature, related_name='languages')

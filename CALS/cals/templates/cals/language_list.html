@@ -2,9 +2,10 @@
 {% block submenu %}
 <ul>
     <li><b>All</b></li>
-    <li><a href="/jrklist/">Kennaway-style</a></li>
+    <li><a href="/language/?jrk">Kennaway-style</a></li>
+    <li><a href="/language/?cloud">Cloud</a></li>
     {% if user.is_authenticated %}
-    <li><a href="../new">Add</a></li>
+    <li><a href="/language/new">Add</a></li>
     {% endif %}
 </ul>
 {% endblock submenu %}

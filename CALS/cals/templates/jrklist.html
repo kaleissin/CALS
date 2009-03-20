@@ -4,12 +4,10 @@
 <ul>
     <li><a href="/language/">All</a></li>
     <li><b>Kennaway-style</b></li>
-    {% comment %}
-    <li><b>All</b></li>
+    <li><a href="/language/?cloud">Cloud</a></li>
     {% if user.is_authenticated %}
-    <li><a href="../new">Add</a></li>
+    <li><a href="/language/new">Add</a></li>
     {% endif %}
-    {% endcomment %}
 </ul>
 {% endblock submenu %}
 {% block content %}

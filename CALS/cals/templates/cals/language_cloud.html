@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}A cloud of conlangs{% endblock title %}
+{% block submenu %}
+<ul>
+    <li><a href="/language/">All</a></li>
+    <li><a href="?jrk">Kennaway-style</a></li>
+    <li><b>Cloud</b></li>
+    {% if user.is_authenticated %}
+    <li><a href="/language/new">Add</a></li>
+    {% endif %}
+</ul>
+{% endblock submenu %}
+{% block content %}
+<h1>A cloud of conlangs</h1>
+<p>The size corresponds, roughly, to the amount of information stored.</p>
+<div class="cloud">
+{% for lang in langs %}
+    <span class="tagsize{{ lang.size }}"><a href="/language/{{ lang.slug }}/">{{ lang.name }}</a></span>
+{% endfor %}
+</div>
+{% endblock content %}
