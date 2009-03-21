@@ -367,6 +367,7 @@ def change_language(request, *args, **kwargs):
         return HttpResponseForbidden(error_forbidden)
 
     langform = LanguageForm(instance=lang)
+    #moreinfoformset = ExternalInfoFormSet(queryset=lang.externalinfo.all())
     #profile = user.get_profile()
     if is_manager:
         editorform = EditorForm(instance=lang)
@@ -410,6 +411,12 @@ def change_language(request, *args, **kwargs):
             else:
                 if greetingtrans:
                     greetingtrans.delete()
+#             # more info
+#             moreinfoformset = ExternalInfoFormSet(request.POST)
+#             if moreinfoformset.is_valid():
+#                 moreinfo = moreinfoformset.save()
+#                 assert False, moreinfo
+# 
             # values
             for value in request.POST.getlist(u'value'):
                 feature_id, value_id = value.split('_')
@@ -431,6 +438,7 @@ def change_language(request, *args, **kwargs):
     data = {'form': langform, 
             'categories': cats, 
             'editorform': editorform, 
+            #'moreinfoformset': moreinfoformset,
             'me': me, 
             'state': state,
             'error': error}
@@ -697,7 +705,7 @@ def language_jrklist(request, *args, **kwargs):
 def language_list(request, *args, **kwargs):
     queryset = Language.objects.all().order_by('name')
     paginator = NamePaginator(queryset, on="name")
-    page = page_in_kwargs_or_get(request, kwargs)
+    page = page_in_kwargs_or_get(request, kwargs) or 1
 
     try:
         page = paginator.page(page)
