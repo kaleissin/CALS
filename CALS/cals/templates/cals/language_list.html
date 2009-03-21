@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load paginator %}
 {% block submenu %}
 <ul>
     <li><b>All</b></li>
@@ -10,6 +11,7 @@
 </ul>
 {% endblock submenu %}
 {% block content %}
+    {% paginator %}
     <ul>
         {% for object in object_list %}
         <li class="{% cycle odd,even %}">
@@ -18,4 +20,6 @@
             ({{ object.features.count }} feature{{ object.features.count|pluralize }})</li>
         {% endfor %}
     </ul>
+    {% paginator %}
+
 {% endblock content %}

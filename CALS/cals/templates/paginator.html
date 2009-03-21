@@ -1,0 +1,25 @@
+{% if is_paginated %}
+<div class="pagination">
+    <span>
+        {% ifnotequal page_obj.first page_obj.number %}
+        <b><a href="?page={{ page_obj.first }}">|&lt;</a></b>
+        {% endifnotequal %}
+        {% if page_obj.has_previous %}
+        <b><a href="?page={{ page_obj.previous_page_number }}">&lt;</a></b>
+        {% endif %}
+        {% for p in page_obj.paginator.pages %}
+        {% ifequal p page_obj %}
+        <b class="selected">{{ page_obj }}</b>
+        {% else %}
+        <b><a href="?page={{ p.number }}">{{ p }}</a></b>
+        {% endifequal %}
+        {% endfor %}
+        {% if page_obj.has_next %}
+        <b><a href="?page={{ page_obj.next_page_number }}">&gt;</a></b>
+        {% endif %}
+        {% ifnotequal page_obj.last page_obj.number %}
+        <b><a href="?page={{ page_obj.last }}">&gt;|</a></b>
+        {% endifnotequal %}
+    </span>
+</div>
+{% endif %}

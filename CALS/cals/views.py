@@ -23,6 +23,8 @@ from django.views.generic.list_detail import object_list
 from django.views.generic.create_update import delete_object
 from django.utils.encoding import smart_unicode
 
+from snippets.namepaginator import NamePaginator, InvalidPage
+
 from tagging.models import Tag
 
 from pygooglechart import StackedVerticalBarChart, Axis
@@ -647,7 +649,13 @@ def auth_login(request, *args, **kwargs):
 def page_in_kwargs_or_get(request, kwargs):
     """If an url has the key-value-pair page=<page> in kwargs or
     GET, return the value, else return False."""
-    return kwargs.get(u'page', 0) or request.GET.get(u'page', False)
+    page = kwargs.get(u'page', 0) or request.GET.get(u'page', 0)
+    try:
+        page = int(page)
+    except ValueError:
+        if page != u'last':
+            page = False
+    return page
 
 def in_kwargs_or_get(request, kwargs, key, value):
     """If an url has the key-value-pair key=<value> in kwargs or
@@ -658,6 +666,7 @@ def in_kwargs_or_get(request, kwargs, key, value):
     return False
 
 def list_languages(request, *args, **kwargs):
+    """Select and dispatch to a view of the list of languages"""
     if in_kwargs_or_get(request, kwargs, 'action', 'cloud'):
         return language_cloud(request, *args, **kwargs)
     for value in ('jrk', 'jrklist'):
@@ -687,8 +696,21 @@ def language_jrklist(request, *args, **kwargs):
 
 def language_list(request, *args, **kwargs):
     queryset = Language.objects.all().order_by('name')
-    return object_list(request, queryset, 
-            extra_context={'me': 'language'})
+    paginator = NamePaginator(queryset, on="name")
+    page = page_in_kwargs_or_get(request, kwargs)
+
+    try:
+        page = paginator.page(page)
+    except (InvalidPage):
+        page = paginator.page(paginator.num_pages)
+
+    data = {u'me': u'language',
+            u'object_list': page.object_list,
+            u'page_obj': page,
+            u'paginator': paginator,
+            u'is_paginated': True}
+
+    return render_page(request, 'cals/language_list.html', data)
 
 def test(request, *args, **kwargs):
     error = pop_error(request)
