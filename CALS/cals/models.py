@@ -23,7 +23,7 @@ from django.utils.translation import ugettext_lazy as _
 import tagging
 from tagging.fields import TagField
 from countries.models import Country
-from nano.link.models import Link
+#from nano.link.models import Link
 
 # Create your models here.
 FEATURE_GROUPS_CHOICES = (
@@ -47,7 +47,10 @@ FREETEXT_TYPES = (
         )
 
 def asciify(string):
-    return unicodedata.normalize('NFKD', string).encode('ascii', 'ignore')
+    string = unicodedata.normalize('NFKD', string).encode('ascii', 'ignore')
+    if not string:
+        string = 'Non-ascii: %s' % datetime.now()
+    return string
 
 def next_id(model):
     # postgres only
