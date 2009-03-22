@@ -99,7 +99,8 @@ def add_languagetranslations(request, *args, **kwargs):
             trans.interlinear = form.cleaned_data['interlinear']
             trans.save()
             request.session['error'] = None
-            return HttpResponseRedirect('..')
+            return HttpResponseRedirect('/translation/%s/language/%s/' %
+                    (trans.exercise.slug, lang.slug))
         else:
             error = 'Form not valid'
             request.session['error'] = error
