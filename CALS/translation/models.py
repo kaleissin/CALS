@@ -12,6 +12,23 @@ from django.utils.html import escape
 
 from cals.models import Language
 
+def get_interlinear(model):
+    if not model.interlinear.strip():
+        return u''
+    interlinear = escape(model.interlinear)
+    format = model.il_format
+    if format == u'leipzig':
+        try:     
+            from leipzig import InterlinearText
+        except ImportError, e:
+            assert False, e
+            format = u'monospace'
+        else:
+            il = InterlinearText()
+            il.add_text(interlinear)
+            return il.to_html()
+    return u'<pre>%s</pre>' % interlinear
+
 class Interlinear(models.Model):
     INTERLINEAR_FORMATS = (
             ('monospace', 'WYSIWYG monospace'),
@@ -25,28 +42,14 @@ class Interlinear(models.Model):
     class Meta:
         abstract = True
 
+    def get_interlinear(self):
+        return get_interlinear(self)
+
     def save(self, *args, **kwargs):
         new_il = self.get_interlinear()
         if new_il:
             self.il_xhtml = new_il
         super(Interlinear, self).save(*args, **kwargs)
-
-    def get_interlinear(self):
-        if not self.interlinear.strip():
-            return u''
-        interlinear = escape(self.interlinear)
-        format = self.il_format
-        if format == u'leipzig':
-            try:     
-                from leipzig import InterlinearText
-            except ImportError, e:
-                assert False, e
-                format = u'monospace'
-            else:
-                il = InterlinearText()
-                il.add_text(interlinear)
-                return il.to_html()
-        return u'<pre>%s</pre>' % interlinear
 
 class TranslationExerciseCategory(models.Model):
     name = models.CharField(max_length=64, unique=True)
