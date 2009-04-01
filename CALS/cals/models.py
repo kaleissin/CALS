@@ -208,7 +208,8 @@ class Profile(models.Model):
     # Denormalization of django.contrib.auth.models.User - allows public
     # backup of database without exposing passwords and email-addresses
     username = models.CharField(max_length=30, unique=True, editable=False)
-    display_name = models.CharField(max_length=32)
+    display_name = models.CharField(max_length=32, blank=True, null=True,
+            help_text="Replaces username everywhere but in urls.")
     show_username = models.NullBooleanField('Always show username',
             help_text="Show username everywhere, even if personal name "
             "or familyname have been set.")
@@ -234,9 +235,11 @@ class Profile(models.Model):
 
     def save(self, *args, **kwargs):
         self.username = self.user.username
-        if not self.show_username:
-            full_name = '%s %s' % (self.user.first_name.strip(), self.user.last_name.strip())
-            self.display_name = full_name.strip() or self.user.username
+        if not self.display_name:
+            self.display_name = self.username
+#         if not self.show_username:
+#             full_name = '%s %s' % (self.user.first_name.strip(), self.user.last_name.strip())
+#             self.display_name = full_name.strip() or self.user.username
         super(Profile, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
