@@ -37,4 +37,13 @@
         </tr>
         {% endfor %}
 </table>
+
+{% if user.is_authenticated %}
+<p>You may translate this exercise into</p>
+<ul>
+{% for lang in langs %}
+<li class="{% cycle odd,even %}"><a href="/translation/{{ exercise.slug }}/language/{{ lang.slug }}/new">{{ lang }}</a></li>
+{% endfor %}
+</ul>
+{% endif %}
 {% endblock content %}

@@ -7,7 +7,7 @@ from django.views.generic.create_update import delete_object
 from nano.tools import getLogger, pop_error, render_page, get_user_model
 LOG = getLogger('translation.views')
 
-from cals.views import _get_lang, _get_user
+from cals.views import _get_lang, _get_user, langs_for_user
 
 from translation.models import Translation, TranslationExercise
 from translation.forms import TranslationForm
@@ -152,7 +152,15 @@ def show_translationexercise(request, *args, **kwargs):
     template = 'translation/translationexercise_list.html'
     exercise = get_translationexercise(*args, **kwargs)
     trans = exercise.translations.exclude(translation__isnull=True).exclude(translation='').order_by('language')
-    extra_context = {'me': me, 'error': error, 'exercise': exercise}
+    langs = None
+    if request.user.is_authenticated():
+        langs = langs_for_user(request.user.get_profile)
+    extra_context = {
+            'me': me, 
+            'error': error, 
+            'exercise': exercise,
+            'langs': langs,
+            }
     return object_list(request, queryset=trans, template_name=template,
             extra_context=extra_context)
 
