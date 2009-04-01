@@ -5,9 +5,13 @@ import unicodedata
 
 from django.contrib.auth.models import User
 from django import forms
+from django.forms.models import modelformset_factory, BaseModelFormSet
+
 from django.db import models
 
 from countries.models import Country
+
+from nano.link.models import Link
 
 from cals.models import *
 
@@ -156,5 +160,12 @@ class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
         exclude = ('user', 'is_visible', 'date_format', 'secret',
-                'altitude')
+                'altitude', 'show_username')
 
+# class _ExternalInfoBaseModelFormSet(BaseModelFormSet):
+#     def add_fields(self, form, index):
+#         super(_ExternalInfoBaseModelFormSet, self).add_fields(form,index)
+#         form.fields['link'].widget = forms.TextInput(attrs={'size': 40})
+#         form.fields['link']
+# ExternalInfoFormSet = modelformset_factory(ExternalInfo, formset=_ExternalInfoBaseModelFormSet)
+ExternalInfoFormSet = modelformset_factory(ExternalInfo)
