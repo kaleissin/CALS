@@ -154,7 +154,7 @@ def show_translationexercise(request, *args, **kwargs):
     trans = exercise.translations.exclude(translation__isnull=True).exclude(translation='').order_by('language')
     langs = None
     if request.user.is_authenticated():
-        langs = langs_for_user(request.user.get_profile)
+        langs = langs_for_user(request.user)
     extra_context = {
             'me': me, 
             'error': error, 
