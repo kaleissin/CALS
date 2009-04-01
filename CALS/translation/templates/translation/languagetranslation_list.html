@@ -23,7 +23,7 @@
             <th><a href="/translation/{{ object.exercise.slug }}/language/{{ lang.slug }}/{{ object.translator.username }}/">{{ object.exercise }}</a></th>
             <td>{{ object.exercise.exercise }}</td>
             <td>{{ object }}</td>
-            <td>{% if object.il_text %}Yes{% else %}No{% endif %}</td>
+            <td>{% if object.interlinear %}Yes{% else %}No{% endif %}</td>
             <td>{% showuser object.translator.get_profile %}</td>
         </tr>
         {% endfor %}
