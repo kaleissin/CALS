@@ -22,6 +22,7 @@ from django.template.loader import render_to_string
 from django.views.generic.list_detail import object_list
 from django.views.generic.create_update import delete_object
 from django.utils.encoding import smart_unicode
+from django.db.models import Q
 
 from snippets.namepaginator import NamePaginator, InvalidPage
 
@@ -73,8 +74,10 @@ def _get_url_pieces(name='slug', **kwargs):
     # '%s not in kwargs: %s' % (name, pformat(kwargs))
     return None
 
-def langs_for_user(profile):
-    return Language.objects.filter(manager=profile)
+def langs_for_user(user):
+    if not isinstance(user, Profile):
+        user = user.get_profile()
+    return Language.objects.filter(Q(public=True) | Q(manager=user) | Q(editors=user))
 
 def compare_feature(request, *args, **kwargs):
     me = 'feature'
