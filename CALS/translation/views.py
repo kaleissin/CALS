@@ -166,5 +166,5 @@ def delete_languagetranslations(request, *args, **kwargs):
     trans = Translation.objects.get(language=lang, translator=request.user, exercise=exercise)
     extra_context = {'me': me, 'error': error,}
     return delete_object(request, model=Translation, object_id=trans.id,
-            post_delete_redirect="..", extra_context=extra_context)
+            post_delete_redirect="/translation/language/%s/" % lang.slug, extra_context=extra_context)
 

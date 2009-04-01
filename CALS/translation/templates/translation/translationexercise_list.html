@@ -27,7 +27,7 @@
             <th><a href="/translation/{{ exercise.slug }}/language/{{ object.language.slug }}/">{{ object.language }}</a></th>
             <td>
                 {% ifequal object.translator request.user %}
-                <a href="/translation/{{ exercise.slug }}/language/{{ object.language.slug }}/change/">{{ object }}</a>
+                <a href="/translation/{{ exercise.slug }}/language/{{ object.language.slug }}/change">{{ object }}</a>
                 {% else %}
                 {{ object }}
                 {% endifequal %}
