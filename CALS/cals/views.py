@@ -73,6 +73,9 @@ def _get_url_pieces(name='slug', **kwargs):
     # '%s not in kwargs: %s' % (name, pformat(kwargs))
     return None
 
+def langs_for_user(profile):
+    return Language.objects.filter(manager=profile)
+
 def compare_feature(request, *args, **kwargs):
     me = 'feature'
     error = pop_error(request)
