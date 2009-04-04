@@ -47,10 +47,15 @@ def _get_display_name(user):
         name = user.username
     return user.get_profile().display_name.strip(), user
 
-def _make_userlink(user):
+#def _make_userlink(user):
+def _make_userlink(user, icon=False):
     """Makes a link to a user-profile with the preferred form of the
     name."""
-    return u'<a href="/people/%i/">%s</a>' % (user.id, user.get_profile().display_name) 
+    if icon:
+        display = icon
+    else:
+        display = user.get_profile().display_name
+    return u'<a href="/people/%i/">%s</a>' % (user.id, display) 
 
 def _make_langlink(lang, internal=False):
     """Makes a link to a language"""
@@ -79,7 +84,7 @@ def currently_logged_in():
 
 @register.simple_tag
 def graphline(barsize):
-    string = u'<img src="%sCALS/img/background.jpg" width="%%i" height="16" />' % MEDIA_URL
+    string = u'<img src="%simg/background.jpg" width="%%i" height="16" />' % MEDIA_URL
     return string % (int(barsize) * 10)
 
 @register.simple_tag
@@ -189,10 +194,11 @@ def latest_modified_languages(num_lang):
 @register.simple_tag
 def messages_for_user(user):
     count = PM.objects.received(user).count()
+    imgstring = u'(%%s <img class="icon" src="%s%s" alt="PMs:" />) '
     icon = u'mail_generic.png'
     if count:
-        imgstring = u'(%%s <img class="icon" src="%s%s" alt="PMs:" />) ' % (_img_src, icon)
-        return imgstring % count
+        imgstring = imgstring % (_img_src, icon)
+        return _make_userlink(user, imgstring % count)
     else:
         return u''
 
