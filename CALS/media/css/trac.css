@@ -1,0 +1,155 @@
+body { border: 1px solid #25331a;
+    font-size: 0.8em;
+    font-family: sans-serif;
+    color: #1f2e1b;
+}
+
+#submenu {
+    float: right;
+    background: #bcd7ae;
+    border: 1px solid #d2b400;
+    color: #25331a;
+    margin: 1ex;
+}
+
+#submenu * {
+    text-align: right;
+    padding-right: 0.5ex;
+}
+
+.nav {
+    padding: 0.5ex;
+}
+
+.nav a {
+    font-weight: bold;
+    text-decoration: none;
+    font-style: normal;
+}
+
+#header .nav {
+    background: #527c3a;
+    color: #ffde28;
+    /* border: 1px solid #25331a;*/
+    border: 1px solid #d2b400;
+}
+
+a, #header a {
+    color: #008000;
+}
+
+a:visited, #header a:visited {
+    color: #421;
+}
+
+a:hover {
+    background: #ffde28;
+}
+
+.nav .me {
+    color: #ffde28;
+    background: #25331a;
+    text-decoration: none;
+}
+
+
+#header .nav a:hover, #footer .nav a:hover { 
+    color: #fff;
+    background: #25331a;
+}
+
+#header .nav a {
+    color: #ffde28;
+    padding: 1ex;
+    width: 7em;
+}
+
+#footer .nav a {
+    padding: 1ex;
+    width: 7em;
+}
+a img {
+    vertical-align: bottom;
+}
+
+.help {
+    font-size: 0.7em;
+    color: #008000;
+    vertical-align: bottom;
+}
+
+th h1 { color: #ffde28; }
+h1 { margin: 1ex; }
+tr, td, th { 
+    text-align: left;
+    vertical-align: top;
+    margin: 0 0 0 0;
+}
+
+ul.treelist li {
+    list-style-type: none;
+}
+ul.treelist .category {
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+ul.treelist .feature {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+li, td, th { padding: 0.25ex }
+li+li { margin-top: 1ex; }
+
+option, input[type=text], input[type=password] { width: 20em }
+.even { background: #dec }
+#footer { background: #7f7 }
+div#header, div#footer { 
+    padding: 1ex;
+    background: url(/CALS/img/background.jpg) no-repeat;
+    background-color: #bcd7ae;
+}
+.right { text-align: right }
+.required { color: #f00 }
+pre { border: 1px solid grey;
+    padding: 1ex;
+    background:  #ccf}
+div#main { margin: 2em; }
+
+.message, .message * { 
+    padding: 1ex;
+    font-weight: bold;
+    border: 3px solid #ffde28;
+}
+
+.error { 
+    padding: 1ex;
+    border: 3px dashed #000; 
+    background: #ffde28;
+    margin: 0px;
+}
+
+
+.messages { 
+    border: 3px solid #0f0; 
+    background: white;
+    margin: 1ex;;
+}
+
+div#login {
+    float: right;
+}
+#login .loginbox { 
+    border: 1px solid grey;
+    margin: 1ex;
+}
+#login input {
+    width: 10em;
+}
+#login input.openid {
+    background: url(/CALS/img/login-openid-bg.gif) no-repeat;
+    background-position: 0 50%;
+    padding-left: 16px;
+    width: 40em;
+}
