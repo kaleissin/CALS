@@ -78,7 +78,7 @@ if (document.signup)
 {% endif %}
 
     <h3>
-                <a href="http://cals.conlang.org/feeds/people/recent/"><img src="{{ MEDIA_URL }}CALS/img/feed-icon-14x14.png" alt="Feed: Recently joined"/></a>
+                <a href="/feeds/people/recent/"><img src="{{ MEDIA_URL }}img/feed-icon-14x14.png" alt="Feed: Recently joined"/></a>
     Recently joined</h3>
     <ul>
     {% for person in people %}
@@ -90,7 +90,7 @@ if (document.signup)
 <div id="content">
 
     <h1>Latest news
-    <small><a href="http://cals.conlang.org/news/latest/">Older
+    <small><a href="/news/latest/">Older
     news</a></small>
     </h1>
     <dl>
@@ -123,7 +123,7 @@ usable at all?</li>
     <tr>
         <td>
             <h3>
-                <a href="http://cals.conlang.org/feeds/languages/newest/"><img src="{{ MEDIA_URL }}CALS/img/feed-icon-14x14.png" alt="Feed: Recently joined"/></a>
+                <a href="http://cals.conlang.org/feeds/languages/newest/"><img src="{{ MEDIA_URL }}img/feed-icon-14x14.png" alt="Feed: Recently joined"/></a>
                 Newly added</h3>
             <ul>
             {% for lang in langs_newest %}
@@ -133,7 +133,7 @@ usable at all?</li>
         </td>
         <td>
             <h3>
-                <a href="http://cals.conlang.org/feeds/languages/last_modified/"><img src="{{ MEDIA_URL }}CALS/img/feed-icon-14x14.png" alt="Feed: Recently joined"/></a>
+                <a href="http://cals.conlang.org/feeds/languages/last_modified/"><img src="{{ MEDIA_URL }}img/feed-icon-14x14.png" alt="Feed: Recently joined"/></a>
                 Last modified</h3>
             <ul>
             {% for lang in langs_modified %}
