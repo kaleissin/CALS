@@ -63,6 +63,8 @@ urlpatterns = patterns('',
 #    (r'^admin/webalizer/',      include('webalizer.urls')),
     (r'^admin/(.*)',            admin.site.root),
 
+    # red tape
+    (r'^favicon\.ico$', 'django.views.generic.simple.redirect_to', {'url': '/media/img/favicon.ico'}),
 
     (r'^thankyou$',             direct_to_template, thankyou_params),
 
