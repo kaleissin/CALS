@@ -16,6 +16,8 @@ from django.contrib.contenttypes import generic
 #from django.contrib.markup.templatetags.markup import textile
 from django.contrib.markup.templatetags.markup import restructuredtext, markdown
 from django.db import models, connection
+from django.db.models import Q
+from django.db.models.query import QuerySet
 from django.template.defaultfilters import slugify
 from django.utils.html import strip_tags
 from django.utils.translation import ugettext_lazy as _
@@ -124,8 +126,49 @@ class Description(Freetext):
         #assert False, self.id
         super(Description, self).save(force_insert=True, *args, **kwargs)
 
+# BEGIN Features
+
+class ActiveQuerySet(QuerySet):
+    def active(self):
+        return self.filter(active=True)
+
+    def passive(self):
+        return self.filter(active=False)
+
+class ActivePassiveManager(models.Manager):
+    "Needed to use the custom queryset"
+    def get_query_set(self):
+        return ActiveQuerySet(self.model)
+
+    def active(self):
+        return self.get_query_set().active()
+
+    def passive(self):
+        return self.get_query_set().passive()
+
+class ActiveManager(models.Manager):
+    "Needed to use the custom queryset"
+    def get_query_set(self):
+        return ActiveQuerySet(self.model)
+
+    def active(self):
+        return self.get_query_set().active()
+
+class PassiveManager(models.Manager):
+    "Needed to use the custom queryset"
+    def get_query_set(self):
+        return ActiveQuerySet(self.model)
+
+    def passive(self):
+        return self.get_query_set().passive()
+
 class Category(models.Model):
     name = models.CharField(max_length=20, unique=True)
+    active = models.BooleanField(default=False, editable=False)
+
+    objects = ActivePassiveManager()
+    active_objects = ActiveManager()
+    passive_objects = PassiveManager()
 
     class Meta:
         ordering = ['id']
@@ -142,12 +185,17 @@ class Feature(models.Model):
     tags = TagField()
     wals = models.BooleanField(default=False, editable=False)
     overrides = models.ForeignKey('self', blank=True, null=True)
+    active = models.BooleanField(default=False, editable=False)
     description = models.TextField(blank=True, null=True)
     description_xhtml = models.TextField(blank=True, null=True, editable=False)
     description_type = models.CharField(blank=True,max_length=20, choices=FREETEXT_TYPES)
     description_link = models.URLField(blank=True, null=True)
 
     descriptions = generic.GenericRelation(Description)
+
+    objects = ActivePassiveManager()
+    active_objects = ActiveManager()
+    passive_objects = PassiveManager()
 
     class Meta:
         unique_together = ('id', 'name', 'category')
@@ -195,6 +243,8 @@ class FeatureValue(models.Model):
 
     def __unicode__(self):
         return self.name
+
+# END Features
 
 class Profile(models.Model):
 # TODO: change date-format on profile-page, needs new date-filter

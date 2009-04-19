@@ -2,7 +2,7 @@
 {% block submenu %}
 <ul>
     <li><b>All features</b></li>
-    <li><a href="http://trac.aldebaaran.uninett.no/cals/wiki/CALSFeatures">Add a feature</a></li>
+    {# <li><a href="http://trac.aldebaaran.uninett.no/cals/wiki/CALSFeatures">Add a feature</a></li> #}
     <hr />
     {% for category in object_list %}
     <li><a href="#{{ category|slugify }}">{{ category }}</a></li>
@@ -15,7 +15,7 @@
         <li><a name="{{ category|slugify }}" id="{{ category|slugify }}"></a>
             <a href="#top" class="category">{{ category }}</a>
         <ul>
-            {% for feature in category.feature_set.all %}
+            {% for feature in category.feature_set.active %}
             <li class="{% cycle odd,even %}">
                 <a class="feature" href="../{{ feature.id }}">{{ feature }}</a>
                 ({{ feature.languages.count }} language{{ feature.languages.count|pluralize }})
