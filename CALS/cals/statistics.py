@@ -68,7 +68,7 @@ def language_first_letters(num = 10):
 def compare_value_sets(values1, values2):
     v1 = set(values1)
     v2 = set(values2)
-    num_f = Feature.objects.count()
+    num_f = Feature.objects.active().count()
     return len(v1 & v2)
 
 def compare_features(features, vfs):
@@ -109,7 +109,7 @@ def compare_languages(langs, same=True, different=True):
     of the languages have is shown."""
 
     num_langs = len(langs)
-    features = Feature.objects.all().order_by('id')
+    features = Feature.objects.active().order_by('id')
     comparison = [(None,) + tuple(langs)]
     num_features = tuple(['Number of features'] + [lang.num_features for lang in langs])
     LOG.info('2: compare_languages: %s %s' % (same, different))
@@ -157,14 +157,16 @@ def country_most_common():
 def feature_usage(feature_order=False, max_count=None, limit=0):
     feature_usage = """SELECT fv.*, count(lf.id) AS languages
     FROM "cals_featurevalue" AS fv 
+    INNER JOIN "cals_feature" AS f ON fv.feature_id = f.id
     LEFT JOIN "cals_languagefeature" AS lf ON lf.value_id = fv.id
+    WHERE f.active = true
     %s 
     GROUP BY fv.id, fv.feature_id, fv.name, fv.position 
     %s
     %s
     """
 
-    where_unused = 'WHERE lf.id IS NULL '
+    where_unused = 'AND lf.id IS NULL '
     having_count = 'HAVING count(lf.id) = %i '
     order_feature = 'ORDER BY fv.feature_id, fv.position ' 
     order_languages = 'ORDER BY languages DESC '
@@ -189,7 +191,7 @@ def feature_usage(feature_order=False, max_count=None, limit=0):
     cursor = connection.cursor()
     cursor.execute(feature_usage % (where, having, order))
     rows = [{'value': FeatureValue.objects.get(id=row[0]),
-            'feature': Feature.objects.get(id=row[1]), 
+            'feature': Feature.objects.active().get(id=row[1]), 
             'languages': row[4],
             'percentage': str(row[4]/float(num_langs)*100) }
             for row in cursor.fetchall()]
@@ -329,8 +331,8 @@ def vocab_size():
 
 def generate_global_stats():
     "Used by the statistics-view"
-    features = Feature.objects.all()
-    fvs = FeatureValue.objects.all() #value_counts()
+    features = Feature.objects.active()
+    fvs = FeatureValue.objects.filter(feature__active=True) #value_counts()
     langs = Language.objects.all()
     users = Profile.objects.filter(is_visible=True)
     lfs = LanguageFeature.objects.all()

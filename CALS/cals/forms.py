@@ -5,6 +5,7 @@ import unicodedata
 
 from django.contrib.auth.models import User
 from django import forms
+from django.forms.formsets import formset_factory
 from django.forms.models import modelformset_factory, BaseModelFormSet
 
 from django.db import models
@@ -59,7 +60,7 @@ class CompareTwoForm(forms.Form):
     lang2 = forms.ModelChoiceField(Language.objects.all())
 
 class CompareTwoFeaturesForm(forms.Form):
-    feature2 = forms.ModelChoiceField(Feature.objects.all())
+    feature2 = forms.ModelChoiceField(Feature.objects.active().all())
 
 class FeatureForm(forms.ModelForm):
 
@@ -161,6 +162,26 @@ class ProfileForm(forms.ModelForm):
         model = Profile
         exclude = ('user', 'is_visible', 'date_format', 'secret',
                 'altitude', 'show_username')
+
+class CategoryForm(forms.ModelForm):
+
+    class Meta:
+        model = Category
+
+class FeatureForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(FeatureForm, self).__init__(*args, **kwargs)
+        self.fields['description'].required = True
+        self.fields['description'].widget = forms.Textarea(attrs={'rows': 40, 'cols': 80})
+
+    class Meta:
+        model = Feature
+
+class NewFeatureValueForm(forms.Form):
+    name = forms.CharField(max_length=60)
+
+NewFeatureValueFormSet = formset_factory(NewFeatureValueForm, extra=10, max_num=10, can_order=True)
 
 # class _ExternalInfoBaseModelFormSet(BaseModelFormSet):
 #     def add_fields(self, form, index):

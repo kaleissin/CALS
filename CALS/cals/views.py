@@ -96,7 +96,7 @@ def compare_feature(request, *args, **kwargs):
     fvs, fs = [], []
     for feature in features:
         try:
-            f = Feature.objects.get(id=feature)
+            f = Feature.objects.active().get(id=feature)
         except Feature.DoesNotExist:
             # 
             return HttpResponseNotFound()
@@ -222,7 +222,7 @@ def show_feature(request, *args, **kwargs):
     me = 'feature'
     error = pop_error(request)
     try:
-         feature = Feature.objects.get(id=kwargs['object'])
+         feature = Feature.objects.active().get(id=kwargs['object'])
     except Feature.DoesNotExist:
         return HttpResponseNotFound()
     cform = CompareTwoFeaturesForm()
@@ -244,7 +244,7 @@ def add_entry_to_blog(object, headline, template, date_field=None):
     blog_entry = Entry.objects.create(content=template,headline=headline,pub_date=pub_date)
 
 def set_language_feature_value(lang, feature_id, value_id):
-    feature = Feature.objects.get(id=feature_id)
+    feature = Feature.objects.active().get(id=feature_id)
     try:
         lf = LanguageFeature.objects.get(language=lang, feature=feature)
     except LanguageFeature.DoesNotExist:
@@ -272,7 +272,7 @@ def make_feature_list_for_lang(lang=None):
             fvs = FeatureValue.objects.filter(feature__category=category)
         except FeatureValue.DoesNotExist:
             continue
-        features = Feature.objects.filter(category=category)
+        features = Feature.objects.active().filter(category=category)
         f = []
         for feature in features:
             form = FeatureValueForm(feature=feature)
@@ -725,6 +725,18 @@ def language_list(request, *args, **kwargs):
             u'is_paginated': True}
 
     return render_page(request, 'cals/language_list.html', data)
+
+def change_or_add_feature(request, *args, **kwargs):
+    categoryform = CategoryForm()
+    featureform = FeatureForm()
+    valueformset = NewFeatureValueFormSet()
+
+    data = {u'me': u'feature',
+        'featureform': featureform,
+        'fvformset': valueformset,
+    }
+
+    return render_page(request, 'cals/suggested_feature_form.html', data)
 
 def test(request, *args, **kwargs):
     error = pop_error(request)

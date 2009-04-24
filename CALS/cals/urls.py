@@ -11,8 +11,14 @@ from cals.models import Language, Feature, FeatureValue, Category, Profile
 # }
 
 feature_list_dict = {
-        'queryset': Category.objects.all().order_by('id'),
+        'queryset': Category.active_objects.all().order_by('id'),
         'template_name': 'cals/feature_list.html', 
+        'extra_context': { 'me': 'feature' },
+}
+
+suggested_features_dict = {
+        'queryset': Category.objects.all().order_by('id'),
+        'template_name': 'cals/suggested_feature_list.html', 
         'extra_context': { 'me': 'feature' },
 }
 
@@ -22,7 +28,7 @@ feature_list_dict = {
 # }
 
 feature_description = {
-        'queryset': Feature.objects.all(),
+        'queryset': Feature.objects.active(),
         'template_name': 'cals/feature_description.html', 
         'extra_context': { 'me': 'feature' },
 }
@@ -85,6 +91,7 @@ urlpatterns += patterns('django.views.generic',
 urlpatterns += patterns('django.views.generic',
         (r'^feature/$',                             'simple.redirect_to', {'url': '/feature/p1/'}),
         (r'^feature/p(?P<page>[0-9]+)/$',           'list_detail.object_list', dict(feature_list_dict)),
+     #   (r'^feature/suggest/$',                     'list_detail.object_list', dict(suggested_features_dict)),
         #(r'^feature/(?P<object_id>[0-9]+)/$',       'list_detail.object_detail', dict(feature_detail_dict)),
 )
 
@@ -113,6 +120,7 @@ urlpatterns += patterns('cals.views',
         (r'^people/(?P<object_id>[0-9]+)/$',        'show_profile'), 
         (r'^people/(?P<object_id>[0-9]+)/change$',  'change_profile'), 
         (r'^people/(?P<object_id>[0-9]+)/pm/',      include('nano.privmsg.urls')),
+     #   (r'^feature/suggest/new$',                  'change_or_add_feature'),
         (r'^feature/(?P<objects>[+0-9]+)/$',        'compare_feature'), 
         (r'^feature/(?P<object_id>[0-9]+)/$',       'show_feature'),
         (r'^feature/(?P<object_id>[0-9]+)/description/change$', 'change_description'),

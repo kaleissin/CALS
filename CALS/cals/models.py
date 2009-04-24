@@ -409,7 +409,7 @@ class Language(models.Model):
     def get_infodensity(self):
         feature_weight = 0.95
         density = 0
-        num_features = Feature.objects.count()
+        num_features = Feature.objects.active().count()
         singles = 7.0
         if self.greeting:
             density += 1
