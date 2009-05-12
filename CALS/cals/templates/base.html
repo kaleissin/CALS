@@ -41,8 +41,9 @@
         <a {% ifequal me 'feature' %}class="me" {% endifequal %}href="/feature/">Features</a> |
         <a {% ifequal me 'translation' %}class="me" {% endifequal %}href="/translation/">Translations</a> |
         <a {% ifequal me 'people' %}class="me" {% endifequal %}href="/people/">People</a> |
-        <a {% ifequal me 'statistics' %}class="me" {% endifequal %}href="/statistics/">Statistics</a> |
+        <a {% ifequal me 'statistics' %}class="me" {% endifequal %}href="/statistics/">Statistics</a> {% comment %}|
         <a {% ifequal me 'bugs' %}class="me" {% endifequal %}href="http://trac.aldebaaran.uninett.no/cals/">Bugs and features</a>
+        {% endcomment %}
     </div>
     {% block error %}
     {% if request.session.error %}

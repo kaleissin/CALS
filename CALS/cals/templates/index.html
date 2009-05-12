@@ -123,8 +123,7 @@ usable at all?</li>
     <tr>
         <td>
             <h3>
-                <a href="http://cals.conlang.org/feeds/languages/newest/"><img src="{{ MEDIA_URL }}img/feed-icon-14x14.png" alt="Feed: Recently joined"/></a>
-                Newly added</h3>
+                <a href="http://cals.conlang.org/feeds/languages/newest/"><img src="{{ MEDIA_URL }}img/feed-icon-14x14.png" alt="Feed: New languages"/></a> Newly added</h3>
             <ul>
             {% for lang in langs_newest %}
             <li>{% show_lang lang %}</li>
@@ -133,7 +132,7 @@ usable at all?</li>
         </td>
         <td>
             <h3>
-                <a href="http://cals.conlang.org/feeds/languages/last_modified/"><img src="{{ MEDIA_URL }}img/feed-icon-14x14.png" alt="Feed: Recently joined"/></a>
+                <a href="http://cals.conlang.org/feeds/languages/last_modified/"><img src="{{ MEDIA_URL }}img/feed-icon-14x14.png" alt="Feed: Changed languages"/></a>
                 Last modified</h3>
             <ul>
             {% for lang in langs_modified %}
@@ -144,12 +143,14 @@ usable at all?</li>
     </tr>
 </table>
 
+<!--
 <h2>Development-stuff</h2>
 
 <p>There is a single, official place to <a href="http://trac.aldebaaran.uninett.no/cals/newticket">report
     bugs</a>. That site will work when this site is impossible, as long
 as the net-connection haven't been <a class="ext" href="http://en.wikipedia.org/wiki/Backhoe#Backhoe_fade" title="Plenty of stupid people
     with backhoes out there...">severed</a>.</p>
+    -->
 
 <p><a href="/changes/">New stuff and changes</a> have been moved to its
 own page. See also the link in the footer.</p>
