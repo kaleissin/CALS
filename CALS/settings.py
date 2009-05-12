@@ -84,7 +84,6 @@ INSTALLED_APPS = (
     'nano.blog',
     'nano.user',
 #    'nano.web20',
-    'webalizer',
 )
 
 #AUTHENTICATION_BACKENDS = (
