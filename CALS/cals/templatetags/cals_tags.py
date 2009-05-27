@@ -172,8 +172,8 @@ def greet(user, lang):
 
 @register.simple_tag
 def greetings(user):
-    greeting = cache.get('greeting')
-    if not greeting:
+    trans = cache.get('greeting')
+    if not trans:
         trans = [trans for trans in Translation.objects.filter(exercise__id=1, translation__isnull=False)]
         cache.set('greeting', trans, 60*10)
     tran = choice(tuple(trans))
