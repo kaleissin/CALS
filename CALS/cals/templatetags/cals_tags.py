@@ -9,6 +9,7 @@ from django import template
 from django.contrib.auth.models import User
 from django.contrib.sessions.models import Session
 from django.conf import settings
+from django.core.cache import cache
 
 from pygooglechart import StackedVerticalBarChart, Axis
 
@@ -138,9 +139,7 @@ def showuser(user):
         user = User.objects.get(id=user)
     return _make_userlink(user)
 
-
-def greet_link(lang, ahref_to_object):
-    greeting_trans = Translation.objects.filter(language=lang, exercise__id=1)
+def make_greet_link(lang, ahref_to_object, greeting_trans=None):
     if not greeting_trans:
         return 'Hello, %s!' % ahref_to_object
     else:
@@ -164,14 +163,21 @@ def greet_link(lang, ahref_to_object):
         greeting = _langlink1 % langd
     return greeting
 
+def greet_link(lang, ahref_to_object):
+    greeting_trans = Translation.objects.filter(language=lang, exercise__id=1)
+    return make_greet_link(lang, ahref_to_object, greeting_trans)
+
 def greet(user, lang):
     return greet_link(lang, _make_userlink(user))
 
 @register.simple_tag
 def greetings(user):
-    langs = [trans.language for trans in Translation.objects.filter(exercise__id=1, translation__isnull=False)]
-    lang = choice(tuple(langs))
-    greeting = greet(user, lang)
+    greeting = cache.get('greeting')
+    if not greeting:
+        trans = [trans for trans in Translation.objects.filter(exercise__id=1, translation__isnull=False)]
+        cache.set('greeting', trans, 60*10)
+    tran = choice(tuple(trans))
+    greeting = greet(user, tran.language)
     return greeting
 
 @register.simple_tag
