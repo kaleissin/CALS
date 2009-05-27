@@ -15,7 +15,7 @@ MANAGERS = ADMINS
 # although not all choices may be available on all operating systems.
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'GMT'
 #TIME_ZONE = 'Europe/Oslo'
 
 # Language code for this installation. All choices can be found here:
@@ -108,6 +108,8 @@ INTERNAL_IPS = ('127.0.0.1', '158.38.62.153',)
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
+CACHE_BACKEND = 'memcached://127.0.0.1:11211/'
+
 # Application-specific
 
 #The trust root to use for OpenID requests
@@ -128,7 +130,7 @@ FORCE_LOWERCASE_TAGS = True
 
 # Nano-settings
 NANO_LOG_FILE = '/tmp/cals.log'
-NANO_USER_EMAIL_SENDER = 'calsbot@gmail.com'
+NANO_USER_EMAIL_SENDER = 'kaleissin@gmail.com'
 
 # Webalizer
 WEBALIZER_DIR = '/home/www/webalizer/CALS/'
