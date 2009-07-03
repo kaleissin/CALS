@@ -338,7 +338,9 @@ def generate_global_stats():
     lfs = LanguageFeature.objects.all()
 
     user100 = User.objects.get(id=139)
+    user150 = User.objects.get(id=200)
     lang100 = Language.objects.get(id=154)
+    lang150 = Language.objects.get(id=271)
 
     num_features = features.count()
     num_langs = langs.count()
@@ -364,7 +366,9 @@ def generate_global_stats():
     data = {}
     data['milestones'] = { 
             'user100': user100, 
-            'lang100': lang100}
+            'lang100': lang100,
+            'user150': user150,
+            'lang150': lang150}
     data['features'] = { 
             'number': num_features,
             'percentage_wals': str(142/float(num_features)*100),
