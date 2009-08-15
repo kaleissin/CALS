@@ -312,7 +312,7 @@ def create_language(request, *args, **kwargs):
         if langform.is_valid():
             lang = langform.save(commit=False)
             lang.added_by = request.user
-            lang.last_modified_by = request.user.get_profile()
+            lang.last_modified_by = request.user
             lang.save(solo=False)
             editorform = EditorForm(data=request.POST, instance=lang)
             if editorform.is_valid():
@@ -400,7 +400,7 @@ def change_language(request, *args, **kwargs):
                 if editorform.is_valid():
                     editors = editorform.save()
                     LOG.error('editors: %s' % editors)
-            lang.last_modified_by = request.user.get_profile()
+            lang.last_modified_by = request.user
             lang = langform.save()
             # greeting
             greetingexercise = TranslationExercise.objects.get(id=1)

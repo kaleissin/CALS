@@ -349,7 +349,7 @@ class Language(models.Model):
             this language.""")
     created = models.DateTimeField(default=datetime.now)
     last_modified = models.DateTimeField(blank=True, null=True, editable=False, default=datetime.now)
-    last_modified_by = models.ForeignKey(Profile, editable=False, blank=True, null=True, related_name='languages_modified')
+    last_modified_by = models.ForeignKey(User, editable=False, blank=True, null=True, related_name='languages_modified')
 
     # Managers
     objects = models.Manager()
