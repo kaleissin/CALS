@@ -336,7 +336,7 @@ class Language(models.Model):
             help_text="""If yes/on, all logged in may edit. If no/off, only the
             manager and editors may edit.""")
     added_by = models.ForeignKey(User,editable=False, blank=True, null=True, related_name='languages')
-    manager = models.ForeignKey(Profile,
+    manager = models.ForeignKey(User,
             blank=True,
             null=True,
             related_name='manages',
@@ -373,7 +373,7 @@ class Language(models.Model):
             self.name = asciify(self.name)
         self.slug = slugify(self.name)
         if not self.manager:
-            self.manager = self.added_by.get_profile() or user.get_profile()
+            self.manager = self.added_by or user
         # XXX Cannot set average score here as there would be an
         # import-loop
         super(Language, self).save(*args, **kwargs)
@@ -395,7 +395,7 @@ class Language(models.Model):
     def can_change(self, profile):
         if isinstance(profile, User):
             profile = profile.get_profile()
-        if self.manager == profile:
+        if self.manager == profile.user:
             return True
         if len(self.editors.filter(id=profile.user.id)):
             return True

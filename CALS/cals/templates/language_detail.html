@@ -10,7 +10,7 @@
         {% if object.public %}
     <li><a href="./change">Change</a></li>
         {% else %}
-            {% ifequal user object.manager.user %}
+            {% ifequal user object.manager %}
     <li><a href="./change">Change</a></li>
             {% endifequal %}
         {% endif %}

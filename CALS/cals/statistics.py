@@ -330,11 +330,13 @@ def vocab_size():
             'mode': mode }
 
 def get_all_lurkers():
-    profile = Profile.objects.filter(is_visible=True)
     users = User.objects.filter(profile__is_visible=True)
-    p_lurkers = profile.filter(languages_modified__isnull=True, manages__isnull=True)
-    u_lurkers = users.filter(edits__isnull=True, translations__isnull=True, languages__isnull=True, translation_exercises__isnull=True)
-    lurkers = set(p_lurkers) & set([l.get_profile() for l in u_lurkers])
+    lurkers = users.filter(edits__isnull=True,
+            manages__isnull=True,
+            translations__isnull=True, 
+            languages__isnull=True,
+            translation_exercises__isnull=True, 
+            languages_modified__isnull=True)
     return lurkers
 
 def generate_global_stats():

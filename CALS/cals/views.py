@@ -81,7 +81,7 @@ def langs_for_user(user):
     else: 
         user = user
         profile = user.get_profile()
-    return Language.objects.filter(Q(public=True) | Q(manager=profile) | Q(editors=user))
+    return Language.objects.filter(Q(public=True) | Q(manager=user) | Q(editors=user))
 
 def compare_feature(request, *args, **kwargs):
     me = 'feature'
@@ -354,7 +354,7 @@ def create_language(request, *args, **kwargs):
 def may_edit_lang(user, language):
     standardreturn = (True, (False, False))
     profile = user.get_profile()
-    if profile == language.manager:
+    if user == language.manager:
         return True, (False, True)
     if user in language.editors.all():
         return standardreturn
@@ -383,7 +383,7 @@ def change_language(request, *args, **kwargs):
         editorform = EditorForm(instance=lang)
     else:
         editorform = None
-    LOG.error('User is manager: %s' % request.user == lang.manager.user)
+    LOG.error('User is manager: %s' % request.user == lang.manager)
     # sort values into categories
     cats = make_feature_list_for_lang(lang)
 

@@ -85,11 +85,11 @@
             </td>
         </tr>
         {% endif %}
-        {% if profile.manages.count %}
+        {% if profile.user.manages.count %}
         <tr><th>Manager for:</th>
             <td>
                 <ul>
-                {% for language in profile.manages.all %}
+                {% for language in profile.user.manages.all %}
                     <li><a href="/language/{{ language.slug }}">{{ language }}</a></li>
                 {% endfor %}
                 </ul>
