@@ -1,4 +1,4 @@
-import atom
+import djatom as atom
 from nano.blog.models import Entry
 from cals.models import Language, Profile
 from django.template.loader import render_to_string
