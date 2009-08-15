@@ -77,14 +77,6 @@ if (document.signup)
     </div>
 {% endif %}
 
-    <h3>
-                <a href="/feeds/people/recent/"><img src="{{ MEDIA_URL }}img/feed-icon-14x14.png" alt="Feed: Recently joined"/></a>
-    Recently joined</h3>
-    <ul>
-    {% for person in people %}
-    <li>{% showuser person %}</li>
-    {% endfor %}
-    </ul>
 </div>
 
 <div id="content">
@@ -123,7 +115,8 @@ usable at all?</li>
     <tr>
         <td>
             <h3>
-                <a href="http://cals.conlang.org/feeds/languages/newest/"><img src="{{ MEDIA_URL }}img/feed-icon-14x14.png" alt="Feed: New languages"/></a> Newly added</h3>
+                <a href="http://cals.conlang.org/feeds/languages/newest/"><img src="{{ MEDIA_URL }}img/feed-icon-14x14.png" alt="Feed: New languages"/></a>
+                Newly added</h3>
             <ul>
             {% for lang in langs_newest %}
             <li>{% show_lang lang %}</li>
@@ -137,6 +130,16 @@ usable at all?</li>
             <ul>
             {% for lang in langs_modified %}
             <li>{% show_lang lang %}</li>
+            {% endfor %}
+            </ul>
+        </td>
+        <td>
+            <h3>
+                <a href="/feeds/people/recent/"><img src="{{ MEDIA_URL }}img/feed-icon-14x14.png" alt="Feed: Recently joined"/></a>
+                Recently joined</h3>
+            <ul>
+            {% for person in people %}
+            <li>{% showuser person %}</li>
             {% endfor %}
             </ul>
         </td>
