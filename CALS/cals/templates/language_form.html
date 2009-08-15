@@ -166,7 +166,7 @@ $("#id_background").keyup(function() {
         {% if form.editors.errors %}<div class="error">{{ editorform.editors.errors }}</div>{% endif %}</td>
     </tr>
     {% else %}
-    {% ifequal user.get_profile form.instance.manager %}
+    {% ifequal user form.instance.manager %}
     <tr>
         <th>Manager
             {% if form.manager.field.required %}<span class="required">*</span>{% endif %}</th>
