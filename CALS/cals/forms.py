@@ -33,7 +33,7 @@ class TruncCharField(forms.CharField):
         return super(TruncCharField, self).clean(value)
 
 class EditorForm(forms.ModelForm):
-    #editors = ModelMultipleChoiceField(queryset=User.objects.order_by('profile_set__display_name'))
+    #editors = ModelMultipleChoiceField(queryset=User.objects.order_by('profile__display_name'))
 
     class Meta:
         model = Language

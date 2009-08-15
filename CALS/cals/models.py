@@ -254,7 +254,7 @@ class Profile(models.Model):
 #             ('Y-m-d H:i O', CHOICE_DATE.),
 #             ('r', ''),
 #             )
-    user = models.ForeignKey(User, unique=True)
+    user = models.ForeignKey(User, unique=True, related_name='profile')
     # Denormalization of django.contrib.auth.models.User - allows public
     # backup of database without exposing passwords and email-addresses
     username = models.CharField(max_length=30, unique=True, editable=False)
@@ -343,7 +343,7 @@ class Language(models.Model):
             help_text=u"""The person who controls who gets to
             change the description of this language. This makes 
             it possible to hand a language over to another person.""")
-    editors = models.ManyToManyField(Profile, blank=True, null=True, 
+    editors = models.ManyToManyField(User, blank=True, null=True, 
             related_name='edits',
             help_text=u"""People who get to change the description of
             this language.""")
@@ -397,7 +397,7 @@ class Language(models.Model):
             profile = profile.get_profile()
         if self.manager == profile:
             return True
-        if len(self.editors.filter(id=profile.id)):
+        if len(self.editors.filter(id=profile.user.id)):
             return True
         return False
 

@@ -24,7 +24,7 @@
             <td>{{ object.user.date_joined|date:"Y-m-d" }}</td>
             <td class="right">{{ object.user.languages.count }}</td>
             <td class="right">{{ object.manages.count }}</td>
-            <td class="right">{{ object.edits.all.count }}</td>
+            <td class="right">{{ object.user.edits.all.count }}</td>
         </tr>
         {% endif %}
         {% endfor %}

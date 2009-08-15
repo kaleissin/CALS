@@ -75,9 +75,13 @@ def _get_url_pieces(name='slug', **kwargs):
     return None
 
 def langs_for_user(user):
-    if not isinstance(user, Profile):
-        user = user.get_profile()
-    return Language.objects.filter(Q(public=True) | Q(manager=user) | Q(editors=user))
+    if isinstance(user, Profile):
+        profile = user
+        user = user.user
+    else: 
+        user = user
+        profile = user.get_profile()
+    return Language.objects.filter(Q(public=True) | Q(manager=profile) | Q(editors=user))
 
 def compare_feature(request, *args, **kwargs):
     me = 'feature'
@@ -352,7 +356,7 @@ def may_edit_lang(user, language):
     profile = user.get_profile()
     if profile == language.manager:
         return True, (False, True)
-    if profile in language.editors.all():
+    if user in language.editors.all():
         return standardreturn
     if language.public:
         return standardreturn
