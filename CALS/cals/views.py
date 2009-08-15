@@ -650,8 +650,8 @@ def auth_login(request, *args, **kwargs):
             if u'next' in request.REQUEST:
                 LOG.error('Redirecting back to %s', request.POST[u'next'])
                 return HttpResponseRedirect(request.POST[u'next'])
-    #l_cloud = Tag.objects.cloud_for_model(Language, steps=7, min_count=2)
-    l_cloud = Tag.objects.cloud_for_model(Language, steps=7)
+    l_cloud = Tag.objects.cloud_for_model(Language, steps=7, min_count=2)
+    #l_cloud = Tag.objects.cloud_for_model(Language, steps=7)
 
     data = {'me': 'home', 
             'error': error, 
