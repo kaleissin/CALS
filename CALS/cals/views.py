@@ -391,17 +391,23 @@ def change_language(request, *args, **kwargs):
         langform = LanguageForm(data=request.POST, instance=lang, initial=request.POST)
         if langform.is_valid():
             # editors and managers
+            old_manager = lang.manager
+            lang = langform.save(commit=False)
             if is_manager:
                 editorform = EditorForm(data=request.POST, instance=lang)
-                old_manager = lang.manager
                 editors = lang.editors
-                if not 'manager' in langform.cleaned_data:
-                    lang.manager = old_manager
                 if editorform.is_valid():
                     editors = editorform.save()
                     LOG.error('editors: %s' % editors)
+                if not 'manager' in langform.cleaned_data:
+                    lang.manager = old_manager
+            else:
+                # Just in case: must be manager also in view in order to
+                # change who can be manager
+                lang.manager = old_manager
+
             lang.last_modified_by = request.user
-            lang = langform.save()
+
             # greeting
             greetingexercise = TranslationExercise.objects.get(id=1)
             new_greeting = lang.greeting

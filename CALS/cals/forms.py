@@ -33,28 +33,36 @@ class TruncCharField(forms.CharField):
         return super(TruncCharField, self).clean(value)
 
 class EditorForm(forms.ModelForm):
-    #editors = ModelMultipleChoiceField(queryset=User.objects.order_by('profile__display_name'))
+    editors = forms.ModelMultipleChoiceField(queryset=Profile.objects.filter(is_visible=True))
 
     class Meta:
         model = Language
         fields = ('editors',)
 
+    def save(self, commit=True, user=None):
+        editors = self.cleaned_data['editors']
+        self.cleaned_data['editors'] = User.objects.filter(id__in=[e.user_id for e in editors])
+        return super(EditorForm, self).save(commit)
+
 class LanguageForm(forms.ModelForm):
     background = TruncCharField(required=False, max_length=256,
             widget=forms.Textarea(attrs={'cols': '64', 'rows': '4'}),
             help_text="""Maximum <span class="count" id="background_max">256</span> characters, formatting included.""")
-    #manager = forms.MultipleChoiceField(queryset=Profile.objects.filter)
+    # Because auth.User isn't sorted
+    manager = forms.ModelChoiceField(queryset=Profile.objects.filter(is_visible=True))
 
     class Meta:
         model = Language
         exclude = ('created', 'editors', 'last_modified_by')
 
-#     def save(self, commit=True, user=None):
+    def save(self, commit=True, user=None):
+        manager = Profile.objects.get(id=self.cleaned_data['manager'].id)
+        self.cleaned_data['manager'] = manager.user
 #         if user:
 #             LOG.info('CALS new language #1: %s', self.cleaned_data)
 #             self.cleaned_data['added_by_id'] = user.id
 #             LOG.info('CALS new language #2: %s', self.cleaned_data)
-#         super(LanguageForm, self).save(commit)
+        return super(LanguageForm, self).save(commit)
 
 class CompareTwoForm(forms.Form):
     lang2 = forms.ModelChoiceField(Language.objects.all())
