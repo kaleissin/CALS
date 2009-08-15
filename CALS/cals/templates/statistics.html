@@ -64,6 +64,11 @@
         <td>of all people have set a country</td>
     </tr>
     <tr>
+        <td class="integer">{{ users.percentage_lurkers|integer }}</td>
+        <td class="fraction">.{{ users.percentage_lurkers|fraction }}%</td>
+        <td>of all people are lurkers</td>
+    </tr>
+    <tr>
         <td class="integer">{{ features.number }}</td>
         <td></td>
         <td>features</td>

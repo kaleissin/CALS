@@ -329,6 +329,14 @@ def vocab_size():
             'chart': chart_url,
             'mode': mode }
 
+def get_all_lurkers():
+    profile = Profile.objects.filter(is_visible=True)
+    users = User.objects.filter(profile__is_visible=True)
+    p_lurkers = profile.filter(languages_modified__isnull=True, manages__isnull=True, edits__isnull=True)
+    u_lurkers = users.filter(translations__isnull=True, languages__isnull=True, translation_exercises__isnull=True)
+    lurkers = set(p_lurkers) & set([l.get_profile() for l in u_lurkers])
+    return lurkers
+
 def generate_global_stats():
     "Used by the statistics-view"
     features = Feature.objects.active()
@@ -350,6 +358,7 @@ def generate_global_stats():
     num_backgrounds = Language.objects.exclude(background__isnull=True).exclude(background='').count()
     num_translations = Translation.objects.count();
     num_countries = users.filter(country__isnull=False).count()
+    num_lurkers = len(get_all_lurkers())
 
     most_average = langs.exclude(num_features=0).order_by('-average_score', '-num_features')
     lma = most_average.count()
@@ -396,6 +405,7 @@ def generate_global_stats():
             'langs_per_user': str(num_langs/float(num_users)),
             'countries': countries,
             'percentage_countries': str(num_countries/float(num_users)*100),
+            'percentage_lurkers': str(num_lurkers / float(num_users) * 100)
             }
     return data
 
