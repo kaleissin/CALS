@@ -81,16 +81,16 @@ if (document.signup)
 
 <div id="content">
 
+    <div class="newsbox">
     <h1>Latest news
     <small><a href="/news/latest/">Older
     news</a></small>
     </h1>
-    <dl>
     {% for entry in news %}
-    <dt><h3>{{ entry.pub_date|date:"Y-m-d H:i" }} {{ entry.headline }}</h3></dt>
-    <dd>{{ entry.content|safe }}</dd>
+    <h3>{{ entry.pub_date|date:"Y-m-d H:i" }} {{ entry.headline }}</h3>
+    <div>{{ entry.content|safe }}</div>
     {% endfor %}
-    </dl>
+    </div>
 
 <h1>What defines your conlang?</h1>
 <p>By adding your language here, and answering the questions by choosing
