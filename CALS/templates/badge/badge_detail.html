@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load badge_tags %}
+{% load cals_tags %}
+{% block submenu %}
+{% endblock submenu %}
+{% block content %}
+<h1>{% show_badge_and_freq object %}</h1>
+<table class="badge_list">
+{% for recipient in object.receivers.all %}
+<tr>
+    <td>{% showuser recipient %} {% show_badges recipient.user %}</td>
+</tr>
+{% endfor %}
+</table>
+{% endblock content %}

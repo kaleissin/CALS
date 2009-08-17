@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load badge_tags %}
+{% block submenu %}
+{% endblock submenu %}
+{% block content %}
+{% if object_list %}
+<p>There are currently {{ object_list.count }} different badges to be earned</p>
+
+<table class="badge-list">
+{% for entry in object_list %}
+<tr>
+    <td>{% show_badge_and_freq entry %}</td>
+    <td>{{ entry.description }}</td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<p>No badges found.</p>
+{% endif %}
+{% endblock content %}

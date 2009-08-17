@@ -15,6 +15,43 @@ caption { text-align: left;
     font-size: small;
 }
 
+.b100 { color: #CD7F32;} /* bronze */
+.b200 { color: #C0C0C0;} /* silver */
+.b300 { color: #FFCC33;} /* gold */
+
+.badge { height: 1em; 
+    width: 10em; 
+    font-weight: bold; 
+    background: #25331a;
+    color: #ffde28;
+    padding: 0.7ex;
+    margin: 2px;
+    border: 1px solid #25331a;
+    font-size: 1em;
+}
+
+.badge-list td { padding-bottom: 2ex; 
+    padding-right: 2ex;
+}
+
+span.badge-freq {
+    font-weight: bold;
+    font-size: 1em;
+}
+
+.badge a, .badge a:visited { text-decoration: none; 
+    font-size: 1em;
+    color: #ffde28;
+}
+.badge:hover, .badge:hover a { 
+    text-decoration: none;
+    font-size: 1em;
+    background: #fff;
+    color: #25331a;
+}
+
+.vote {text-align: center; width: 5em;} 
+
 .pagination {
     text-align: center;
     width: 90%;
@@ -132,7 +169,7 @@ h3 { font-size: 1.25em; }
 }
 
 a, #header a {
-    color: #008000;
+    color: #004d00;
 }
 
 a:visited, #header a:visited {
@@ -174,6 +211,7 @@ a.ext * {
 #footer {
     margin-top: 1em;
     clear: both;
+    background-color: #bcd7ae;
 }
 
 #footer .nav a {
@@ -223,10 +261,9 @@ li, td, th { padding: 0.25ex }
 li+li { margin-top: 1ex; }
 
 .even, .tweet { background: #dec }
-#footer { background: #7f7 }
 div#header, div#footer { 
     padding: 1ex;
-    background: url(/img/background.jpg) no-repeat;
+    background: url(/CALS/img/background.jpg) no-repeat;
     background-color: #bcd7ae;
 }
 .right { text-align: right; }
@@ -350,7 +387,7 @@ input[type=text] {
     width: 10em;
 }
 #login input.openid {
-    background: url(/img/login-openid-bg.gif) no-repeat;
+    background: url(/CALS/img/login-openid-bg.gif) no-repeat;
     background-position: 0 50%;
     padding-left: 16px;
     width: 40em;

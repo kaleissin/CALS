@@ -16,6 +16,10 @@ people_feeds = {
         'all': AllPeopleFeed,
 }
 
+all_feeds = {
+        'all': AllFeed,
+}
+
 thankyou_params = {
         'template': 'cals/thankyou.html', 
         'extra_context': { 
@@ -77,12 +81,14 @@ urlpatterns = patterns('',
 
     (r'^feeds/languages/(.*)/$', 'django.contrib.syndication.views.feed', {'feed_dict': language_feeds}),
     (r'^feeds/people/(.*)/$', 'django.contrib.syndication.views.feed', {'feed_dict': people_feeds}),
-    (r'^feeds/(.*)/$', 'django.contrib.syndication.views.feed', {'feed_dict': {'all': AllFeed,},}),
+    (r'^feeds/(.*)/$', 'django.contrib.syndication.views.feed', {'feed_dict': all_feeds}),
+#    (r'^feeds/all/$', 'django.contrib.syndication.views.feed', {'feed_dict': {'all': AllFeed,},}),
 
-    (r'^news/',                include('nano.blog.urls')),
+    (r'^news/',                 include('nano.blog.urls')),
     (r'^comments/',             include('django.contrib.comments.urls')),
 
     (r'^translation/',          include('translation.urls')),
+    (r'^badge/',                include('nano.badge.urls')),
     (r'^',                      include('cals.urls')),
 
 

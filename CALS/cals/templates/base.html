@@ -85,11 +85,12 @@
         <div class="nav right">
             Devel-clock: {% now "H:i O" %}
             <a {% ifequal request.path '/about/' %}class="me"{% endifequal %} href="/about/">About</a> | 
-            <a {% ifequal request.path '/privacy/' %}class="me"{% endifequal %} href="/privacy/">Privacy</a> | 
-            <a {% ifequal request.path '/terms/' %}class="me"{% endifequal %} href="/terms/">Terms of service</a> |
+            <a {% ifequal request.path '/badge/' %}class="me"{% endifequal %} href="/badge/">Badges</a> |
             <a {% ifequal request.path '/copyright/' %}class="me"{% endifequal %} href="/copyright/">Copyright</a> |
-            <a {% ifequal request.path '/thankyou' %}class="me" {% endifequal %}href="/thankyou">Thanks</a> |
-            <a {% ifequal me 'news' %}class="me"{% endifequal %} href="/news/latest/">News</a>
+            <a {% ifequal request.path '/privacy/' %}class="me"{% endifequal %} href="/privacy/">Privacy</a> | 
+            <a {% ifequal me 'news' %}class="me"{% endifequal %} href="/news/latest/">News</a> |
+            <a {% ifequal request.path '/terms/' %}class="me"{% endifequal %} href="/terms/">Terms of service</a> |
+            <a {% ifequal request.path '/thankyou' %}class="me" {% endifequal %}href="/thankyou">Thanks</a>
             <a href="http://validator.w3.org/check?uri=referer"><img
                     src="http://media.aldebaaran.uninett.no/CALS/img/valid-xhtml10.png"
                     alt="Valid XHTML 1.0 Strict" height="31" width="88" /></a>

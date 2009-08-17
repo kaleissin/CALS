@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {# {% load nano_web20_tags %} #}
 {% load cals_tags %}
+{% load badge_tags %}
 {% block title %}{{ object.username }}'s page{% endblock title %}
 {% block submenu %}
 <ul>
@@ -120,6 +121,16 @@
                     </tr>
                 {% endfor %}
                 </table>
+            </td>
+        </tr>
+        {% endif %}
+        {% if profile.badges.count %}
+        <tr>
+            <th>Badges earned ({{ profile.badges.count }}):</th>
+            <td>
+            {% for badge in profile.badges.all %}
+            {% show_badge badge %}
+            {% endfor %}
             </td>
         </tr>
         {% endif %}
