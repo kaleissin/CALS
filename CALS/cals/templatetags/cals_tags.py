@@ -38,15 +38,16 @@ _wals_feature = '<sup class="wals"><a href="%s/%%i" target="_blank">WALS</a><sup
 def _get_display_name(user):
     """Given an id (int) or a user-object, returns preferred name to
     display and user-object.""" 
-    try:
-        name = user.username
-    except AttributeError:
-        try:
-            user = User.objects.get(id=int(user))
-        except ValueError:
-            raise template.TemplateSyntaxError, 'must be integer or user-object'
-        name = user.username
-    return user.get_profile().display_name.strip(), user
+    if type(user) == type(User()):
+        display_name = user.get_profile().display_name.strip()
+    elif type(user) == type(Profile()):
+        display_name = user.display_name.strip()
+    elif type(user) == type(5):
+        user = User.objects.get(id=int(user))
+        display_name = user.get_profile().display_name.strip()
+    else:
+        raise TemplateSyntaxError, 'wrong argument type'
+    return display_name, user
 
 #def _make_userlink(user):
 def _make_userlink(user, icon=False):
@@ -55,7 +56,7 @@ def _make_userlink(user, icon=False):
     if icon:
         display = icon
     else:
-        display = user.get_profile().display_name
+        display, _ = _get_display_name(user)
     return u'<a href="/people/%i/">%s</a>' % (user.id, display) 
 
 def _make_langlink(lang, internal=False):
