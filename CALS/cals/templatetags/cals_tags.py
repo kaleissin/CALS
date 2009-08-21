@@ -3,7 +3,7 @@
 
 from datetime import datetime
 from random import choice
-from math import modf, floor
+from math import modf, floor, ceil
 
 from django import template
 from django.contrib.auth.models import User
@@ -13,7 +13,7 @@ from django.core.cache import cache
 
 from pygooglechart import StackedVerticalBarChart, Axis
 
-from nano.tools import getLogger
+from nano.tools import getLogger, grouper
 from nano.privmsg.models import PM
 LOG = getLogger('cals.templatetags')
 
@@ -236,3 +236,13 @@ def nbr(text):
     return text.encode('utf8')
 nbr.is_safe = True
 
+@register.filter
+def partition(iterable, cols=4):
+    try:
+        cols = int(cols)
+    except (ValueError, TypeError):
+        return None
+    the_tuple = tuple(iterable)
+    maxrows = int(ceil(len(the_tuple)/float(cols)))
+    columns = grouper(maxrows, the_tuple)
+    return zip(*tuple(columns))

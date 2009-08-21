@@ -8,30 +8,10 @@
 {% endblock submenu %}
 {% block content %}
     <table class="list">
-            {% comment %}
+        {% for row in object_list|partition %}
         <tr>
-            <th rowspan="2">Conlanger</th>
-            <th rowspan="2">Joined</th>
-            <th colspan="3">Languages</th>
+        {% for cell in row %}<td>{% if cell %}{% showuser cell %} {% show_badges cell.user %}{% endif %}</td>{% endfor %}
         </tr>
-        <tr>
-            <th>added</th>
-            <th>managed</th>
-            <th>edited</th>
-        </tr>
-            {% endcomment %}
-        {% for object in object_list %}
-        {% if object.is_visible %}
-        <tr class="{% cycle odd,even %}">
-            <td>{% showuser object %} {% show_badges object.user %}</td>
-            {% comment %}
-            <td>{{ object.user.date_joined|date:"Y-m-d" }}</td>
-            <td class="right">{{ object.user.languages.count }}</td>
-            <td class="right">{{ object.user.manages.count }}</td>
-            <td class="right">{{ object.user.edits.all.count }}</td>
-            {% endcomment %}
-        </tr>
-        {% endif %}
         {% endfor %}
     </table>
 {% endblock content %}
