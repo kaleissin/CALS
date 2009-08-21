@@ -5,6 +5,7 @@
 {% endblock submenu %}
 {% block content %}
 <h1>{% show_badge_and_freq object %}</h1>
+<p>{{ object.description }}</p>
 <table class="badge_list">
 {% for recipient in object.receivers.all %}
 <tr>
