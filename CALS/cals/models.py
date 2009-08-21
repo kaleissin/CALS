@@ -471,3 +471,15 @@ class ExternalInfo(models.Model):
     def __unicode__(self):
         return u"%s %s: on request: %s, link: %s" % (self.language,
                 self.category, self.on_request, self.link or 'No')
+
+# --- Signals
+
+from nano.user import new_user_created
+
+def new_user(sender, **kwargs):
+    "nano.user sends a signal when a user is created"
+    new_user = kwargs[u'user']
+    blog_template = 'blog/new_user.html'
+    add_entry_to_blog(new_user, '%s just joined' % new_user.username, blog_template, date_field='date_joined')
+
+new_user_created.connect(new_user, sender=User)
