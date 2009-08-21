@@ -14,6 +14,7 @@ from django.core.cache import cache
 from pygooglechart import StackedVerticalBarChart, Axis
 
 from nano.tools import getLogger, grouper
+from nano.badge.templatetags.badge_tags import show_badges
 from nano.privmsg.models import PM
 LOG = getLogger('cals.templatetags')
 
@@ -138,7 +139,10 @@ def showuser(user):
         user = user.user
     elif type(user) == type(5):
         user = User.objects.get(id=user)
-    return _make_userlink(user)
+    badge = show_badges(user)
+    if badge:
+        badge = u' ' + badge
+    return _make_userlink(user) + show_badges(user)
 
 def make_greet_link(lang, ahref_to_object, greeting_trans=None):
     if not greeting_trans:

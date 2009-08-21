@@ -10,7 +10,7 @@
     <table class="list">
         {% for row in object_list|partition %}
         <tr>
-        {% for cell in row %}<td>{% if cell %}{% showuser cell %} {% show_badges cell.user %}{% endif %}</td>{% endfor %}
+        {% for cell in row %}<td>{% if cell %}{% showuser cell %}{% endif %}</td>{% endfor %}
         </tr>
         {% endfor %}
     </table>
