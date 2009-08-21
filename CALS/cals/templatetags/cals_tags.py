@@ -139,10 +139,10 @@ def showuser(user):
         user = user.user
     elif type(user) == type(5):
         user = User.objects.get(id=user)
-    badge = show_badges(user)
-    if badge:
-        badge = u' ' + badge
-    return _make_userlink(user) + show_badges(user)
+    badges = show_badges(user)
+    if badges:
+        badges = u' ' + badges
+    return _make_userlink(user) + badges
 
 def make_greet_link(lang, ahref_to_object, greeting_trans=None):
     if not greeting_trans:
