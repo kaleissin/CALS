@@ -228,7 +228,7 @@ class FeatureValueManager(models.Manager):
         return self._value_counts().order_by('count')
 
 class FeatureValue(models.Model):
-    feature = models.ForeignKey(Feature)
+    feature = models.ForeignKey(Feature, related_name='values')
     name = models.CharField(max_length=64)
     position = models.IntegerField(null=True)#, editable=False)
 

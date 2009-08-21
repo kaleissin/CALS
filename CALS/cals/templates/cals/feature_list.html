@@ -19,10 +19,10 @@
             <li class="{% cycle odd,even %}">
                 <a class="feature" href="../{{ feature.id }}">{{ feature }}</a>
                 ({{ feature.languages.count }} language{{ feature.languages.count|pluralize }})
-                ({{ feature.featurevalue_set.count }} value{{ feature.featurevalue_set.count|pluralize }})
-                {% if feature.featurevalue_set.count %}
+                ({{ feature.values.count }} value{{ feature.values.count|pluralize }})
+                {% if feature.values.count %}
                 <ul>
-                {% for fv in feature.featurevalue_set.all %}
+                {% for fv in feature.values.all %}
                 <li>
                     <a href="/value/{{ fv.id }}">{{ fv }}</a>
                     ({{ fv.languagefeature_set.count }} language{{ fv.languagefeature_set.count|pluralize }})

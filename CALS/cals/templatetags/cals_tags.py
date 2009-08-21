@@ -93,7 +93,7 @@ def graphline(barsize):
 def feature_graph(feature):
     values = []
     max_count = 0
-    for value in feature.featurevalue_set.all():
+    for value in feature.values.all():
         count = value.languagefeature_set.count()
         values.append(count)
         if count > max_count:

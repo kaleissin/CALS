@@ -24,9 +24,9 @@
         {% endif %}
         <tr>
             <th colspan="2">Values:</th>
-            <td rowspan="{{ object.featurevalue_set.count|add:1 }}" class="graph">{% feature_graph object %}</td>
+            <td rowspan="{{ object.values.count|add:1 }}" class="graph">{% feature_graph object %}</td>
         </tr>
-        {% for value in object.featurevalue_set.all %}
+        {% for value in object.values.all %}
         <tr class="{% cycle odd,even %}">
             <td></td>
             <td><a href="/value/{{ value.id }}">{{ value.name }}</a> 
