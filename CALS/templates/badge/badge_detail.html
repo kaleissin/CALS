@@ -8,7 +8,7 @@
 <table class="badge_list">
 {% for recipient in object.receivers.all %}
 <tr>
-    <td>{% showuser recipient %} {% show_badges recipient.user %}</td>
+    <td>{% showuser recipient %}</td>
 </tr>
 {% endfor %}
 </table>
