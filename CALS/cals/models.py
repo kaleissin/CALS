@@ -487,6 +487,8 @@ def new_or_changed_language(sender, **kwargs):
     "Signal handler for cals.Language.post_save"
     new = kwargs[u'created']
     lang = kwargs[u'instance']
+    if u'testarossa' in lang.slug:
+        return
     new_title = 'New language: %s' % lang.name
     changed_title = 'Changed language: %s' % lang.name
     if new:
