@@ -475,6 +475,7 @@ class ExternalInfo(models.Model):
 # --- Signals
 
 from nano.user import new_user_created
+from django.db.models.signals import post_save
 
 def new_user(sender, **kwargs):
     "nano.user sends a signal when a user is created"
@@ -482,4 +483,21 @@ def new_user(sender, **kwargs):
     blog_template = 'blog/new_user.html'
     add_entry_to_blog(new_user, '%s just joined' % new_user.username, blog_template, date_field='date_joined')
 
+def new_or_changed_language(sender, **kwargs):
+    "Signal handler for cals.Language.post_save"
+    new = kwargs[u'created']
+    lang = kwargs[u'instance']
+    new_title = 'New language: %s' % lang.name
+    changed_title = 'Changed language: %s' % lang.name
+    if new:
+        add_entry_to_blog(lang, new_title, 'feeds/languages_newest_description.html', date_field='created')
+    else:
+        latest = Entry.objects.latest('pub_date')
+        if latest.headline != changed_title:
+            add_entry_to_blog(lang, changed_title, 'feeds/languages_description.html', date_field='last_modified')
+        else:
+            latest.pub_date = datetime.now()
+            latest.save()
+
 new_user_created.connect(new_user, sender=User)
+post_save.connect(new_or_changed_language, sender=Language)

@@ -241,12 +241,6 @@ def show_feature(request, *args, **kwargs):
             'cform': cform}
     return render_page(request, 'feature_detail.html', data)
 
-def add_entry_to_blog(object, headline, template, date_field=None):
-    data = {'obj': object}
-    template = loader.render_to_string(template, dictionary=data)
-    pub_date = object.__dict__.get(date_field or 'last_modified', datetime.now())
-    blog_entry = Entry.objects.create(content=template,headline=headline,pub_date=pub_date)
-
 def set_language_feature_value(lang, feature_id, value_id):
     feature = Feature.objects.active().get(id=feature_id)
     try:
@@ -337,8 +331,6 @@ def create_language(request, *args, **kwargs):
             lang.set_average_score()
             lang.save()
             request.session['error'] = None
-            if not u'testarossa' in lang.slug:
-                add_entry_to_blog(lang, 'New language: %s' % lang.name, 'feeds/languages_newest_description.html', date_field='created')
             return HttpResponseRedirect('.')
         else:
             error = "Couldn't store language-description: " + str(form.errors) 
@@ -442,10 +434,6 @@ def change_language(request, *args, **kwargs):
             lang.num_avg_features = freq
             lang.set_average_score()
             lang.save()
-            if not u'testarossa' in lang.slug:
-                add_entry_to_blog(lang, 'Changed language: %s' % lang.name,
-                        'feeds/languages_description.html',
-                        date_field='last_modified')
             request.session['error'] = None
             return HttpResponseRedirect('.')
         else:
