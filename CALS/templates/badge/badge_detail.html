@@ -7,10 +7,10 @@
 <h1>{% show_badge_and_freq object %}</h1>
 <p>{{ object.description }}</p>
 <table class="badge_list">
-{% for recipient in object.receivers.all %}
-<tr>
-    <td>{% showuser recipient %}</td>
-</tr>
+{% for row in object.receivers.all|partition %}
+    <tr>
+    {% for cell in row %}<td>{% if cell %}{% showuser cell %}{% endif %}</td>{% endfor %}
+    </tr>
 {% endfor %}
 </table>
 {% endblock content %}
