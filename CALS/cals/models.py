@@ -474,8 +474,11 @@ class ExternalInfo(models.Model):
 
 # --- Signals
 
-from nano.user import new_user_created
 from django.db.models.signals import post_save
+from nano.user import new_user_created
+
+from nano.blog import add_entry_to_blog
+from nano.blog.models import Entry
 
 def new_user(sender, **kwargs):
     "nano.user sends a signal when a user is created"
@@ -494,7 +497,7 @@ def new_or_changed_language(sender, **kwargs):
     if new:
         add_entry_to_blog(lang, new_title, 'feeds/languages_newest_description.html', date_field='created')
     else:
-        latest = Entry.objects.latest('pub_date')
+        latest = Entry.objects.latest()
         if latest.headline != changed_title:
             add_entry_to_blog(lang, changed_title, 'feeds/languages_description.html', date_field='last_modified')
         else:
