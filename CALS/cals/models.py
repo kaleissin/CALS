@@ -107,6 +107,7 @@ class Description(Freetext):
     class Meta:
         #unique_together = ('version', 'content_type', 'object_id')
         db_table = 'cals_description'
+        get_latest_by = 'last_modified'
 
     def save(self, user=None, *args, **kwargs):
         self.id = next_id(self.__class__)
@@ -357,6 +358,7 @@ class Language(models.Model):
     class Meta:
         ordering = ['name']
         db_table = 'cals_language'
+        get_latest_by = 'last_modified'
 
     def __unicode__(self):
         return self.name
