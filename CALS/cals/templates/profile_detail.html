@@ -129,7 +129,7 @@
             <th>Badges earned ({{ profile.badges.count }}):</th>
             <td>
             {% for badge_row in profile.badges.all|partition %}
-            <div>
+            <div class="badge-list">
             {% for badge in badge_row %}{% show_badge badge %}{% endfor %}
             </div>
             {% endfor %}
