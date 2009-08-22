@@ -85,7 +85,7 @@
         <div class="nav right">
             Devel-clock: {% now "H:i O" %}
             <a {% ifequal request.path '/about/' %}class="me"{% endifequal %} href="/about/">About</a> | 
-            <a {% ifequal request.path '/badge/' %}class="me"{% endifequal %} href="/badge/">Badges</a> |
+            <a {% if request.path|startswith:"/badge/" %}class="me"{% endif %} href="/badge/">Badges</a> |
             <a {% ifequal request.path '/copyright/' %}class="me"{% endifequal %} href="/copyright/">Copyright</a> |
             <a {% ifequal request.path '/privacy/' %}class="me"{% endifequal %} href="/privacy/">Privacy</a> | 
             <a {% ifequal me 'news' %}class="me"{% endifequal %} href="/news/latest/">News</a> |

@@ -14,6 +14,7 @@ from django.core.cache import cache
 from pygooglechart import StackedVerticalBarChart, Axis
 
 from nano.tools import getLogger, grouper
+from nano.tools.templatetags.nano_tags import *
 from nano.badge.templatetags.badge_tags import show_badges
 from nano.privmsg.models import PM
 LOG = getLogger('cals.templatetags')
@@ -215,38 +216,8 @@ def messages_for_user(user):
 
 # --------------- Filters
 
-@register.filter
-def integer(text):
-    _, integer = modf(float(text))
-    return str(int(integer))
-integer.is_safe = True
-
-@register.filter
-def fraction(text, arg=1):
-    arg = int(arg)
-    fraction, _ = modf(float(text))
-    integer, fraction = str(fraction).split('.', 1)
-    lf = len(fraction)
-    fraction = fraction[:arg]
-    if arg > lf:
-        fraction = u'%s%s' % (fraction, '0'*(arg-lf))
-    return fraction
-fraction.is_safe = True
-
-@register.filter
-def nbr(text):
-    pieces = text.split()
-    text = u'\xa0'.join(pieces)
-    return text.encode('utf8')
-nbr.is_safe = True
-
-@register.filter
-def partition(iterable, cols=4):
-    try:
-        cols = int(cols)
-    except (ValueError, TypeError):
-        return None
-    the_tuple = tuple(iterable)
-    maxrows = int(ceil(len(the_tuple)/float(cols)))
-    columns = grouper(maxrows, the_tuple)
-    return zip(*tuple(columns))
+register.filter(nbr)
+register.filter(integer)
+register.filter(fraction)
+register.filter(partition)
+register.filter(startswith)
