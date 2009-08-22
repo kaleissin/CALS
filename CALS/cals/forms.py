@@ -49,15 +49,17 @@ class LanguageForm(forms.ModelForm):
             widget=forms.Textarea(attrs={'cols': '64', 'rows': '4'}),
             help_text="""Maximum <span class="count" id="background_max">256</span> characters, formatting included.""")
     # Because auth.User isn't sorted
-    manager = forms.ModelChoiceField(queryset=Profile.objects.filter(is_visible=True))
+    manager = forms.ModelChoiceField(queryset=Profile.objects.filter(is_visible=True), required=False)
 
     class Meta:
         model = Language
         exclude = ('created', 'editors', 'last_modified_by')
 
     def save(self, commit=True, user=None):
-        manager = Profile.objects.get(id=self.cleaned_data['manager'].id)
-        self.cleaned_data['manager'] = manager.user
+        new_manager = self.cleaned_data.get('manager', None)
+        if new_manager:
+            manager = Profile.objects.get(id=new_manager.id)
+            self.cleaned_data['manager'] = manager.user
 #         if user:
 #             LOG.info('CALS new language #1: %s', self.cleaned_data)
 #             self.cleaned_data['added_by_id'] = user.id
