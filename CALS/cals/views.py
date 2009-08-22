@@ -295,6 +295,7 @@ def create_language(request, *args, **kwargs):
     state = 'new'
     error = pop_error(request)
     langform = LanguageForm()
+    user = request.user
 
     editorform = EditorForm()
 
@@ -305,9 +306,11 @@ def create_language(request, *args, **kwargs):
         langform = LanguageForm(data=request.POST, initial=request.POST)
         if langform.is_valid():
             lang = langform.save(commit=False)
-            lang.added_by = request.user
-            lang.last_modified_by = request.user
-            lang.save(solo=False)
+            lang.added_by = user
+            lang.last_modified_by = user
+            if not lang.manager:
+                lang.manager = user
+            lang.save(user=user, solo=False)
             editorform = EditorForm(data=request.POST, instance=lang)
             if editorform.is_valid():
                 editorform.save()
@@ -316,7 +319,7 @@ def create_language(request, *args, **kwargs):
                 # use signal instead?
                 greetingexercise = TranslationExercise.objects.get(id=1)
                 trans = Translation(translation=lang.greeting,language=lang,
-                        translator=request.user,exercise=greetingexercise)
+                        translator=user,exercise=greetingexercise)
                 trans.save()
             # values
             for value in request.POST.getlist(u'value'):
@@ -329,7 +332,7 @@ def create_language(request, *args, **kwargs):
             lang.num_features = LanguageFeature.objects.filter(language=lang).count()
             lang.num_avg_features = freq
             lang.set_average_score()
-            lang.save()
+            lang.save(user=user)
             request.session['error'] = None
             return HttpResponseRedirect('.')
         else:
@@ -375,7 +378,7 @@ def change_language(request, *args, **kwargs):
         editorform = EditorForm(instance=lang)
     else:
         editorform = None
-    LOG.error('User is manager: %s' % request.user == lang.manager)
+    LOG.error('User is manager: %s' % user == lang.manager)
     # sort values into categories
     cats = make_feature_list_for_lang(lang)
 
@@ -398,14 +401,14 @@ def change_language(request, *args, **kwargs):
                 # change who can be manager
                 lang.manager = old_manager
 
-            lang.last_modified_by = request.user
+            lang.last_modified_by = user
 
             # greeting
             greetingexercise = TranslationExercise.objects.get(id=1)
             new_greeting = lang.greeting
             try:
                 greetingtrans = Translation.objects.get(language=lang, exercise=greetingexercise,
-                        translator=request.user)
+                        translator=user)
             except Translation.DoesNotExist:
                 greetingtrans = None
             if new_greeting:
@@ -414,7 +417,7 @@ def change_language(request, *args, **kwargs):
                         greetingtrans.translation = new_greeting
                 else:
                     Translation.objects.create(language=lang,
-                            exercise=greetingexercise, translator=request.user,
+                            exercise=greetingexercise, translator=user,
                             translation=new_greeting)
             else:
                 if greetingtrans:
@@ -433,7 +436,7 @@ def change_language(request, *args, **kwargs):
             lang.num_features = LanguageFeature.objects.filter(language=lang).count()
             lang.num_avg_features = freq
             lang.set_average_score()
-            lang.save()
+            lang.save(user=user)
             request.session['error'] = None
             return HttpResponseRedirect('.')
         else:
