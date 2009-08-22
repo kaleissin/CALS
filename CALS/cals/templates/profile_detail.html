@@ -73,7 +73,7 @@
         </tr>
         {% endcomment %}
         <tr><th>Joined:</th>
-            <td>{{ profile.user.date_joined|date:"Y-m-d H:i T" }}</td>
+            <td>{{ object.date_joined|date:"Y-m-d H:i T" }}</td>
         </tr>
         {% if object.languages.count %}
         <tr><th>Languages added:</th>
@@ -86,22 +86,22 @@
             </td>
         </tr>
         {% endif %}
-        {% if profile.user.manages.count %}
+        {% if object.manages.count %}
         <tr><th>Manager for:</th>
             <td>
                 <ul>
-                {% for language in profile.user.manages.all %}
+                {% for language in object.manages.all %}
                     <li><a href="/language/{{ language.slug }}">{{ language }}</a></li>
                 {% endfor %}
                 </ul>
             </td>
         </tr>
         {% endif %}
-        {% if profile.edits.all.count %}
+        {% if object.edits.all.count %}
         <tr><th>Editor for:</th>
             <td>
                 <ul>
-                {% for language in profile.edits.all %}
+                {% for language in object.edits.all %}
                     <li><a href="/language/{{ language.slug }}">{{ language }}</a></li>
                 {% endfor %}
                 </ul>
@@ -124,11 +124,11 @@
             </td>
         </tr>
         {% endif %}
-        {% if profile.badges.count %}
+        {% if object.badges.count %}
         <tr>
-            <th>Badges earned ({{ profile.badges.count }}):</th>
+            <th>Badges earned ({{ object.badges.count }}):</th>
             <td>
-            {% for badge_row in profile.badges.all|partition %}
+            {% for badge_row in object.badges.all|partition %}
             <div class="badge-list">
             {% for badge in badge_row %}{% show_badge badge %}{% endfor %}
             </div>
