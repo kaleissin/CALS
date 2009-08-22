@@ -475,6 +475,7 @@ class ExternalInfo(models.Model):
                 self.category, self.on_request, self.link or 'No')
 
 # --- Signals
+from datetime import timedelta
 
 from django.db.models.signals import post_save
 from nano.user import new_user_created
@@ -500,8 +501,10 @@ def new_or_changed_language(sender, **kwargs):
         add_entry_to_blog(lang, new_title, 'feeds/languages_newest_description.html', date_field='created')
     else:
         latest = Entry.objects.latest()
+        one_minute = timedelta(0, 60, 0)
         if latest.headline != changed_title:
-            add_entry_to_blog(lang, changed_title, 'feeds/languages_description.html', date_field='last_modified')
+            if not (latest.headline == new_title and (lang.last_modified - latest.pub_date < one_minute)):
+                add_entry_to_blog(lang, changed_title, 'feeds/languages_description.html', date_field='last_modified')
         else:
             latest.pub_date = datetime.now()
             latest.save()
