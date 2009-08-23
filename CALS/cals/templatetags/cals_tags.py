@@ -80,7 +80,7 @@ def currently_logged_in():
         uid = session.get('_auth_user_id', None)
         if not uid: continue
         uids.append(uid)
-    users = Profile.objects.filter(user__id__in=uids).order_by('display_name')
+    users = Profile.objects.filter(user__in=uids).order_by('display_name')
     out = []
     for user in users:
         out.append(_make_userlink(user.user))

@@ -58,7 +58,7 @@ class LanguageForm(forms.ModelForm):
     def save(self, commit=True, user=None):
         new_manager = self.cleaned_data.get('manager', None)
         if new_manager:
-            manager = Profile.objects.get(id=new_manager.id)
+            manager = Profile.objects.get(user=new_manager.id)
             self.cleaned_data['manager'] = manager.user
 #         if user:
 #             LOG.info('CALS new language #1: %s', self.cleaned_data)

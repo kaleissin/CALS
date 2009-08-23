@@ -44,7 +44,7 @@ FEATURE_GROUPS_CHOICES = (
 
 FREETEXT_TYPES = (
         ('textile', 'textile'),
-        ('rest', 'RestructuredText'),
+        ('rst', 'RestructuredText'),
         ('plaintext', 'plaintext'),
         )
 
@@ -255,7 +255,7 @@ class Profile(models.Model):
 #             ('Y-m-d H:i O', CHOICE_DATE.),
 #             ('r', ''),
 #             )
-    user = models.ForeignKey(User, unique=True, related_name='profile')
+    user = models.ForeignKey(User, unique=True, related_name='profile', primary_key=True)
     # Denormalization of django.contrib.auth.models.User - allows public
     # backup of database without exposing passwords and email-addresses
     username = models.CharField(max_length=30, unique=True, editable=False)
@@ -346,8 +346,7 @@ class Language(models.Model):
             it possible to hand a language over to another person.""")
     editors = models.ManyToManyField(User, blank=True, null=True, 
             related_name='edits',
-            help_text=u"""People who get to change the description of
-            this language.""")
+            help_text=u"""People who get to change the description of this language.""")
     created = models.DateTimeField(default=datetime.now)
     last_modified = models.DateTimeField(blank=True, null=True, editable=False, default=datetime.now)
     last_modified_by = models.ForeignKey(User, editable=False, blank=True, null=True, related_name='languages_modified')
@@ -484,7 +483,7 @@ from nano.blog import add_entry_to_blog
 from nano.blog.models import Entry
 
 def new_user(sender, **kwargs):
-    "nano.user sends a signal when a user is created"
+    "Signal handler for nano.user.new_user_created"
     new_user = kwargs[u'user']
     blog_template = 'blog/new_user.html'
     add_entry_to_blog(new_user, '%s just joined' % new_user.username, blog_template, date_field='date_joined')
