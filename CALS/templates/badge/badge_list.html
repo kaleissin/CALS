@@ -8,10 +8,12 @@
 
 <table class="badge-list">
 {% for entry in object_list %}
+{% if entry.receivers.count %}
 <tr>
     <td>{% show_badge_and_freq entry %}</td>
     <td>{{ entry.description }}</td>
 </tr>
+{% endif %}
 {% endfor %}
 </table>
 {% else %}
