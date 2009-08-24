@@ -111,3 +111,8 @@ class Translation(Interlinear):
         self.last_modified = datetime.now()
         super(Translation, self).save(*args, **kwargs)
 
+# -- signals
+from signalhandlers import new_translation
+from django.db.models.signals import post_save
+
+post_save.connect(new_translation, sender=Translation)
