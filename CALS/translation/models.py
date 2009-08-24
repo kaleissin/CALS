@@ -75,6 +75,7 @@ class TranslationExercise(models.Model):
     class Meta:
         db_table = 'cals_translationexercise'
         ordering = ('category', 'slug',)
+        get_latest_by = 'added'
 
     def __unicode__(self):
         return self.name
@@ -99,6 +100,7 @@ class Translation(Interlinear):
         db_table = 'cals_translation'
         ordering = ('exercise', 'language', 'translator')
         unique_together = (('language', 'translator', 'exercise'),)
+        get_latest_by = 'last_modified'
 
     def __unicode__(self):
         return self.translation
