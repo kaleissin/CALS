@@ -22,7 +22,7 @@
         <tr class="{% cycle odd,even %}">
             <th><a href="/translation/{{ object.exercise.slug }}/language/{{ lang.slug }}/{{ object.translator.username }}/">{{ object.exercise }}</a></th>
             <td>{{ object.exercise.exercise }}</td>
-            <td>{{ object }}</td>
+            <td><div class="plaintext">{{ object }}</div></td>
             <td>{% if object.interlinear %}Yes{% else %}No{% endif %}</td>
             <td>{% showuser object.translator.get_profile %}</td>
         </tr>

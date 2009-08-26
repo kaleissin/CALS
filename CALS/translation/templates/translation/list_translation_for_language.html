@@ -19,12 +19,9 @@
         <th>Translator</th>
     {% for object in object_list %}
     <tr class="{% cycle odd,even %}">
-        <td>{% ifequal object.translator request.user %}
-            <a href="/translation/{{ object.exercise.slug }}/language/{{ object.language.slug }}/change">{{ object }}</a>
-            {% else %}
-            {{ object }}
-            {% endifequal %}
-            {% if object.interlinear %}{{ object.il_xhtml|safe }}{% endif %}
+        <td>
+        <div class="plaintext">{% ifequal object.translator request.user %}<a href="/translation/{{ object.exercise.slug }}/language/{{ object.language.slug }}/change">{{ object }}</a>{% else %}{{ object }}{% endifequal %}</div>
+        {% if object.interlinear %}{{ object.il_xhtml|safe }}{% endif %}
         </td>
         <td><a href="{{ object.translator.username }}/">{{ object.translator }}</a></td>
     </tr>

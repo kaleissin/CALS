@@ -21,11 +21,7 @@
             <tr>
                 <td class="langname"><a href="{{ object.slug }}/language/{{ translation.language.slug }}/">{{ translation.language }}</a>:</td>
                 <td>
-                {% ifequal translation.translator user %}
-                <a href="/translation/{{ translation.exercise.slug }}/language/{{ translation.language.slug }}/change">{{ translation }}</a>
-                {% else %}
-                {{ translation }}
-                {% endifequal %}
+<div class="plaintext">{% ifequal translation.translator user %}<a href="/translation/{{ translation.exercise.slug }}/language/{{ translation.language.slug }}/change">{{ translation }}</a>{% else %}{{ translation }}{% endifequal %}</div>
                 </td>
             </tr>
         {% endfor %}
