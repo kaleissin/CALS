@@ -599,7 +599,7 @@ def change_profile(request, *args, **kwargs):
     return render_page(request, 'profile_form.html', data)
 
 def auth_login(request, *args, **kwargs):
-    LOG.critical('Starting auth_login')
+    LOG.info('Starting auth_login')
     error = None
     messages = None
     greeting = None
@@ -611,33 +611,40 @@ def auth_login(request, *args, **kwargs):
     people_recent = people.order_by('-date_joined')[:5]
     if u'next' in request.REQUEST:
         next = request.REQUEST[u'next']
-    if not request.user.is_authenticated():
-        if request.method == 'POST':
-            LOG.critical('request: %s', request.POST)
+    if request.method == 'POST':
+        LOG.debug('request: %s', request.POST)
+
+        # Login
+        if not request.user.is_authenticated():
             username = asciify(smart_unicode(request.POST[u'username'], errors='ignore').strip())
             password = request.POST['password'].strip()
             if username and password:
                 try:
-                    LOG.critical('Form valid')
+                    LOG.debug('Form valid')
                     try:
                         user = User.objects.get(username=username)
                     except User.DoesNotExist:
-                        error = "User '%s' does not exist! Typo?" % username
-                        request.session['error'] = error
-                        LOG.critical('User does not exist')
-                        if u'next' in request.REQUEST:
-                            LOG.error('Redirecting back to %s', request.POST[u'next'])
-                            errorstring = ''
-                            if error:
-                                errorstring = '?error='+error
-                            return HttpResponseRedirect(request.POST[u'next']+errorstring)
-                    user = auth.authenticate(username=username, password=password)
-                    LOG.critical("User: %s", pformat(user))
+                        try:
+                            userslug = slugify(username)
+                            profile = Profile.objects.get(slug=userslug)
+                            user = profile.user
+                        except Profile.DoesNotExist:
+                            error = "User '%s' does not exist! Typo?" % username
+                            request.session['error'] = error
+                            LOG.warn('User does not exist')
+                            if u'next' in request.REQUEST:
+                                LOG.error('Redirecting back to %s', request.POST[u'next'])
+                                errorstring = ''
+                                if error:
+                                    errorstring = '?error='+error
+                                return HttpResponseRedirect(request.POST[u'next']+errorstring)
+                    user = auth.authenticate(username=user.username, password=password)
+                    LOG.info("User: %s", pformat(user))
                     if user is not None:
                         auth.login(request, user)
                         request.session['error'] = None
                     else:
-                        LOG.critical("Invalid user for some reason")
+                        LOG.warn("Invalid user for some reason")
                         error = "Couldn't log you in: Your username and/or password does not match with what is stored here."
                         request.session['error'] = error
                         messages = [error]
@@ -645,7 +652,7 @@ def auth_login(request, *args, **kwargs):
                     error = "Couldn't sign you up: " + e
                     request.session['error'] = error
             if u'next' in request.REQUEST:
-                LOG.error('Redirecting back to %s', request.POST[u'next'])
+                LOG.info('Redirecting back to %s', request.POST[u'next'])
                 return HttpResponseRedirect(request.POST[u'next'])
     l_cloud = Tag.objects.cloud_for_model(Language, steps=7, min_count=2)
     #l_cloud = Tag.objects.cloud_for_model(Language, steps=7)
