@@ -30,7 +30,7 @@
         <tr>
             <td></td>
             <td colspan="2" class="right">
-                {% greetings user %}&nbsp;{% messages_for_user user %}(<a href="/logout">Log&nbsp;out</a>)
+                {% ifequal request.path "/" %}{% greetings user %}{% else %}{% showuser user %}{% endifequal %}&nbsp;{% messages_for_user user %}(<a href="/logout">Log&nbsp;out</a>)
             </td>
         </tr>
         {% endif %}
@@ -82,23 +82,37 @@
     </div>
     <div id="footer">
 {% block footer %}
-        <div class="nav right">
-            Devel-clock: {% now "H:i O" %}
-            <a {% ifequal request.path '/about/' %}class="me"{% endifequal %} href="/about/">About</a> | 
-            <a {% if request.path|startswith:"/badge/" %}class="me"{% endif %} href="/badge/">Badges</a> |
-            <a {% ifequal request.path '/copyright/' %}class="me"{% endifequal %} href="/copyright/">Copyright</a> |
-            <a {% ifequal request.path '/privacy/' %}class="me"{% endifequal %} href="/privacy/">Privacy</a> | 
-            <a {% ifequal me 'news' %}class="me"{% endifequal %} href="/news/latest/">News</a> |
-            <a {% ifequal request.path '/terms/' %}class="me"{% endifequal %} href="/terms/">Terms of service</a> |
-            <a {% ifequal request.path '/thankyou' %}class="me" {% endifequal %}href="/thankyou">Thanks</a>
-            <a href="http://validator.w3.org/check?uri=referer"><img
-                    src="http://media.aldebaaran.uninett.no/CALS/img/valid-xhtml10.png"
-                    alt="Valid XHTML 1.0 Strict" height="31" width="88" /></a>
-            <a href="http://jigsaw.w3.org/css-validator/validator?uri=http://cals.aldebaaran.uninett.no{{ request.path }}"><img height="31" width="88"
-                    src="http://media.aldebaaran.uninett.no/CALS/img/vcss.gif"
-                    alt="Valid CSS!" />
-            </a>
-        </div>
+        <table class="right">
+            <tr>
+                <td rowspan="2" class="bgbuffer"><div>&nbsp;</div></td>
+                <td class="nav right">
+                    <a {% if request.path|startswith:"/badge/" %}class="me"{% endif %} href="/badge/">Badges</a> |
+                    <a {% ifequal request.path '/thankyou' %}class="me" {% endifequal %}href="/thankyou">Thanks</a>
+                </td>
+                <td rowspan="2" width="180">
+                    <div id="techfooter" class="right">
+                    <a href="http://validator.w3.org/check?uri=referer"><img
+                            src="http://media.aldebaaran.uninett.no/CALS/img/valid-xhtml10.png"
+                            alt="Valid XHTML 1.0 Strict" height="31" width="88" /></a>
+                    <a href="http://jigsaw.w3.org/css-validator/validator?uri=http://cals.aldebaaran.uninett.no{{ request.path }}"><img height="31" width="88"
+                            src="http://media.aldebaaran.uninett.no/CALS/img/vcss.gif"
+                            alt="Valid CSS!" />
+                    </a>
+                    </div>
+                    <div id="develclock">Devel-clock: {% now "H:i O" %}</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="nav right">
+                    <a {% ifequal request.path '/about/' %}class="me"{% endifequal %} href="/about/">About</a> | 
+                    <a {% ifequal request.path '/copyright/' %}class="me"{% endifequal %} href="/copyright/">Copyright</a> |
+                    <a {% ifequal request.path '/help/' %}class="me"{% endifequal %} href="/help/">Help</a> |
+                    <a {% ifequal request.path '/privacy/' %}class="me"{% endifequal %} href="/privacy/">Privacy</a> | 
+                    <a {% ifequal me 'news' %}class="me"{% endifequal %} href="/news/latest/">News</a> |
+                    <a {% ifequal request.path '/terms/' %}class="me"{% endifequal %} href="/terms/">Terms of service</a>
+                </td>
+            </tr>
+        </table>
 {% endblock footer %}
     </div>
 <!--[if lt IE 7]></div><![endif]-->

@@ -11,6 +11,8 @@ caption { text-align: left;
 
 .icon { vertical-align: sub;}
 
+.plaintext { white-space: pre-wrap;}
+
 * {
     font-size: small;
 }
@@ -30,7 +32,7 @@ caption { text-align: left;
     font-size: 1em;
 }
 
-.badge-list td { padding-bottom: 2ex; 
+.badge-list td, div.badge-list { padding-bottom: 2ex; 
     padding-right: 2ex;
 }
 
@@ -49,6 +51,8 @@ span.badge-freq {
     background: #fff;
     color: #25331a;
 }
+
+.newsbox div.translation { max-width: 66em; }  
 
 .vote {text-align: center; width: 5em;} 
 
@@ -78,6 +82,7 @@ span.badge-freq {
 
 div.pm { border: 1px solid #d2b400; 
     padding: 1ex;
+    max-width: 60em;
 }
 .pm + .pm { margin-top: 1ex; }
 .pm-footer { font-weight: bold; } 
@@ -123,9 +128,8 @@ h3 { font-size: 1.25em; }
 #submenu {
     float: right;
     background: #bcd7ae;
-    border: 1px solid #d2b400;
     color: #25331a;
-    margin: 1ex;
+    margin: 0 0 1ex 1ex;
 }
 
 #submenu * {
@@ -212,6 +216,13 @@ a.ext * {
     margin-top: 1em;
     clear: both;
     background-color: #bcd7ae;
+    vertical-align: middle;
+}
+
+#footer table  {
+    text-align: right;
+    width: 100%;
+    right: 0;
 }
 
 #footer .nav a {
@@ -226,6 +237,13 @@ a img {
 #footer a img {
     vertical-align: middle;
 }
+
+
+div.bgbuffer {
+    width: 230;
+}
+
+td.bgimg { margin-right: 250px; }
 
 #sidebar {
     max-width: 20em;
@@ -261,7 +279,7 @@ li, td, th { padding: 0.25ex }
 li+li { margin-top: 1ex; }
 
 .even, .tweet { background: #dec }
-div#header, div#footer { 
+#header, #footer { 
     padding: 1ex;
     background: url(/CALS/img/background.jpg) no-repeat;
     background-color: #bcd7ae;
@@ -270,7 +288,10 @@ div#header, div#footer {
 .required { color: #f00 }
 pre { border: 1px solid gray;
     padding: 1ex;
-    background:  #ccf}
+    background:  #ccf;
+    white-space: pre-wrap;
+    max-width: 60em;
+}
 div#main { margin: 2em; }
 
 #modifications td { padding-right: 2em; }
@@ -317,7 +338,10 @@ ul {
 
 .cloud { 
     text-align: justify;
+    z-index: 2;
+    background-color: white;
 }
+
 .cloud a {text-decoration: none }
 .tagsize1 * { font-size: xx-small; color: gray}
 .tagsize2 * { font-size: x-small; color: gray}
