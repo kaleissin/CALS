@@ -1,6 +1,5 @@
 
-# -*- coding: UTF-8 -*-
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 from nano.blog import add_entry_to_blog
 from nano.blog.models import Entry
