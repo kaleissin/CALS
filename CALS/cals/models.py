@@ -122,7 +122,7 @@ class Description(Freetext):
 #         self.version += 1
         #assert False, 'A %i %i' % (v, self.version)
         if user:
-            self.added_by = user
+            self.last_modified_by = user
         Description.objects.filter(object_id=self.object_id).update(current=False)
         #assert False, self.id
         super(Description, self).save(force_insert=True, *args, **kwargs)
@@ -187,6 +187,7 @@ class Feature(models.Model):
     wals = models.BooleanField(default=False, editable=False)
     overrides = models.ForeignKey('self', blank=True, null=True)
     active = models.BooleanField(default=False, editable=False)
+    added_by = models.ForeignKey(User, editable=False, null=True)
     description = models.TextField(blank=True, null=True)
     description_xhtml = models.TextField(blank=True, null=True, editable=False)
     description_type = models.CharField(blank=True,max_length=20, choices=FREETEXT_TYPES)
@@ -217,6 +218,10 @@ class Feature(models.Model):
 #                 self.description_xhtml = xhtml
 #         super(Feature, self).save()
 
+    @property
+    def description(self):
+        description_type = ContentType.objects.get(app_label="cals", model="description")
+        return description_type.get_object_for_this_type(feature=self)
 
 class FeatureValueManager(models.Manager):
     def _value_counts(self):
@@ -245,6 +250,11 @@ class FeatureValue(models.Model):
     def __unicode__(self):
         return self.name
 
+    @property
+    def description(self):
+        description_type = ContentType.objects.get(app_label="cals", model="description")
+        return description_type.get_object_for_this_type(featurevalue=self)
+
 # END Features
 
 class Profile(models.Model):
@@ -261,15 +271,12 @@ class Profile(models.Model):
     username = models.CharField(max_length=30, unique=True, editable=False)
     display_name = models.CharField(max_length=32, blank=True, null=True,
             help_text="Replaces username everywhere but in urls.")
+    slug = models.SlugField(max_length=64, unique=True, editable=False)
     show_username = models.NullBooleanField('Always show username',
-            help_text="Show username everywhere, even if personal name "
-            "or familyname have been set.")
+            help_text="Show username everywhere, even if display name "
+            "have been set.")
     homepage = models.URLField(blank=True,null=True)
     homepage_title = models.CharField(max_length=64, blank=True)
-#     help_text="""If you're on twitter and want your """
-#             """latest tweet to be visible, fill this in """
-#             """with your twitter-username"""
-#     )
     country = models.ForeignKey(Country, null=True, blank=True)
     latitude = models.FloatField(blank=True,null=True)
     longitude = models.FloatField(blank=True,null=True)
@@ -286,6 +293,7 @@ class Profile(models.Model):
 
     def save(self, *args, **kwargs):
         self.username = self.user.username
+        self.slug = slugify(self.username)
         if not self.display_name:
             self.display_name = self.username
 #         if not self.show_username:
@@ -294,7 +302,7 @@ class Profile(models.Model):
         super(Profile, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return "/people/%s/" % self.id 
+        return "/people/%s/" % self.user.id
 
 #     def twittername(self):
 #         twitteraccounts = self.user.web20.filter(type='Twitter')
@@ -446,6 +454,12 @@ class LanguageFeature(models.Model):
 
     def __unicode__(self):
         return u"%s / %s / %s" % (self.language, self.feature, self.value)
+
+    @property
+    def description(self):
+        description_type = ContentType.objects.get(app_label="cals", model="description")
+        return description_type.get_object_for_this_type(languagefeature=self)
+
 
 class UTC(dt.tzinfo):
     ZERO = dt.timedelta(0)
