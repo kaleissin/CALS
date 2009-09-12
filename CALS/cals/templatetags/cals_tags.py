@@ -19,7 +19,7 @@ from nano.badge.templatetags.badge_tags import show_badges
 from nano.privmsg.models import PM
 LOG = getLogger('cals.templatetags')
 
-from cals.models import Language, Feature, Profile
+from cals.models import Language, Feature, Profile, LanguageFeature
 from translation.models import Translation
 
 MWF = Feature.MAX_WALS_FEATURE
@@ -68,6 +68,9 @@ def _make_langlink(lang, internal=False):
         langname = lang.get_name()
     return u'<a href="/language/%s/">%s</a>' % (lang.slug, langname) 
 
+def fetch_lf_description(language, feature, value):
+    lf =LanguageFeature.objects.get(language=language, feature=feature, value=value)
+    return lf.description
 
 @register.simple_tag
 def currently_logged_in():
@@ -203,6 +206,8 @@ def latest_modified_languages(num_lang):
         raise template.TemplateSyntaxError, 'must be integer'
     return ''
 
+# -------------- nano.pm
+
 @register.simple_tag
 def messages_for_user(user):
     count = PM.objects.received(user).count()
@@ -213,6 +218,37 @@ def messages_for_user(user):
         return _make_userlink(user, imgstring % count)
     else:
         return u''
+
+# -------------- Move to nano
+
+import urllib
+try:
+    import hashlib
+except ImportError:
+    import md5 as hashlib
+
+@register.simple_tag
+def gravatar(obj, size=32, fallback='identicon'):
+    # TODO: 
+    # - Size in a setting
+    # - Fallback in a setting
+    # - Fallback different from those provided by gravatar
+
+    try:
+        string = obj + u''
+    except TypeError:
+        if isinstance(obj, User):
+            string = obj.email or u'%s %s' % (obj.id, obj.date_joined)
+        else:
+            string = unicode(obj)
+
+    url = "http://www.gravatar.com/avatar.php?"
+    url += urllib.urlencode({ 'gravatar_id': hashlib.md5(string).hexdigest()+'.jpg', 's': str(size), 'd': fallback })
+    return """<img src="%s" width="%s" height="%s" alt="" title="gravatar" class="gravatar" border="0" />""" % (url, size, size)
+
+# --------------- Inclusion tags
+
+register.inclusion_tag('come_back.html', takes_context=True)(come_back)
 
 # --------------- Filters
 
