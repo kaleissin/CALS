@@ -139,6 +139,8 @@ def walsfeature(feature):
 
 @register.simple_tag
 def showuser(user):
+    if not user:
+        return 'Anonymous'
     if type(user) == type(Profile()):
         user = user.user
     elif type(user) == type(5):
