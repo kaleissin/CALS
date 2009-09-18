@@ -2,7 +2,6 @@ from django.conf.urls.defaults import *
 from django.contrib.auth.models import User
 
 from tagging.models import Tag
-from voting.views import vote_on_object
 
 from cals.models import Language, Feature, FeatureValue, Category, Profile
 
