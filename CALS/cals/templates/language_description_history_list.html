@@ -4,7 +4,7 @@
 {% block submenu %}
 <ul>
     <li><a href="/language/">All languages</a></li>
-    <li><a href="../../">Back to {{ lang }}</a></li>
+    <li><a href="/language/{{ lang.slug }}/">Back to {{ lang }}</a></li>
     <li><a href="../">Back to overview</a></li>
     {% if user.is_authenticated %}
     {% ifequal user lang.added_by %}
@@ -25,8 +25,14 @@
     <input type="radio" value="{{ d.id }}" name="newid"/> 
     {{ d.last_modified|date:"Y-m-d H:i:s" }}
     {% showuser d.last_modified_by %}
+    {% if d.current %} 
+    Current
+    {% else %}
     {% if user.is_authenticated %}
+    {% ifequal user lang.manager %}
     (<a href="../use?id={{ d.id }}">Use this one</a>)
+    {% endifequal %}
+    {% endif %}
     {% endif %}
     </li>
     {% endfor %}

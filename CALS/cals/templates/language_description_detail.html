@@ -4,7 +4,7 @@
 {% block submenu %}
 <ul>
     <li><a href="/language/">All languages</a></li>
-    <li><a href="../../">Back to {{ lang }}</a></li>
+    <li><a href="/language/{{ lang.slug }}/">Back to {{ lang }}</a></li>
     <li><b>Overview</b></li>
     {% if user.is_authenticated %}
     {% ifequal user lang.added_by %}
