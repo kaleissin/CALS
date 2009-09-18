@@ -78,7 +78,7 @@ def description_diff(oldest, newest, link_prefix):
         return u''
 
     diff_header_template = loader.get_template('cals/diff_header.html')
-    differ = BetterHtmlDiff(wrapcolumn=80)
+    differ = BetterHtmlDiff()
 
     # prev header
     old_prev_url = get_next_prev_links(oldest.prev_version(),
