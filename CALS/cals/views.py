@@ -54,6 +54,9 @@ class CALSUserExistsError(CALSError):
 def _get_lang(*args, **kwargs):
     return get_object_or_404(Language, slug=kwargs.get('lang', None))
 
+def _get_feature(*args, **kwargs):
+    return get_object_or_404(Feature, id=kwargs.get('object_id', None))
+
 def _get_exercise(*args, **kwargs):
     #assert False, kwargs.get('exercise', None)
     return get_object_or_404(TranslationExercise, slug=kwargs.get('exercise', None))
@@ -479,16 +482,85 @@ def show_languagefeature(request, *args, **kwargs):
     lang = _get_lang(*args, **kwargs)
     feature = get_object_or_404(Feature, id=kwargs.get('object_id', None))
     lf = get_object_or_404(LanguageFeature, language=lang, feature=feature)
-    descriptions = get_languagefeature_descriptions(lf=lf)
+    try:
+        description = lf.description
+    except Description.DoesNotExist:
     description = None
-    if descriptions:
-        description = descriptions[0]
     link = '/language/%s/feature/%i/' % (lang.slug, feature.id)
     data = {'me': me,
             'description': description,
             'lang': lang, 'feature': lf,
             'error': error}
     return render_page(request, 'language_description_detail.html', data)
+
+def show_languagefeature_history(request, *args, **kwargs):
+    me = 'language'
+    error = pop_error(request)
+    lang = _get_lang(*args, **kwargs)
+    feature = get_object_or_404(Feature, id=kwargs.get('object_id', None))
+    lf = get_object_or_404(LanguageFeature, language=lang, feature=feature)
+    descriptions = Description.archive.filter(languagefeature=lf).order_by('-last_modified')
+    link = '/language/%s/feature/%i/' % (lang.slug, feature.id)
+    data = {'me': me,
+            'descriptions': descriptions,
+            'lang': lang, 'feature': lf,
+            'error': error}
+    return render_page(request, 'language_description_history_list.html', data)
+
+def compare_languagefeature_history(request, *args, **kwargs):
+    me = 'language'
+    error = pop_error(request)
+    lang = _get_lang(*args, **kwargs)
+    feature = get_object_or_404(Feature, id=kwargs.get('object_id', None))
+    lf = get_object_or_404(LanguageFeature, language=lang, feature=feature)
+    descriptions = Description.archive.filter(languagefeature=lf).order_by('-last_modified')
+
+    newest = descriptions[0]
+    oldest = tuple(descriptions)[-1]
+    oldid = request.GET.get('oldid', oldest.id)
+    newid = request.GET.get('newid', newest.id)
+    if oldid:
+        oldest = descriptions.get(id=int(oldid))
+    if newid:
+        newest = descriptions.get(id=int(newid))
+    link_format = '/language/%s/feature/%i/history/compare?' % (lang.slug, feature.id)
+    patch = u''
+    if request.method == 'GET':
+        patch = description_diff(oldest, newest, link_format)
+    data = {'me': me,
+            'oldest': oldest,
+            'newest': newest,
+            'patch': patch,
+            'lang': lang, 
+            'feature': lf,
+            'error': error}
+    return render_page(request, 'language_description_history_compare.html', data)
+
+@login_required
+def revert_languagefeature_description(request, *args, **kwargs):
+    me = 'language'
+    error = pop_error(request)
+    lang = _get_lang(*args, **kwargs)
+    feature = get_object_or_404(Feature, id=kwargs.get('object_id', None))
+    lf = get_object_or_404(LanguageFeature, language=lang, feature=feature)
+    may_edit, (is_admin, is_manager) = may_edit_lang(request.user, lang)
+    if not may_edit:
+        return HttpResponseForbidden(error_forbidden)
+
+    descriptions = Description.archive.filter(languagefeature=lf).order_by('-last_modified')
+    link_format = '/language/%s/feature/%i/' % (lang.slug, feature.id)
+
+    revert_to = request.GET.get('id', 0)
+    if revert_to:
+        try:
+            description = descriptions.get(id=revert_to)
+        except Description.DoesNotExist:
+            request.session['error'] = 'Invalid version. This revert-attempt has been logged.'
+        else:
+            description.current = True
+            description.save()
+            return HttpResponseRedirect(link_format)
+    return HttpResponseRedirect(link_format)
 
 @login_required()
 def describe_languagefeature(request, *args, **kwargs):
@@ -734,6 +806,7 @@ def language_list(request, *args, **kwargs):
 
     return render_page(request, 'cals/language_list.html', data)
 
+@login_required()
 def change_or_add_feature(request, *args, **kwargs):
     categoryform = CategoryForm()
     featureform = FeatureForm()

@@ -5,25 +5,32 @@
 <ul>
     <li><a href="/language/">All languages</a></li>
     <li><a href="../../">Back to {{ lang }}</a></li>
-    <li><b>Overview</b></li>
+    <li><a href="../">Back to overview</a></li>
     {% if user.is_authenticated %}
     {% ifequal user lang.added_by %}
     <li><a href="./change">Change description</a></li>
     {% endifequal %}
     {% endif %}
-    <li><a href="./history">History</a></li>
+    <li><b>History</b></li>
 </ul>
 {% endblock submenu %}
 {% block content %}
     <h1>{{ lang.name }}: {{ feature.feature.name }}: {{ feature.value.name }}</h1>
-    <table>
-        {% if description.freetext_xhtml %}
-        {{ description.freetext_xhtml|safe }}
-        {% else %}
-        <p>Local description missing.</p>
-        {% endif %}
-        {% if description.freetext_link %}
-        <p>Even more info at <a href="{{ description.freetext_link }}">{{ description.freetext_link }}</a></p>
-        {% endif %}
-    </table>
+    <form action="./compare" method="get">
+    <input type="submit" value="Compare" />
+    <ul>
+    {% for d in descriptions %}
+    <li>
+    <input type="radio" value="{{ d.id }}" name="oldid"/> 
+    <input type="radio" value="{{ d.id }}" name="newid"/> 
+    {{ d.last_modified|date:"Y-m-d H:i:s" }}
+    {% showuser d.last_modified_by %}
+    {% if user.is_authenticated %}
+    (<a href="../use?id={{ d.id }}">Use this one</a>)
+    {% endif %}
+    </li>
+    {% endfor %}
+    </ul>
+    <input type="submit" value="Compare" />
+    </form>
 {% endblock content %}

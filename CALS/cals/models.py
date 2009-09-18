@@ -127,6 +127,20 @@ class Description(Freetext):
         #assert False, self.id
         super(Description, self).save(force_insert=True, *args, **kwargs)
 
+    def next_version(self):
+        try:
+            return Description.archive.filter(object_id=self.object_id, content_type=self.content_type,
+                id__gt=self.id).order_by('last_modified')[0]
+        except IndexError:
+            return None
+
+    def prev_version(self):
+        try:
+            return Description.archive.filter(object_id=self.object_id, content_type=self.content_type,
+                id__lt=self.id).order_by('-last_modified')[0]
+        except IndexError:
+            return None
+
 # BEGIN Features
 
 class ActiveQuerySet(QuerySet):
