@@ -43,5 +43,7 @@ admin.site.register(Category, CategoryAdmin)
 class ProfileAdmin(admin.ModelAdmin): 
     model = Profile
     ordering = ('display_name',)
+    list_display = ('display_name', 'username')
 admin.site.register(Profile, ProfileAdmin)
 
+#admin.site.register(ExternalInfo)
