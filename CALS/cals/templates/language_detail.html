@@ -90,10 +90,11 @@
     <tr class="feature {% cycle odd,even %}">
         <th><a href="/language/{{ object.slug }}/feature/{{ feature.feature.id }}/">{{ feature.feature }}</a> {% wals feature.feature.id %}</th>
         {#<th><b>{{ feature.feature }}</b> {% wals feature.feature.id %}</th>#}
-        <td>{{ feature.value }}
-        {{ feature.description|safe }}
-        </td>
+        <td>{{ feature.value }}</td>
     </tr>
+    {% if feature.description %}
+    <tr><td colspan="2">{{ feature.description|safe }}</td></tr>
+    {% endif %}
         {% endfor %}
         {% endif %}
 </table>

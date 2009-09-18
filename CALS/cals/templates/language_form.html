@@ -216,7 +216,10 @@ $("#id_background").keyup(function() {
         {% for feature in category.features %}
     <tr class="feature {% cycle odd,even %}">
         <th>{{ feature.feature }} {% wals feature.feature.id %}</th>
-        <td>{{ feature.form.value }}
+        <td>{{ feature.form.value }}<br />
+        {% if feature.value.description %}
+        {{ feature.value.description|safe }}
+        {% endif %}
         </td>
     </tr>
         {% endfor %}
