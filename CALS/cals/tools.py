@@ -96,7 +96,7 @@ def description_diff(oldest, newest, link_prefix):
             'last_modified': oldest.last_modified,
             'last_modified_by': oldest.last_modified_by })
 
-    new_prev_url = u'← ' + get_next_prev_links(oldest,
+    new_prev_url = get_next_prev_links(oldest,
             newest.prev_version(), 'Previous')
     if new_prev_url:
         new_prev_url = u'← ' + new_prev_url
