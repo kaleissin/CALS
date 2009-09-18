@@ -485,7 +485,7 @@ def show_languagefeature(request, *args, **kwargs):
     try:
         description = lf.description
     except Description.DoesNotExist:
-    description = None
+        description = None
     link = '/language/%s/feature/%i/' % (lang.slug, feature.id)
     data = {'me': me,
             'description': description,
