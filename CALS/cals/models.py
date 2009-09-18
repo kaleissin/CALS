@@ -84,7 +84,7 @@ class Freetext(models.Model):
         elif self.freetext_type == 'rest':
             self.freetext_xhtml = restructuredtext(self.freetext)
         else:
-            self.freetext_xhtml = u'<pre>'+self.freetext.strip()+u'</pre>'
+            self.freetext_xhtml = u'<pre class="plaintext">'+self.freetext.strip()+u'</pre>'
         super(Freetext, self).save(*args, **kwargs)
 
 class DescriptionManager(models.Manager):
@@ -109,9 +109,16 @@ class Description(Freetext):
         db_table = 'cals_description'
         get_latest_by = 'last_modified'
 
-    def save(self, user=None, *args, **kwargs):
-        self.id = next_id(self.__class__)
-        self.last_modified = datetime.now()
+    def save(self, user=None, batch=False, *args, **kwargs):
+        if not batch:
+            self.id = next_id(self.__class__)
+            self.last_modified = datetime.now()
+            if user:
+                self.last_modified_by = user
+            Description.objects.filter(object_id=self.object_id).update(current=False)
+            super(Description, self).save(force_insert=True, *args, **kwargs)
+        else:
+            super(Description, self).save(*args, **kwargs)
         #v = self.version
 #         try:
 #             d = Description.objects.get(object_id=self.object_id)
@@ -121,11 +128,7 @@ class Description(Freetext):
 #             self.version = 0
 #         self.version += 1
         #assert False, 'A %i %i' % (v, self.version)
-        if user:
-            self.last_modified_by = user
-        Description.objects.filter(object_id=self.object_id).update(current=False)
         #assert False, self.id
-        super(Description, self).save(force_insert=True, *args, **kwargs)
 
     def next_version(self):
         try:
@@ -140,6 +143,12 @@ class Description(Freetext):
                 id__lt=self.id).order_by('-last_modified')[0]
         except IndexError:
             return None
+
+    def reset_current_to_latest(self):
+        descriptions = Description.archive.filter(object_id=self.object_id).order_by('-last_modified')
+        d = descriptions[0]
+        d.current = True
+        d.save(batch=True)
 
 # BEGIN Features
 
