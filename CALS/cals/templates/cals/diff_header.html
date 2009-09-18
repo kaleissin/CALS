@@ -1,0 +1,6 @@
+{% load cals_tags %}
+<table class="diff_header">
+    <tr><td colspan="2">Revision as of {{ last_modified|date:"Y-m-d H:i:s" }}</td></tr> 
+    <tr><td colspan="2">{% showuser last_modified_by %}</td></tr> 
+    <tr><td>{{ prev_version|safe }}</td><td class="right">{{ next_version|safe }}</td></tr>
+</table>
