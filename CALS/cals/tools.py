@@ -88,7 +88,9 @@ def description_diff(oldest, newest, link_prefix):
     else:
         old_prev_url = u'← ' + old_prev_url
     old_next_url = get_next_prev_links(oldest.next_version(),
-            newest, 'Next') + u' →'
+            newest, 'Next')
+    if old_next_url:
+        old_next_url += u' →'
     prev_version = Context({'prev_version': old_prev_url,
             'next_version': old_next_url,
             'last_modified': oldest.last_modified,
@@ -96,6 +98,8 @@ def description_diff(oldest, newest, link_prefix):
 
     new_prev_url = u'← ' + get_next_prev_links(oldest,
             newest.prev_version(), 'Previous')
+    if new_prev_url:
+        new_prev_url = u'← ' + new_prev_url
     new_next_url = get_next_prev_links(oldest,
             newest.next_version(), 'Next') + u' →'
     if newest.current:
