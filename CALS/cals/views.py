@@ -182,6 +182,7 @@ def show_language(request, *args, **kwargs):
     me = 'language'
     error = pop_error(request)
     lang = _get_lang(*args, **kwargs)
+    may_edit, (is_admin, is_manager) = may_edit_lang(request.user, lang)
     categories = Category.objects.all().select_related().order_by('id')
     cats = []
     for category in categories:
@@ -213,6 +214,7 @@ def show_language(request, *args, **kwargs):
             'categories': cats, 
             'me': me, 
             'cform': cform,
+            'may_edit': may_edit,
             'error': error,
     }
     return render_page(request, 'language_detail.html', data)
@@ -277,6 +279,7 @@ def make_feature_list_for_lang(lang=None):
         f = []
         for feature in features:
             form = FeatureValueForm(feature=feature)
+            lf = None
             if lang:
                 try:
                     lf = LanguageFeature.objects.get(language=lang, feature=feature)
@@ -285,7 +288,7 @@ def make_feature_list_for_lang(lang=None):
                             #instance=lf.value, initial={'name': lf.value.id})
                 except LanguageFeature.DoesNotExist:
                     pass
-            f.append({'feature': feature, 'form':form})
+            f.append({'feature': feature, 'form':form, 'value': lf})
         if f:
             cats.append({'name': category.name, 'features': f})
         else:
@@ -565,37 +568,55 @@ def revert_languagefeature_description(request, *args, **kwargs):
 @login_required()
 def describe_languagefeature(request, *args, **kwargs):
     me = 'language'
-    error = pop_error(request)
     lang = _get_lang(*args, **kwargs)
-    feature = get_object_or_404(Feature, id=kwargs.get('object_id', None))
-    lf = get_object_or_404(LanguageFeature, language=lang, feature=feature)
     may_edit, (is_admin, is_manager) = may_edit_lang(request.user, lang)
     if not may_edit:
         return HttpResponseForbidden(error_forbidden)
-    descriptions = get_languagefeature_descriptions(lf=lf)
-    if descriptions:
-        description = descriptions[0]
+
+    error = pop_error(request)
+    feature = get_object_or_404(Feature, id=kwargs.get('object_id', None))
+    lf = get_object_or_404(LanguageFeature, language=lang, feature=feature)
+    value_str = '%s_%s' % (feature.id, lf.value.id)
     link = '/language/%s/feature/%i/' % (lang.slug, feature.id)
+
     if request.method == 'POST':
-        if descriptions:
-            form = DescriptionForm(data=request.POST, instance=descriptions[0])
+        if lf.description:
+            descriptionform = DescriptionForm(data=request.POST, instance=lf.description)
         else:
-            form = DescriptionForm(data=request.POST)
-        if form.is_valid():
-            lfd = form.save(commit=False)
-            lfd.content_type = ContentType.objects.get_for_model(lf)
-            lfd.object_id = lf.id
-            lfd.save(user=request.user)
+            descriptionform = DescriptionForm(data=request.POST)
+        valueform = FeatureValueForm(feature=feature, data=request.POST)
+
+        if descriptionform.is_valid() and valueform.is_valid():
+            # value
+            new_f, new_v = map(int, valueform.cleaned_data.get('value', value_str).split('_'))
+            if new_v and new_f == feature.id and new_v != lf.value.id:
+                lf.value = new_v
+                lf.save()
+            
+            # description
+            # Need to prevent extraenous saving here because of versioning
+            lfd = descriptionform.save(commit=False)
+            if not lf.description or lfd.freetext_xhtml != lf.description.freetext_xhtml:
+                lfd.content_type = ContentType.objects.get_for_model(lf)
+                lfd.object_id = lf.id
+                lfd.save(user=request.user)
+            
             request.session['error'] = None
             return HttpResponseRedirect(link)
     else:
-        if descriptions:
-            form = DescriptionForm(instance=descriptions[0])
+        valueform = FeatureValueForm(feature=feature, initial={'value': value_str})
+
+        if lf.description:
+            descriptionform = DescriptionForm(instance=lf.description)
         else:
-            form = DescriptionForm()
+            descriptionform = DescriptionForm()
+
     data = {'me': me,
-            'form': form, 'lang': lang, 'feature': lf,
-            'error': error}
+            'form': descriptionform, 
+            'lang': lang, 'feature': lf,
+            'error': error,
+            'valueform': valueform,
+            }
     return render_page(request, 'language_description_form.html', data)
 
 def show_profile(request, *args, **kwargs):
@@ -603,6 +624,7 @@ def show_profile(request, *args, **kwargs):
     error = pop_error(request)
     user = _get_profile(*args, **kwargs)
     profile = None
+    whereami = request.META.get('PATH_INFO', None)
     try:
         profile = user.get_profile()
     except Profile.DoesNotExist:
@@ -618,6 +640,7 @@ def show_profile(request, *args, **kwargs):
             'pms': pms,
             'pms_archived': pms_archived,
             'pms_sent': pms_sent,
+            'whereami': whereami,
             'error': error}
     return render_page(request, 'profile_detail.html', data)
 

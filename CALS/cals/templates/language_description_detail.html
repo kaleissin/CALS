@@ -8,14 +8,14 @@
     <li><b>Overview</b></li>
     {% if user.is_authenticated %}
     {% ifequal user lang.added_by %}
-    <li><a href="./change">Change description</a></li>
+    <li><a href="./change">Change</a></li>
     {% endifequal %}
     {% endif %}
     <li><a href="./history">History</a></li>
 </ul>
 {% endblock submenu %}
 {% block content %}
-    <h1>{{ lang.name }}: {{ feature.feature.name }}: {{ feature.value.name }}</h1>
+    <h1>{{ lang.name }}: {{ feature.feature.category.name }}: {{ feature.feature.name }}: {{ feature.value.name }}</h1>
     <table>
         {% if description.freetext_xhtml %}
         {{ description.freetext_xhtml|safe }}

@@ -1,25 +1,23 @@
 {% extends "base.html" %}
 {% load cals_tags %}
-{% block title %}Language description: change{% endblock title %}
+{% block title %} Language: {{ lang.name }}: {{ feature.feature.name }}: {{ feature.value.name }}: change{% endblock title %}
 {% block submenu %}
 <ul>  
     <li><a href="/language/">All languages</a></li>
     <li><a href="../../">Back to {{ feature.language }}</a></li>
     <li><a href=".">Back to overview</a></li>
-    {% if user.is_authenticated %}
-    <li><b>Change description</b></li>
-    {% endif %}
+    <li><b>Change</b></li>
 </ul>
 </ul>
 {% endblock submenu %}
 {% block content %}
 <form action="" method="post">
-    <h2>{{ feature.feature.category.name }}: {{ feature.feature.name }}</h2>
-    <h3>Description</h3>
+    <h1>{{ lang.name }}: {{ feature.feature.category.name }}: {{ feature.feature.name }}: {{ feature.value }} </h1>
     {% comment %}
     <p>You can use <a href="http://hobix.com/textile/" class="ext">Textile-markup</a> to markup
     the text.</p>
     {% endcomment %}
+    <p>New value: {{ valueform.value }}</p>
     <p>Currently only plaintext can be used here. HTML is stripped away.</p>
     {{ form.freetext }}
     <p>{{ form.freetext.errors }}</p>

@@ -91,9 +91,12 @@
         <th><a href="/language/{{ object.slug }}/feature/{{ feature.feature.id }}/">{{ feature.feature }}</a> {% wals feature.feature.id %}</th>
         {#<th><b>{{ feature.feature }}</b> {% wals feature.feature.id %}</th>#}
         <td>{{ feature.value }}</td>
+        {% if may_edit %}
+        <td><a href="/language/{{ object.slug }}/feature/{{ feature.feature.id }}/change">Edit</a></td>
+        {% endif %}
     </tr>
     {% if feature.description %}
-    <tr><td colspan="2">{{ feature.description|safe }}</td></tr>
+    <tr><td colspan="{% if may_edit %}3{% else %}2{% endif %}">{{ feature.description|safe }}</td></tr>
     {% endif %}
         {% endfor %}
         {% endif %}
