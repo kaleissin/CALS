@@ -16,6 +16,7 @@
         <tr class="{% cycle odd,even %}">
             <td></td>
             <td><a href="/language/{{ lf.language.slug }}"> {{ lf.language.name }}</a></td>
+            <td>{{ lf.description|safe }}</td>
         </tr>
         {% endfor %}
     </table>
