@@ -45,26 +45,12 @@
         <a {% ifequal me 'bugs' %}class="me" {% endifequal %}href="http://trac.aldebaaran.uninett.no/cals/">Bugs and features</a>
         {% endcomment %}
     </div>
-    {% block error %}
-    {% if request.session.error %}
-    <div class="error">{{ request.session.error }}</div>
-    {% else %}
-    {% if error %}
-    <div class="error">{{ error }}</div>
-    {% endif %}
-    {% endif %}
-    {% if error_message %}
-    <div class="error">Error: {{ error_message }}</div>
-    {% endif %}
-    {% endblock error %}
     {% block messages %}
-    {% if messages %}
+    {% if notifications %}
     <div class="messages">
-        <ul>
-        {% for message in messages %}
-            <li>{{ message }}</li>
+        {% for message in notifications %}
+        <p{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</p>
         {% endfor %}
-        </ul>
     </div>
     {% endif %}
     {% endblock messages %}

@@ -88,7 +88,6 @@ def langs_for_user(user):
 
 def compare_feature(request, *args, **kwargs):
     me = 'feature'
-    error = pop_error(request)
     features = _get_url_pieces(name='objects', **kwargs)
     if not features:
         # 'No feature'
@@ -127,7 +126,6 @@ def compare_feature(request, *args, **kwargs):
     data = { 
             'comparison': comparison,
             'me': me,
-            'error': error,
             'features': fs,
             'fvs': fvs,
             }
@@ -135,10 +133,9 @@ def compare_feature(request, *args, **kwargs):
 
 def compare_language(request, *args, **kwargs):
     me = 'language'
-    error = pop_error(request)
     langslugs = _get_url_pieces(name='slugs', **kwargs)
     comparison_type = kwargs.get('opt', None)
-    LOG.error('Will compare %s' % langslugs)
+    LOG.info('Will compare %s' % langslugs)
     if not langslugs:
         return HttpResponseForbidden(error_forbidden)
     if len(langslugs) == 1:
@@ -159,15 +156,14 @@ def compare_language(request, *args, **kwargs):
     elif comparison_type == 'same':
         same = True
         different = False
-    LOG.error('0: %s' % comparison_type)
-    LOG.error('1: same %s, different %s' % (same, different))
+    LOG.debug('0: %s' % comparison_type)
+    LOG.debug('1: same %s, different %s' % (same, different))
     comparison = compare_languages(langs, same=same, different=different)
-    LOG.error('Last: Features compared: %s (%s)' % (len(comparison), comparison_type))
+    LOG.debug('Last: Features compared: %s (%s)' % (len(comparison), comparison_type))
     data = {
             'comparison': comparison, 
             'me': me,
             'langs': langs,
-            'error': error,
             'comparison_type': comparison_type,
             }
     return render_page(request, 'language_compare.html', data)
@@ -180,7 +176,6 @@ def all_people_map(request, *args, **kwargs):
 
 def show_language(request, *args, **kwargs):
     me = 'language'
-    error = pop_error(request)
     lang = _get_lang(*args, **kwargs)
     may_edit, (is_admin, is_manager) = may_edit_lang(request.user, lang)
     categories = Category.objects.all().select_related().order_by('id')
@@ -215,13 +210,11 @@ def show_language(request, *args, **kwargs):
             'me': me, 
             'cform': cform,
             'may_edit': may_edit,
-            'error': error,
     }
     return render_page(request, 'language_detail.html', data)
 
 def list_feature(request, *args, **kwargs):
-    error = pop_error(request)
-    extra_context = {'me': 'feature', 'error': error}
+    extra_context = {'me': 'feature'}
     queryset = Category.objects.all().order_by('id')
     template = 'cals/feature_list.html'
     return object_list(queryset=queryset, template_name=template,
@@ -229,7 +222,6 @@ def list_feature(request, *args, **kwargs):
 
 def show_feature(request, *args, **kwargs):
     me = 'feature'
-    error = pop_error(request)
     try:
          feature = Feature.objects.active().get(id=kwargs['object'])
     except Feature.DoesNotExist:
@@ -242,7 +234,6 @@ def show_feature(request, *args, **kwargs):
             return HttpResponseRedirect('/feature/%s+%s/' % (feature.id, feature2.id))
     data = {'object': feature, 
             'me': me, 
-            'error': error,
             'cform': cform}
     return render_page(request, 'feature_detail.html', data)
 
@@ -299,7 +290,6 @@ def make_feature_list_for_lang(lang=None):
 def create_language(request, *args, **kwargs):
     me = 'language'
     state = 'new'
-    error = pop_error(request)
     langform = LanguageForm()
     user = request.user
 
@@ -334,22 +324,20 @@ def create_language(request, *args, **kwargs):
                     continue
                 set_language_feature_value(lang, feature_id, value_id)
             freq = get_averageness_for_lang(lang, scale=100)
-            LOG.error('Freq now: %s' % repr(freq))
+            LOG.info('Freq now: %s' % repr(freq))
             lang.num_features = LanguageFeature.objects.filter(language=lang).count()
             lang.num_avg_features = freq
             lang.set_average_score()
             lang.save(user=user)
-            request.session['error'] = None
             return HttpResponseRedirect('.')
         else:
             error = "Couldn't store language-description: " + str(form.errors) 
-            request.session['error'] = error
+            request.notifications.add(error, 'error')
     data = {'form': langform, 
             'categories': cats, 
             'me': me, 
             'editorform': editorform,
-            'state': state,
-            'error': error}
+            'state': state,}
     return render_page(request, 'language_form.html', data)
 
 def may_edit_lang(user, language):
@@ -369,7 +357,6 @@ def may_edit_lang(user, language):
 def change_language(request, *args, **kwargs):
     me = 'language'
     state = 'change'
-    error = pop_error(request)
     lang = _get_lang(*args, **kwargs)
     user = request.user
 
@@ -384,13 +371,14 @@ def change_language(request, *args, **kwargs):
         editorform = EditorForm(instance=lang)
     else:
         editorform = None
-    LOG.error('User is manager: %s' % user == lang.manager)
+    LOG.info('User is manager: %s' % user == lang.manager)
     # sort values into categories
     cats = make_feature_list_for_lang(lang)
 
     if request.method == 'POST':
         langform = LanguageForm(data=request.POST, instance=lang, initial=request.POST)
         if langform.is_valid():
+
             # editors and managers
             old_manager = lang.manager
             lang = langform.save(commit=False)
@@ -399,7 +387,7 @@ def change_language(request, *args, **kwargs):
                 editors = lang.editors
                 if editorform.is_valid():
                     editors = editorform.save()
-                    LOG.error('editors: %s' % editors)
+                    LOG.debug('editors: %s' % editors)
                 if not 'manager' in langform.cleaned_data:
                     lang.manager = old_manager
             else:
@@ -443,24 +431,21 @@ def change_language(request, *args, **kwargs):
             lang.num_avg_features = freq
             lang.set_average_score()
             lang.save(user=user)
-            request.session['error'] = None
             return HttpResponseRedirect('.')
         else:
             error = "Couldn't change language-description: " + str(langform.errors)
-            request.session['error'] = error
+            request.notifications.add(error, 'error')
     data = {'form': langform, 
             'categories': cats, 
             'editorform': editorform, 
             #'moreinfoformset': moreinfoformset,
             'me': me, 
-            'state': state,
-            'error': error}
+            'state': state,}
     return render_page(request, 'language_form.html', data)
 
 @login_required()
 def change_description(request, *args, **kwargs):
     me = 'feature'
-    error = pop_error(request)
     feature = get_object_or_404(Feature, id=kwargs.get('object_id', None))
     link = '/feature/%i/description/' % feature.id
     if not request.user.is_staff:
@@ -469,19 +454,16 @@ def change_description(request, *args, **kwargs):
         form = FeatureDescriptionForm(data=request.POST, instance=feature)
         if form.is_valid():
             feature = form.save()
-            request.session['error'] = None
             return HttpResponseRedirect(link)
     else:
         form = FeatureDescriptionForm(instance=feature)
     data = {'me': me,
             'form': form,
-            'feature': feature,
-            'error': error}
+            'feature': feature,}
     return render_page(request, 'feature_description_form.html', data)
 
 def show_languagefeature(request, *args, **kwargs):
     me = 'language'
-    error = pop_error(request)
     lang = _get_lang(*args, **kwargs)
     feature = get_object_or_404(Feature, id=kwargs.get('object_id', None))
     lf = get_object_or_404(LanguageFeature, language=lang, feature=feature)
@@ -492,13 +474,11 @@ def show_languagefeature(request, *args, **kwargs):
     link = '/language/%s/feature/%i/' % (lang.slug, feature.id)
     data = {'me': me,
             'description': description,
-            'lang': lang, 'feature': lf,
-            'error': error}
+            'lang': lang, 'feature': lf,}
     return render_page(request, 'language_description_detail.html', data)
 
 def show_languagefeature_history(request, *args, **kwargs):
     me = 'language'
-    error = pop_error(request)
     lang = _get_lang(*args, **kwargs)
     feature = get_object_or_404(Feature, id=kwargs.get('object_id', None))
     lf = get_object_or_404(LanguageFeature, language=lang, feature=feature)
@@ -506,13 +486,11 @@ def show_languagefeature_history(request, *args, **kwargs):
     link = '/language/%s/feature/%i/' % (lang.slug, feature.id)
     data = {'me': me,
             'descriptions': descriptions,
-            'lang': lang, 'feature': lf,
-            'error': error}
+            'lang': lang, 'feature': lf,}
     return render_page(request, 'language_description_history_list.html', data)
 
 def compare_languagefeature_history(request, *args, **kwargs):
     me = 'language'
-    error = pop_error(request)
     lang = _get_lang(*args, **kwargs)
     feature = get_object_or_404(Feature, id=kwargs.get('object_id', None))
     lf = get_object_or_404(LanguageFeature, language=lang, feature=feature)
@@ -535,14 +513,12 @@ def compare_languagefeature_history(request, *args, **kwargs):
             'newest': newest,
             'patch': patch,
             'lang': lang, 
-            'feature': lf,
-            'error': error}
+            'feature': lf,}
     return render_page(request, 'language_description_history_compare.html', data)
 
 @login_required
 def revert_languagefeature_description(request, *args, **kwargs):
     me = 'language'
-    error = pop_error(request)
     lang = _get_lang(*args, **kwargs)
     feature = get_object_or_404(Feature, id=kwargs.get('object_id', None))
     lf = get_object_or_404(LanguageFeature, language=lang, feature=feature)
@@ -558,7 +534,8 @@ def revert_languagefeature_description(request, *args, **kwargs):
         try:
             description = descriptions.get(id=revert_to)
         except Description.DoesNotExist:
-            request.session['error'] = 'Invalid version. This revert-attempt has been logged.'
+            error = 'Invalid version. This revert-attempt has been logged.'
+            request.notification.add(error, 'error')
         else:
             description.current = True
             description.save()
@@ -601,7 +578,6 @@ def describe_languagefeature(request, *args, **kwargs):
                 lfd.object_id = lf.id
                 lfd.save(user=request.user)
             
-            request.session['error'] = None
             return HttpResponseRedirect(link)
     else:
         valueform = FeatureValueForm(feature=feature, initial={'value': value_str})
@@ -613,15 +589,14 @@ def describe_languagefeature(request, *args, **kwargs):
 
     data = {'me': me,
             'form': descriptionform, 
-            'lang': lang, 'feature': lf,
-            'error': error,
+            'lang': lang, 
+            'feature': lf,
             'valueform': valueform,
             }
     return render_page(request, 'language_description_form.html', data)
 
 def show_profile(request, *args, **kwargs):
     me = 'people'
-    error = pop_error(request)
     user = _get_profile(*args, **kwargs)
     profile = None
     whereami = request.META.get('PATH_INFO', None)
@@ -641,14 +616,12 @@ def show_profile(request, *args, **kwargs):
             'pms_archived': pms_archived,
             'pms_sent': pms_sent,
             'whereami': whereami,
-            'error': error}
+            }
     return render_page(request, 'profile_detail.html', data)
 
 def show_stats(request, *args, **kwargs):
     me = 'statistics'
-    error = pop_error(request)
-    data = {'me': me, 
-            'error': error}
+    data = {'me': me}
 
     data.update(generate_global_stats())
     return render_page(request, 'statistics.html', data)
@@ -656,7 +629,6 @@ def show_stats(request, *args, **kwargs):
 @login_required()
 def change_profile(request, *args, **kwargs):
     me = 'people'
-    error = pop_error(request)
     user = _get_profile(*args, **kwargs)
     if user != request.user:
         return HttpResponseNotFound()
@@ -667,35 +639,32 @@ def change_profile(request, *args, **kwargs):
         return HttpResponseNotFound()
     #web20acc = user.web20.all()
 
-    LOG.error('User: %s', user)
-    LOG.error('Profile: %s', profile)
+    LOG.info('User: %s', user)
+    LOG.info('Profile: %s', profile)
     uform = UserForm(instance=user)
     pform = ProfileForm(instance=profile)
     #w20forms = [Web20Form(instance=w20) for w20 in web20acc]
     #new_w20 = Web20Form(prefix="new_w20")
     if request.method == 'POST':
-        LOG.error('POST %s', request.POST)
+        LOG.debug('POST %s', request.POST)
         uform = UserForm(data=request.POST, instance=user)
         pform = ProfileForm(data=request.POST, instance=profile)
         if uform.is_valid() and pform.is_valid():
-            LOG.error('Saving form')
+            LOG.debug('Saving form')
             user = uform.save()
             profile = pform.save()
-            LOG.error('Form saved')
-            LOG.error('Country:', profile.country)
-            request.session['error'] = None
+            LOG.debug('Form saved')
+            LOG.debug('Country:', profile.country)
             return HttpResponseRedirect('/people/%i' % user.id)
     data = {#'w20forms': w20forms, 
             #'new_w20': new_w20, 
             'uform': uform,
             'pform': pform, 
-            'me': me, 
-            'error': error}
+            'me': me}
     return render_page(request, 'profile_form.html', data)
 
 def auth_login(request, *args, **kwargs):
     LOG.info('Starting auth_login')
-    error = None
     messages = None
     greeting = None
     next = ''
@@ -725,27 +694,22 @@ def auth_login(request, *args, **kwargs):
                             user = profile.user
                         except Profile.DoesNotExist:
                             error = "User '%s' does not exist! Typo?" % username
-                            request.session['error'] = error
+                            request.notifications.add(error, 'error')
                             LOG.warn('User does not exist')
                             if u'next' in request.REQUEST:
-                                LOG.error('Redirecting back to %s', request.POST[u'next'])
-                                errorstring = ''
-                                if error:
-                                    errorstring = '?error='+error
-                                return HttpResponseRedirect(request.POST[u'next']+errorstring)
+                                LOG.warn('Redirecting back to %s after failed login', request.POST[u'next'])
+                                return HttpResponseRedirect(request.POST[u'next'])
                     user = auth.authenticate(username=user.username, password=password)
                     LOG.info("User: %s", pformat(user))
                     if user is not None:
                         auth.login(request, user)
-                        request.session['error'] = None
                     else:
                         LOG.warn("Invalid user for some reason")
                         error = "Couldn't log you in: Your username and/or password does not match with what is stored here."
-                        request.session['error'] = error
-                        messages = [error]
+                        request.notifications.add(error, 'error')
                 except CALSUserExistsError, e:
                     error = "Couldn't sign you up: " + e
-                    request.session['error'] = error
+                    request.notifications.add(error, 'error')
             if u'next' in request.REQUEST:
                 LOG.info('Redirecting back to %s', request.POST[u'next'])
                 return HttpResponseRedirect(request.POST[u'next'])
@@ -753,14 +717,12 @@ def auth_login(request, *args, **kwargs):
     #l_cloud = Tag.objects.cloud_for_model(Language, steps=7)
 
     data = {'me': 'home', 
-            'error': error, 
             'next': next,
             'news': Entry.objects.order_by('-pub_date')[:2],
             'language_cloud': l_cloud,
             'langs_newest': langs_newest,
             'langs_modified': langs_modified,
-            'people': people_recent,
-            'messages': messages}
+            'people': people_recent,}
     return render_page(request, 'index.html', data)
 
 def page_in_kwargs_or_get(request, kwargs):
@@ -843,13 +805,11 @@ def change_or_add_feature(request, *args, **kwargs):
     return render_page(request, 'cals/suggested_feature_form.html', data)
 
 def test(request, *args, **kwargs):
-    error = pop_error(request)
     template = 'test.html'
     data = { 
             'testarossa': Language.objects.get(id=80),
             'langs': Language.objects.all(), 
             'features': Feature.objects.all(),
-            'error': error,
             'news': Entry.objects.latest('pub_date')
             }
     return render_page(request, template, data)
