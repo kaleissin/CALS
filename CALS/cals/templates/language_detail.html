@@ -90,7 +90,7 @@
     <tr class="feature {% cycle odd,even %}">
         <th><a href="/language/{{ object.slug }}/feature/{{ feature.feature.id }}/">{{ feature.feature }}</a> {% wals feature.feature.id %}</th>
         {#<th><b>{{ feature.feature }}</b> {% wals feature.feature.id %}</th>#}
-        <td>{{ feature.value }}</td>
+        <td class="fv">{{ feature.value }}</td>
         {% if may_edit %}
         <td><a href="/language/{{ object.slug }}/feature/{{ feature.feature.id }}/change">Edit</a></td>
         {% endif %}

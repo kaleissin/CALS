@@ -230,15 +230,8 @@ a:hover {
 }
 
 a.ext {
-    background-color: transparent;
-    background-image: url(../extlink.gif);
-    background-repeat: no-repeat;
-    background-attachment: scroll;
-    background-position: center left;
-}
-
-a.ext:after {
-    content: ' →';
+    background: transparent url(/CALS/img/external_link.gif) no-repeat right center;
+    padding-right: 13px;
 }
 
 .nav .me {
@@ -406,6 +399,7 @@ ul {
 .tagsize * { font-size: xx-large; color: #25331a; font-weight: 900}
 
 table.feature th { width: 40em; }
+table.feature td.fv { width: 20em; }
 
 .wals a {
     font-family: serif;
