@@ -342,7 +342,10 @@ def create_language(request, *args, **kwargs):
 
 def may_edit_lang(user, language):
     standardreturn = (True, (False, False))
-    profile = user.get_profile()
+    try:
+        profile = user.get_profile()
+    except AttributeError:
+        return False, (False, False)
     if user == language.manager:
         return True, (False, True)
     if user in language.editors.all():
@@ -565,19 +568,25 @@ def describe_languagefeature(request, *args, **kwargs):
 
         if descriptionform.is_valid() and valueform.is_valid():
             # value
+            value_change = ''
             new_f, new_v = map(int, valueform.cleaned_data.get('value', value_str).split('_'))
             if new_v and new_f == feature.id and new_v != lf.value.id:
-                lf.value = new_v
+                new_fv = FeatureValue.objects.get(feature=feature, position=new_v)
+                lf.value = new_fv
                 lf.save()
+                value_change = u'Value now "%s." ' % lf.value
             
             # description
             # Need to prevent extraenous saving here because of versioning
+            desc_change = ''
             lfd = descriptionform.save(commit=False)
             if not lf.description or lfd.freetext_xhtml != lf.description.freetext_xhtml:
                 lfd.content_type = ContentType.objects.get_for_model(lf)
                 lfd.object_id = lf.id
                 lfd.save(user=request.user)
+                desc_change = 'Description changed.'
             
+            request.notifications.add('%s%s' % (value_change, desc_change))
             return HttpResponseRedirect(link)
     else:
         valueform = FeatureValueForm(feature=feature, initial={'value': value_str})
