@@ -15,14 +15,12 @@
 <form action="" method="post">
     <h2>{{ feature.category.name }}: {{ feature.name }}</h2>
     <h3>Description</h3>
-    <p>You can use <a href="http://hobix.com/textile/" class="ext">Textile-markup</a> to markup
-    the text.</p>
-    {{ form.description }}
-    <p>{{ form.description.errors }}</p>
+    {{ form.freetext }}
+    <p>{{ form.freetext.errors }}</p>
     {% if feature.wals %}
     <p>Link to even more info: {% wals feature.id %}</p>
     {% else %}
-    <p>Link to even more info:{{ form.description_link }}{{ form.description_link.errors }}</p>
+    <p>Link to even more info: {{ form.freetext_link }}{{ form.freetext_link.errors }}</p>
     {% endif %}
     <input type="submit" />
 </form>

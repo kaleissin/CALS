@@ -81,7 +81,7 @@ class Freetext(models.Model):
             self.freetext_xhtml = textile(self.freetext.decode('utf8'), head_offset=1, validate=0, sanitize=0)
 #             self.freetext_xhtml = textile(self.freetext.encode('utf8'), head_offset=1,
 #                     validate=0, sanitize=0, encoding='utf-8', output='utf-8').encode('UTF-8')
-        elif self.freetext_type == 'rest':
+        elif self.freetext_type == 'rst':
             self.freetext_xhtml = restructuredtext(self.freetext)
         else:
             self.freetext_xhtml = u'<pre class="plaintext">'+self.freetext.strip()+u'</pre>'
@@ -157,9 +157,8 @@ class DescriptionMixin(object):
     @property
     def description(self):
         description_type = ContentType.objects.get(app_label="cals", model="description")
-        #return description_type.get_object_for_this_type(feature=self)
         try:
-            return description_type.get_object_for_this_type(feature=self)
+            return description_type.get_object_for_this_type(object_id=self.id)
         except Description.DoesNotExist:
             return None
 
@@ -215,7 +214,7 @@ class Category(models.Model):
     def __unicode__(self):
         return self.name
 
-class Feature(models.Model):
+class Feature(models.Model, DescriptionMixin):
     MAX_WALS_FEATURE = 142
     name = models.CharField(max_length=96, unique=True) # Longest faeture-name... 93 chars!!
     category = models.ForeignKey(Category)
@@ -224,12 +223,6 @@ class Feature(models.Model):
     overrides = models.ForeignKey('self', blank=True, null=True)
     active = models.BooleanField(default=False, editable=False)
     added_by = models.ForeignKey(User, editable=False, null=True)
-    description = models.TextField(blank=True, null=True)
-    description_xhtml = models.TextField(blank=True, null=True, editable=False)
-    description_type = models.CharField(blank=True,max_length=20, choices=FREETEXT_TYPES)
-    description_link = models.URLField(blank=True, null=True)
-
-    descriptions = generic.GenericRelation(Description)
 
     objects = ActivePassiveManager()
     active_objects = ActiveManager()
@@ -243,21 +236,6 @@ class Feature(models.Model):
 
     def __unicode__(self):
         return self.name
-
-#     def save(self):
-#         if self.description:
-#             if self.description_type in ('textile', ''):
-#                 xhtml = textile(self.description,
-#                         head_offset=1, validate=0, sanitize=0,
-#                         output='utf-8')
-#             if xhtml != self.description_xhtml:
-#                 self.description_xhtml = xhtml
-#         super(Feature, self).save()
-
-    @property
-    def description(self):
-        description_type = ContentType.objects.get(app_label="cals", model="description")
-        return description_type.get_object_for_this_type(feature=self)
 
 class FeatureValueManager(models.Manager):
     def _value_counts(self):

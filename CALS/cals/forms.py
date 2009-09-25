@@ -102,7 +102,7 @@ class FeatureDescriptionForm(forms.ModelForm):
 
     class Meta:
         model = Feature
-        fields = ('description', 'description_link')
+        fields = ('description',)
 
 class LanguageFeatureForm(forms.ModelForm):
 

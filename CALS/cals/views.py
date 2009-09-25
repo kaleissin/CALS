@@ -454,16 +454,28 @@ def change_description(request, *args, **kwargs):
     if not request.user.is_staff:
         return HttpResponseRedirect(link)
     if request.method == 'POST':
-        form = FeatureDescriptionForm(data=request.POST, instance=feature)
+        if feature.description:
+            form = DescriptionForm(data=request.POST, instance=feature.description)
+        else:
+            form = DescriptionForm(data=request.POST)
         if form.is_valid():
-            feature = form.save()
+            featured = form.save(commit=False)
+            featured.content_type = ContentType.objects.get_for_model(feature)
+            featured.object_id = feature.id
+            featured.freetext_type = 'rst'
+            featured.save()
             return HttpResponseRedirect(link)
     else:
-        form = FeatureDescriptionForm(instance=feature)
+        if feature.description:
+            form = DescriptionForm(instance=feature.description)
+        else:
+            form = DescriptionForm()
     data = {'me': me,
             'form': form,
             'feature': feature,}
     return render_page(request, 'feature_description_form.html', data)
+
+# BEGIN LF
 
 def show_languagefeature(request, *args, **kwargs):
     me = 'language'
@@ -580,7 +592,7 @@ def describe_languagefeature(request, *args, **kwargs):
             # Need to prevent extraenous saving here because of versioning
             desc_change = ''
             lfd = descriptionform.save(commit=False)
-            if not lf.description or lfd.freetext_xhtml != lf.description.freetext_xhtml:
+            if not lf.description or lfd.freetext != lf.description.freetext:
                 lfd.content_type = ContentType.objects.get_for_model(lf)
                 lfd.object_id = lf.id
                 lfd.save(user=request.user)
@@ -588,6 +600,8 @@ def describe_languagefeature(request, *args, **kwargs):
             
             request.notifications.add('%s%s' % (value_change, desc_change))
             return HttpResponseRedirect(link)
+        else:
+            request.notifications.add('Something impossible just happened', 'error')
     else:
         valueform = FeatureValueForm(feature=feature, initial={'value': value_str})
 
@@ -603,6 +617,8 @@ def describe_languagefeature(request, *args, **kwargs):
             'valueform': valueform,
             }
     return render_page(request, 'language_description_form.html', data)
+
+# END LF
 
 def show_profile(request, *args, **kwargs):
     me = 'people'

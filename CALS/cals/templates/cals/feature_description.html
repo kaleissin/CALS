@@ -15,16 +15,16 @@
 {% block content %}
     <h1>{{ object.name }}</h1>
     <table>
-        {% if object.description_xhtml %}
-        {{ object.description_xhtml|safe }}
+        {% if object.description.freetext_xhtml %}
+        {{ object.description.freetext_xhtml|safe }}
         {% else %}
         <p>Local description missing.</p>
         {% endif %}
         {% if object.wals %}
         <p>Even more info at {% wals object.id %}</a>
         {% else %}
-        {% if object.description_link %}
-        <p>Even more info at <a href="{{ object.description_link }}">{{ object.description_link }}</a></p>
+        {% if object.description.freetext_link %}
+        <p>Even more info at <a href="{{ object.description.freetext_link }}">{{ object.description.freetext_link }}</a></p>
         {% endif %}
         {% endif %}
     </table>

@@ -15,20 +15,19 @@
     </form>
 {% endblock submenu %}
 {% block content %}
+    <h1>{{ object.name }} {% walsfeature object.id %}</h1>
+    {{ object.description.freetext_xhtml|safe }}
     <table>
-        <tr><th>Name:</th><td>{{ object.name }} {% walsfeature object.id %}</td></tr>
-        {% if object.description_xhtml %}
-        <tr><th>Description:</th><td>{{ object.description_xhtml|safe }}</td></tr>
-        {% endif %}
         {% if object.wals %}
         <tr><th>In-depth description:</th><td>Only at {% wals object.id %}</td></tr>
         {% else %}
-        {% if object.description_link %}
-        <tr><th>In-depth description:</th><td><a href="{{ object.description_link }}">{{ object.description_link }}</a></td></tr>
+        {% if object.description.freetext_link %}
+        <tr><th>In-depth description:</th><td><a href="{{ object.description.freetext_link }}">{{ object.description.freetext_link }}</a></td></tr>
         {% endif %}
         {% endif %}
         <tr>
-            <th colspan="2">Values:</th>
+            <th>Values:</th>
+            <td></td>
             <td rowspan="{{ object.values.count|add:1 }}" class="graph">{% feature_graph object %}</td>
         </tr>
         {% for value in object.values.all %}
