@@ -450,8 +450,11 @@ def change_language(request, *args, **kwargs):
 def change_feature_description(request, *args, **kwargs):
     me = 'feature'
     feature = get_object_or_404(Feature, id=kwargs.get('object_id', None))
+    preview = u''
     link = '/feature/%i/' % feature.id
     if not request.user.is_staff:
+        error = "You do not have permission to change this feature's description"
+        request.notifications.add(error, 'error')
         return HttpResponseRedirect(link)
     if request.method == 'POST':
         if feature.description:
@@ -460,11 +463,17 @@ def change_feature_description(request, *args, **kwargs):
             form = DescriptionForm(data=request.POST)
         if form.is_valid():
             featured = form.save(commit=False)
-            featured.content_type = ContentType.objects.get_for_model(feature)
-            featured.object_id = feature.id
-            featured.freetext_type = 'rst'
-            featured.save()
-            return HttpResponseRedirect(link)
+            
+            if request.POST.get('preview'):
+                preview = featured.make_xhtml()
+                msg = "You are previewing the description of this feature"
+                request.notifications.add(msg)
+            elif request.POST.get('submit'):
+                featured.content_type = ContentType.objects.get_for_model(feature)
+                featured.object_id = feature.id
+                featured.freetext_type = 'rst'
+                featured.save()
+                return HttpResponseRedirect(link)
     else:
         if feature.description:
             form = DescriptionForm(instance=feature.description)
@@ -472,6 +481,7 @@ def change_feature_description(request, *args, **kwargs):
             form = DescriptionForm()
     data = {'me': me,
             'form': form,
+            'preview': preview,
             'feature': feature,}
     return render_page(request, 'feature_description_form.html', data)
 

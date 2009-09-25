@@ -77,15 +77,20 @@ class Freetext(models.Model):
 
     def save(self, *args, **kwargs):
         self.freetext = strip_tags(self.freetext)
+        self.freetext_html = self.make_xhtml()
+        super(Freetext, self).save(*args, **kwargs)
+
+    def make_xhtml(self):
+        freetext = strip_tags(self.freetext)
         if self.freetext_type == 'textile':
-            self.freetext_xhtml = textile(self.freetext.decode('utf8'), head_offset=1, validate=0, sanitize=0)
-#             self.freetext_xhtml = textile(self.freetext.encode('utf8'), head_offset=1,
+            freetext_xhtml = textile(self.freetext.decode('utf8'), head_offset=1, validate=0, sanitize=0)
+#             freetext_xhtml = textile(self.freetext.encode('utf8'), head_offset=1,
 #                     validate=0, sanitize=0, encoding='utf-8', output='utf-8').encode('UTF-8')
         elif self.freetext_type == 'rst':
-            self.freetext_xhtml = restructuredtext(self.freetext)
+            freetext_xhtml = restructuredtext(self.freetext)
         else:
-            self.freetext_xhtml = u'<pre class="plaintext">'+self.freetext.strip()+u'</pre>'
-        super(Freetext, self).save(*args, **kwargs)
+            freetext_xhtml = u'<pre class="plaintext">'+self.freetext.strip()+u'</pre>'
+        return freetext_xhtml
 
 class DescriptionManager(models.Manager):
     def get_query_set(self):

@@ -14,7 +14,13 @@
 {% block content %}
 <form action="" method="post">
     <h2>{{ feature.category.name }}: {{ feature.name }}</h2>
-    <h3>Description</h3>
+    {% if preview %}
+    <fieldset>
+    <legend>Preview</legend>
+    {{ preview }}
+    </fieldset>
+    {% endif %}
+    <h3>Change description</h3>
     {{ form.freetext }}
     <p>{{ form.freetext.errors }}</p>
     {% if feature.wals %}
@@ -22,6 +28,7 @@
     {% else %}
     <p>Link to even more info: {{ form.freetext_link }}{{ form.freetext_link.errors }}</p>
     {% endif %}
-    <input type="submit" />
+    <input type="submit" name="preview" value="Preview" />
+    <input type="submit" name="submit" value="Submit" />
 </form>
 {% endblock content %}
