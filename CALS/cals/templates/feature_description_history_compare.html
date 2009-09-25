@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load cals_tags %}
+{% block title %} Feature: {{ feature.name }}{% endblock title %}
+{% block submenu %}
+<ul>
+    <li><a href="/feature/">All languages</a></li>
+    <li><a href="../">Back to overview</a></li>
+    {% if user.is_authenticated %}
+    {% ifequal user lang.added_by %}
+    <li><a href="../change">Change description</a></li>
+    {% endifequal %}
+    {% endif %}
+    <li><a href="./">History</a></li>
+    <li><b>Compare</b></li>
+</ul>
+{% endblock submenu %}
+{% block content %}
+    <h1>{{ feature.name }}</h1>
+    {{ patch|safe }}
+    <h2>Revision as of {{ newest.last_modified|date:"Y-m-d H:i:s" }}, by {% showuser newest.last_modified_by %}</h2>
+    {{ newest|safe }}
+{% endblock content %}
