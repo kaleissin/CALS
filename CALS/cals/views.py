@@ -579,6 +579,8 @@ def describe_languagefeature(request, *args, **kwargs):
     feature = get_object_or_404(Feature, id=kwargs.get('object_id', None))
     lf = get_object_or_404(LanguageFeature, language=lang, feature=feature)
     value_str = '%s_%s' % (feature.id, lf.value.id)
+    preview = u''
+    preview_value = u''
     link = '/language/%s/feature/%i/' % (lang.slug, feature.id)
 
     if request.method == 'POST':
@@ -589,29 +591,34 @@ def describe_languagefeature(request, *args, **kwargs):
         valueform = FeatureValueForm(feature=feature, data=request.POST)
 
         if descriptionform.is_valid() and valueform.is_valid():
-            # value
-            value_change = ''
             new_f, new_v = map(int, valueform.cleaned_data.get('value', value_str).split('_'))
-            if new_v and new_f == feature.id and new_v != lf.value.id:
-                new_fv = FeatureValue.objects.get(feature=feature, position=new_v)
-                lf.value = new_fv
-                lf.save()
-                value_change = u'Value now "%s." ' % lf.value
-            
-            # description
+            new_fv = FeatureValue.objects.get(feature=feature, position=new_v)
+            preview_value = new_fv
+
             # Need to prevent extraenous saving here because of versioning
-            desc_change = ''
             lfd = descriptionform.save(commit=False)
-            if not lf.description or lfd.freetext != lf.description.freetext:
-                lfd.content_type = ContentType.objects.get_for_model(lf)
-                lfd.object_id = lf.id
-                lfd.save(user=request.user)
-                desc_change = 'Description changed.'
             
-            request.notifications.add('%s%s' % (value_change, desc_change))
-            return HttpResponseRedirect(link)
-        else:
-            request.notifications.add('Something impossible just happened', 'error')
+            if request.POST.get('preview'):
+                preview = lfd.make_xhtml()
+                msg = "You are previewing the description of '%s: %s' for %s" % (feature, new_fv, lang)
+                request.notifications.add(msg)
+            elif request.POST.get('submit'):
+                # value
+                value_change = ''
+                if new_v and new_f == feature.id and new_v != lf.value.id:
+                    lf.value = new_fv
+                    lf.save()
+                    value_change = u'Value now "%s." ' % lf.value
+            
+                # description
+                desc_change = ''
+                if not lf.description or lfd.freetext != lf.description.freetext:
+                    lfd.content_type = ContentType.objects.get_for_model(lf)
+                    lfd.object_id = lf.id
+                    lfd.save(user=request.user)
+                    desc_change = 'Description changed.'
+                request.notifications.add('%s%s' % (value_change, desc_change))
+                return HttpResponseRedirect(link)
     else:
         valueform = FeatureValueForm(feature=feature, initial={'value': value_str})
 
@@ -625,6 +632,8 @@ def describe_languagefeature(request, *args, **kwargs):
             'lang': lang, 
             'feature': lf,
             'valueform': valueform,
+            'preview': preview,
+            'preview_value': preview_value,
             }
     return render_page(request, 'language_description_form.html', data)
 

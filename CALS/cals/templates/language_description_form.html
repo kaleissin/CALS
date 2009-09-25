@@ -13,14 +13,19 @@
 {% block content %}
 <form action="" method="post">
     <h1>{{ lang.name }}: {{ feature.feature.category.name }}: {{ feature.feature.name }}: {{ feature.value }} </h1>
-    {% comment %}
-    <p>You can use <a href="http://hobix.com/textile/" class="ext">Textile-markup</a> to markup
-    the text.</p>
-    {% endcomment %}
+    {% if preview %}
+    <fieldset>
+    <legend>Preview</legend>
+    <h3>{{ lang.name }}: {{ feature.feature.category.name }}: {{ feature.feature.name }}: {{ preview_value }}</h3>
+    {{ preview|safe }}
+    </fieldset>
+    {% endif %}
     <p>New value: {{ valueform.value }}</p>
     <p>Currently only plaintext can be used here. HTML is stripped away.</p>
+    <h3>Change description:</h3>
     {{ form.freetext }}
     <p>{{ form.freetext.errors }}</p>
-    <input type="submit" />
+    <input type="submit" name="preview" value="Preview" />
+    <input type="submit" name="submit" value="Submit" />
 </form>
 {% endblock content %}
