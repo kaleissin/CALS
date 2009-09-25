@@ -485,6 +485,73 @@ def change_feature_description(request, *args, **kwargs):
             'feature': feature,}
     return render_page(request, 'feature_description_form.html', data)
 
+def show_feature_history(request, *args, **kwargs):
+    me = 'feature'
+    feature = get_object_or_404(Feature, id=kwargs.get('object_id', None))
+    feature_type = ContentType.objects.get(app_label="cals", model="feature")
+    descriptions = Description.archive.filter(object_id=feature.id, content_type=feature_type).order_by('-last_modified')
+    link = '/feature/%i/' % feature.id
+    data = {'me': me,
+            'descriptions': descriptions,
+            'feature': feature,
+            }
+    return render_page(request, 'feature_description_history_list.html', data)
+
+def compare_feature_history(request, *args, **kwargs):
+    me = 'feature'
+    feature = get_object_or_404(Feature, id=kwargs.get('object_id', None))
+    feature_type = ContentType.objects.get(app_label="cals", model="feature")
+    descriptions = Description.archive.filter(object_id=feature.id, content_type=feature_type).order_by('-last_modified')
+
+    newest = descriptions[0]
+    oldest = tuple(descriptions)[-1]
+    oldid = request.GET.get('oldid', oldest.id)
+    newid = request.GET.get('newid', newest.id)
+    if oldid:
+        oldest = descriptions.get(id=int(oldid))
+    if newid:
+        newest = descriptions.get(id=int(newid))
+    link_format = '/feature/%i/history/compare?' % feature.id
+    patch = u''
+    if request.method == 'GET':
+        patch = description_diff(oldest, newest, link_format)
+    data = {'me': me,
+            'oldest': oldest,
+            'newest': newest,
+            'patch': patch,
+            'feature': feature,}
+    return render_page(request, 'feature_description_history_compare.html', data)
+
+def revert(user, descriptions, revert_to):
+    if revert_to:
+        try:
+            description = descriptions.get(id=int(revert_to))
+        except Description.DoesNotExist:
+            error = 'Invalid version. This revert-attempt has been logged.'
+            return error
+        else:
+            description.current = True
+            description_last_modified_by = user
+            description.save()
+
+@login_required
+def revert_feature_description(request, *args, **kwargs):
+    me = 'language'
+    feature = get_object_or_404(Feature, id=kwargs.get('object_id', None))
+    feature_type = ContentType.objects.get(app_label="cals", model="feature")
+    may_edit, (is_admin, is_manager) = may_edit_lang(request.user, lang)
+    if not may_edit:
+        return HttpResponseForbidden(error_forbidden)
+
+    descriptions = Description.archive.filter(object_id=feature.id, content_type=feature_type).order_by('-last_modified')
+    link_format = '/feature/%i/history/compare?' % feature.id
+
+    revert_to = request.GET.get('id', 0)
+    error = revert(request.user, descriptions, revert_to)
+    if error:
+        request.notification.add(error, 'error')
+    return HttpResponseRedirect(link_format)
+
 # BEGIN LF
 
 def show_languagefeature(request, *args, **kwargs):
@@ -507,7 +574,8 @@ def show_languagefeature_history(request, *args, **kwargs):
     lang = _get_lang(*args, **kwargs)
     feature = get_object_or_404(Feature, id=kwargs.get('object_id', None))
     lf = get_object_or_404(LanguageFeature, language=lang, feature=feature)
-    descriptions = Description.archive.filter(languagefeature=lf).order_by('-last_modified')
+    lf_type = ContentType.objects.get(app_label="cals", model="languagefeature")
+    descriptions = Description.archive.filter(object_id=lf.id, content_type=lf_type).order_by('-last_modified')
     link = '/language/%s/feature/%i/' % (lang.slug, feature.id)
     data = {'me': me,
             'descriptions': descriptions,
@@ -518,8 +586,9 @@ def compare_languagefeature_history(request, *args, **kwargs):
     me = 'language'
     lang = _get_lang(*args, **kwargs)
     feature = get_object_or_404(Feature, id=kwargs.get('object_id', None))
+    lf_type = ContentType.objects.get(app_label="cals", model="languagefeature")
     lf = get_object_or_404(LanguageFeature, language=lang, feature=feature)
-    descriptions = Description.archive.filter(languagefeature=lf).order_by('-last_modified')
+    descriptions = Description.archive.filter(object_id=lf.id, content_type=lf_type).order_by('-last_modified')
 
     newest = descriptions[0]
     oldest = tuple(descriptions)[-1]
@@ -546,25 +615,19 @@ def revert_languagefeature_description(request, *args, **kwargs):
     me = 'language'
     lang = _get_lang(*args, **kwargs)
     feature = get_object_or_404(Feature, id=kwargs.get('object_id', None))
+    lf_type = ContentType.objects.get(app_label="cals", model="languagefeature")
     lf = get_object_or_404(LanguageFeature, language=lang, feature=feature)
     may_edit, (is_admin, is_manager) = may_edit_lang(request.user, lang)
     if not may_edit:
         return HttpResponseForbidden(error_forbidden)
 
-    descriptions = Description.archive.filter(languagefeature=lf).order_by('-last_modified')
+    descriptions = Description.archive.filter(object_id=lf.id, content_type=lf_type).order_by('-last_modified')
     link_format = '/language/%s/feature/%i/' % (lang.slug, feature.id)
 
     revert_to = request.GET.get('id', 0)
-    if revert_to:
-        try:
-            description = descriptions.get(id=revert_to)
-        except Description.DoesNotExist:
-            error = 'Invalid version. This revert-attempt has been logged.'
-            request.notification.add(error, 'error')
-        else:
-            description.current = True
-            description.save()
-            return HttpResponseRedirect(link_format)
+    error = revert(request.user, descriptions, revert_to)
+    if error:
+        request.notification.add(error, 'error')
     return HttpResponseRedirect(link_format)
 
 @login_required()
@@ -592,7 +655,7 @@ def describe_languagefeature(request, *args, **kwargs):
 
         if descriptionform.is_valid() and valueform.is_valid():
             new_f, new_v = map(int, valueform.cleaned_data.get('value', value_str).split('_'))
-            new_fv = FeatureValue.objects.get(feature=feature, position=new_v)
+            new_fv = FeatureValue.objects.get(feature=feature, id=new_v)
             preview_value = new_fv
 
             # Need to prevent extraenous saving here because of versioning

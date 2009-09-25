@@ -77,7 +77,7 @@ class Freetext(models.Model):
 
     def save(self, *args, **kwargs):
         self.freetext = strip_tags(self.freetext)
-        self.freetext_html = self.make_xhtml()
+        self.freetext_xhtml = self.make_xhtml()
         super(Freetext, self).save(*args, **kwargs)
 
     def make_xhtml(self):
@@ -97,7 +97,6 @@ class DescriptionManager(models.Manager):
         return super(DescriptionManager, self).get_query_set().filter(current=True)
 
 class Description(Freetext):
-    #version = models.PositiveIntegerField(default=0)
     last_modified = models.DateTimeField(default=datetime.now, editable=False)
     last_modified_by = models.ForeignKey(User, editable=False, blank=True, null=True, related_name='descriptions')
     current = models.BooleanField(default=True)
@@ -118,22 +117,13 @@ class Description(Freetext):
         if not batch:
             self.id = next_id(self.__class__)
             self.last_modified = datetime.now()
+            self.freetext = self.make_xhtml()
             if user:
                 self.last_modified_by = user
             Description.objects.filter(object_id=self.object_id).update(current=False)
             super(Description, self).save(force_insert=True, *args, **kwargs)
         else:
             super(Description, self).save(*args, **kwargs)
-        #v = self.version
-#         try:
-#             d = Description.objects.get(object_id=self.object_id)
-#             self.version = d.version
-#             #assert False, 'B %i %i' % (v, self.version)
-#         except Description.DoesNotExist:
-#             self.version = 0
-#         self.version += 1
-        #assert False, 'A %i %i' % (v, self.version)
-        #assert False, self.id
 
     def next_version(self):
         try:
@@ -155,15 +145,20 @@ class Description(Freetext):
         d.current = True
         d.save(batch=True)
 
+    def reformat_xhtml(self):
+        self.freetext_xhtml = self.make_xhtml()
+        self.save(batch=True)
+
 class DescriptionMixin(object):
 
     descriptions = generic.GenericRelation(Description)
 
     @property
     def description(self):
+        self_type = ContentType.objects.get_for_model(self)
         description_type = ContentType.objects.get(app_label="cals", model="description")
         try:
-            return description_type.get_object_for_this_type(object_id=self.id)
+            return Description.objects.get(object_id=self.id, current=True)
         except Description.DoesNotExist:
             return None
 
