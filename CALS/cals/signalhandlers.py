@@ -4,11 +4,19 @@ from datetime import timedelta, datetime
 from nano.blog import add_entry_to_blog
 from nano.blog.models import Entry
 
-def new_user(sender, **kwargs):
-    "Signal handler for nano.user.new_user_created"
-    new_user = kwargs[u'user']
-    blog_template = 'blog/new_user.html'
-    add_entry_to_blog(new_user, '%s just joined' % new_user.username, blog_template, date_field='date_joined')
+from cals.models import Profile
+
+def new_user_anywhere(sender, **kwargs):
+    new = kwargs[u'created']
+    if new:
+        new_user = kwargs[u'instance']
+        blog_template = 'blog/new_user.html'
+        add_entry_to_blog(new_user, '%s just joined' % new_user.username, blog_template, date_field='date_joined')
+        try:
+            profile = new_user.get_profile()
+        except Profile.DoesNotExist:
+            profile = Profile(user=new_user, display_name=new_user.username)
+            profile.save()
 
 def new_or_changed_language(sender, **kwargs):
     "Signal handler for cals.Language.post_save"
