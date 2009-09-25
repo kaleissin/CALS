@@ -447,10 +447,10 @@ def change_language(request, *args, **kwargs):
     return render_page(request, 'language_form.html', data)
 
 @login_required()
-def change_description(request, *args, **kwargs):
+def change_feature_description(request, *args, **kwargs):
     me = 'feature'
     feature = get_object_or_404(Feature, id=kwargs.get('object_id', None))
-    link = '/feature/%i/description/' % feature.id
+    link = '/feature/%i/' % feature.id
     if not request.user.is_staff:
         return HttpResponseRedirect(link)
     if request.method == 'POST':
