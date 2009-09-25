@@ -150,6 +150,19 @@ class Description(Freetext):
         d.current = True
         d.save(batch=True)
 
+class DescriptionMixin(object):
+
+    descriptions = generic.GenericRelation(Description)
+
+    @property
+    def description(self):
+        description_type = ContentType.objects.get(app_label="cals", model="description")
+        #return description_type.get_object_for_this_type(feature=self)
+        try:
+            return description_type.get_object_for_this_type(feature=self)
+        except Description.DoesNotExist:
+            return None
+
 # BEGIN Features
 
 class ActiveQuerySet(QuerySet):
@@ -256,13 +269,11 @@ class FeatureValueManager(models.Manager):
     def value_counts(self):
         return self._value_counts().order_by('count')
 
-class FeatureValue(models.Model):
+class FeatureValue(models.Model, DescriptionMixin):
     feature = models.ForeignKey(Feature, related_name='values')
     name = models.CharField(max_length=64)
     position = models.IntegerField(null=True)#, editable=False)
 
-    descriptions = generic.GenericRelation(Description)
-    #objects = FeatureValueManager()
 
     class Meta:
         unique_together = ('feature', 'name')
@@ -272,11 +283,6 @@ class FeatureValue(models.Model):
 
     def __unicode__(self):
         return self.name
-
-    @property
-    def description(self):
-        description_type = ContentType.objects.get(app_label="cals", model="description")
-        return description_type.get_object_for_this_type(featurevalue=self)
 
 # END Features
 
@@ -462,12 +468,10 @@ class Language(models.Model):
         density = (weighted_num_features + density) / (num_features + singles)
         return density
 
-class LanguageFeature(models.Model):
+class LanguageFeature(models.Model, DescriptionMixin):
     language = models.ForeignKey(Language, related_name='features')
     feature = models.ForeignKey(Feature, related_name='languages')
     value = models.ForeignKey(FeatureValue) #, related_name='languages')
-
-    descriptions = generic.GenericRelation(Description)
 
     objects = models.Manager()
 
@@ -477,11 +481,6 @@ class LanguageFeature(models.Model):
 
     def __unicode__(self):
         return u"%s / %s / %s" % (self.language, self.feature, self.value)
-
-    @property
-    def description(self):
-        description_type = ContentType.objects.get(app_label="cals", model="description")
-        return description_type.get_object_for_this_type(languagefeature=self)
 
 
 class UTC(dt.tzinfo):
