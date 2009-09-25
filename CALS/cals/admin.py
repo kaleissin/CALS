@@ -49,8 +49,8 @@ admin.site.register(Profile, ProfileAdmin)
 class DescriptionAdmin(admin.ModelAdmin): 
     model = Description
     #ordering = ('display_name',)
-    list_display = ('object_id', 'content_type')
-    list_filter = ('content_type',)
+    list_display = ('object_id', 'content_type', 'current', 'last_modified', 'last_modified_by')
+    list_filter = ('current', 'content_type',)
 admin.site.register(Description, DescriptionAdmin)
 
 #admin.site.register(ExternalInfo)
