@@ -208,6 +208,22 @@ def latest_modified_languages(num_lang):
         raise template.TemplateSyntaxError, 'must be integer'
     return ''
 
+def restructuredtext(value):
+    try:
+        from docutils.parsers.rst import directives
+        from docutils.core import publish_parts
+    except ImportError:
+        if settings.DEBUG:
+            raise template.TemplateSyntaxError, "Error in {% restructuredtext %} filter: The Python docutils library isn't installed."
+        return force_unicode(value)
+    from cals import rst
+    directives.register_directive('interlinear', rst.InterlinearDirective)
+    else:
+        docutils_settings = getattr(settings, "RESTRUCTUREDTEXT_FILTER_SETTINGS", {})
+        parts = publish_parts(source=smart_str(value), writer=rst.CALSHTMLWriter(), settings_overrides=docutils_settings)
+        return mark_safe(force_unicode(parts["fragment"]))
+restructuredtext.is_safe = True
+
 # -------------- nano.pm
 
 @register.simple_tag
