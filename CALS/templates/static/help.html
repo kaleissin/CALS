@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load cals_tags %}
+{% block title %}Help{% endblock title %}
+{% block submenu %}
+<ul>
+    <li><b>Help</b></li>
+    <li><a href="/faq/">FAQ</a></li>
+    <li><a href="/help/rst_quickref">ReStructuredText Quickref</a></li>
+</ul>
+{% endblock submenu %}
+
+{% block content %}
+<h1>Help</h1>
+
+<p>Sundry guides and howtos, have a peek rightwards.</p>
+
+<p>If you wonder about something, check the <a href="/faq/">FAQ</a> first.</p>
+{% endblock content %}

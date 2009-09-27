@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}FAQ{% endblock title %}
+{% block submenu %}
+<ul>
+    <li><a href="/help">Help</a></li>
+    <li><b>FAQ</b></li>
+</ul>
+{% endblock submenu %}
+{% block content %}
+
+<h1>Frequently Asked Questions</h1>
+
+{% for object in object_list %}
+<h2>{{ object.question }}</h2>
+
+<div class="answer">
+{{ object.answer|safe }}
+
+<p>Last modified: {{ object.last_modified }}</p>
+
+</div>
+{% endfor %}
+
+{% endblock content %}

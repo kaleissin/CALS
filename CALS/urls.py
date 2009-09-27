@@ -75,6 +75,12 @@ urlpatterns = patterns('',
                                 'extra_context': 
                                         { 'me': 'help'}
                                 }),
+    (r'^help/',                 direct_to_template, {
+                                'template': 'static/help.html',
+                                'extra_context': 
+                                        { 'me': 'help'}
+                                }),
+
     (r'^logged_in$',            direct_to_template, login_params),
     (r'^logout$',               'django.contrib.auth.views.logout_then_login'),
     (r'^signup/$',              'nano.user.views.signup'),
@@ -91,7 +97,7 @@ urlpatterns = patterns('',
 
     (r'^translation/',          include('translation.urls')),
     (r'^badge/',                include('nano.badge.urls')),
-    (r'^help/',                 include('nano.faq.urls')),
+    (r'^faq/',                  include('nano.faq.urls')),
     (r'^',                      include('cals.urls')),
 
 )
