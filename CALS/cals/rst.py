@@ -21,13 +21,15 @@ class CALSHTMLTranslator(html4css1.HTMLTranslator):
         self.body.append(self.starttag(node, 'pre', CLASS='literal-block plaintext'))
 
     def visit_interlinear(self, node):
+        self.body.append(self.starttag(node, 'div'))
         il = InterlinearText()
-        il.add_text(node.astext())
-        text = il.to_html()
+        text = il.do_text(node.astext())
         self.body.append(text)
         node.children = []
 
     def depart_interlinear(self, node):
+        self.body.append('</div>') #self.endtag(node, 'div'))
+        self.body.append('<p></p>\n')
         pass
 
 class InterlinearDirective(rst.Directive):

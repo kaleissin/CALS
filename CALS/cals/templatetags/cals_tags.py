@@ -10,6 +10,8 @@ from django.contrib.auth.models import User
 from django.contrib.sessions.models import Session
 from django.conf import settings
 from django.core.cache import cache
+from django.utils.encoding import smart_str, force_unicode
+from django.utils.safestring import mark_safe
 
 from pygooglechart import StackedVerticalBarChart, Axis
 
@@ -21,6 +23,8 @@ LOG = getLogger('cals.templatetags')
 
 from cals.models import Language, Feature, Profile, LanguageFeature
 from translation.models import Translation
+
+from cals import markup_as_restructuredtext
 
 MWF = Feature.MAX_WALS_FEATURE
 
@@ -208,6 +212,8 @@ def latest_modified_languages(num_lang):
         raise template.TemplateSyntaxError, 'must be integer'
     return ''
 
+# reuse markup_as_restructuredtext
+@register.filter()
 def restructuredtext(value):
     try:
         from docutils.parsers.rst import directives
@@ -216,9 +222,9 @@ def restructuredtext(value):
         if settings.DEBUG:
             raise template.TemplateSyntaxError, "Error in {% restructuredtext %} filter: The Python docutils library isn't installed."
         return force_unicode(value)
-    from cals import rst
-    directives.register_directive('interlinear', rst.InterlinearDirective)
     else:
+        from cals import rst
+        directives.register_directive('interlinear', rst.InterlinearDirective)
         docutils_settings = getattr(settings, "RESTRUCTUREDTEXT_FILTER_SETTINGS", {})
         parts = publish_parts(source=smart_str(value), writer=rst.CALSHTMLWriter(), settings_overrides=docutils_settings)
         return mark_safe(force_unicode(parts["fragment"]))

@@ -7,6 +7,7 @@
     <li><a href="../../">Back to {{ feature.language }}</a></li>
     <li><a href=".">Back to overview</a></li>
     <li><b>Change</b></li>
+    <li><a href="./history/">History</a></li>
 </ul>
 </ul>
 {% endblock submenu %}
@@ -24,6 +25,7 @@
     <p>Currently only plaintext can be used here. HTML is stripped away.</p>
     <h3>Change description:</h3>
     {{ form.freetext }}
+    <p>Type: {{ form.freetext_type }}</p>
     <p>{{ form.freetext.errors }}</p>
     <input type="submit" name="preview" value="Preview" />
     <input type="submit" name="submit" value="Submit" />

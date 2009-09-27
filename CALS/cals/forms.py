@@ -14,7 +14,8 @@ from countries.models import Country
 
 from nano.link.models import Link
 
-from cals.models import *
+from cals.models import Language, Profile, Feature, FeatureValue, \
+        LanguageFeature, Category, Description, ExternalInfo
 
 def asciify(string):
     return unicodedata.normalize(string, 'NFKD').encode('ascii', 'ignore')
@@ -58,8 +59,8 @@ class LanguageForm(forms.ModelForm):
     def save(self, commit=True, user=None):
         new_manager = self.cleaned_data.get('manager', None)
         if new_manager:
-            manager = Profile.objects.get(user=new_manager.id)
-            self.cleaned_data['manager'] = manager.user
+            manager = User.objects.get(id=new_manager.user)
+            self.cleaned_data['manager'] = manager
 #         if user:
 #             LOG.info('CALS new language #1: %s', self.cleaned_data)
 #             self.cleaned_data['added_by_id'] = user.id
@@ -91,11 +92,11 @@ class FeatureValueForm(forms.Form):
                 self.fields['value'].initial = initial.get('value', None)
 
 class DescriptionForm(forms.ModelForm):
-    freetext = forms.CharField(widget=forms.Textarea(attrs={'rows': '20', 'cols':'60'}))
+    freetext = forms.CharField(widget=forms.Textarea(attrs={'rows': '20', 'cols':'66'}))
 
     class Meta:
         model = Description
-        fields = ('freetext', 'freetext_link')
+        fields = ('freetext', 'freetext_link', 'freetext_type')
 
 class FeatureDescriptionForm(forms.ModelForm):
     description = forms.CharField(widget=forms.Textarea(attrs={'rows': '20', 'cols':'60'}))

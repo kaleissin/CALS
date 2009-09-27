@@ -13,8 +13,6 @@ from textile import textile
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
-#from django.contrib.markup.templatetags.markup import textile
-from django.contrib.markup.templatetags.markup import restructuredtext, markdown
 from django.db import models, connection
 from django.db.models import Q
 from django.db.models.query import QuerySet
@@ -26,6 +24,10 @@ import tagging
 from tagging.fields import TagField
 from countries.models import Country
 #from nano.link.models import Link
+
+import sys
+#assert False, sys.path
+from cals import markup_as_restructuredtext
 
 # Create your models here.
 FEATURE_GROUPS_CHOICES = (
@@ -43,7 +45,6 @@ FEATURE_GROUPS_CHOICES = (
         )
 
 FREETEXT_TYPES = (
-        ('textile', 'textile'),
         ('rst', 'RestructuredText'),
         ('plaintext', 'plaintext'),
         )
@@ -76,19 +77,14 @@ class Freetext(models.Model):
         return self.freetext_xhtml
 
     def save(self, *args, **kwargs):
-        self.freetext = strip_tags(self.freetext)
         self.freetext_xhtml = self.make_xhtml()
         super(Freetext, self).save(*args, **kwargs)
 
     def make_xhtml(self):
-        freetext = strip_tags(self.freetext)
-        if self.freetext_type == 'textile':
-            freetext_xhtml = textile(self.freetext.decode('utf8'), head_offset=1, validate=0, sanitize=0)
-#             freetext_xhtml = textile(self.freetext.encode('utf8'), head_offset=1,
-#                     validate=0, sanitize=0, encoding='utf-8', output='utf-8').encode('UTF-8')
-        elif self.freetext_type == 'rst':
-            freetext_xhtml = restructuredtext(self.freetext)
+        if self.freetext_type == 'rst':
+            freetext_xhtml = markup_as_restructuredtext(self.freetext)
         else:
+            freetext = strip_tags(self.freetext)
             freetext_xhtml = u'<pre class="plaintext">'+self.freetext.strip()+u'</pre>'
         return freetext_xhtml
 
@@ -117,7 +113,7 @@ class Description(Freetext):
         if not batch:
             self.id = next_id(self.__class__)
             self.last_modified = datetime.now()
-            self.freetext = self.make_xhtml()
+            #self.freetext_xhtml = self.make_xhtml()
             if user:
                 self.last_modified_by = user
             Description.objects.filter(object_id=self.object_id).update(current=False)

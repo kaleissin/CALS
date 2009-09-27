@@ -25,8 +25,7 @@ def get_interlinear(model):
             format = u'monospace'
         else:
             il = InterlinearText()
-            il.add_text(interlinear)
-            return il.to_html()
+            return il.do_text(interlinear)
     return u'<pre>%s</pre>' % interlinear
 
 class Interlinear(models.Model):
