@@ -64,20 +64,22 @@ todo_params = {
 
 urlpatterns = patterns('',
     (r'^admin/doc/',            include('django.contrib.admindocs.urls')),
-#    (r'^admin/webalizer/',      include('webalizer.urls')),
-    (r'^admin/(.*)',            admin.site.root),
+    (r'^admin/',                include(admin.site.urls)),
 
     # red tape
     (r'^favicon\.ico$', 'django.views.generic.simple.redirect_to', {'url': '/media/img/favicon.ico'}),
 
     (r'^thankyou$',             direct_to_template, thankyou_params),
-
+    (r'^help/rst_quickref$',    direct_to_template, {
+                                'template': 'static/rst_quickref.html', 
+                                'extra_context': 
+                                        { 'me': 'help'}
+                                }),
     (r'^logged_in$',            direct_to_template, login_params),
     (r'^logout$',               'django.contrib.auth.views.logout_then_login'),
     (r'^signup/$',              'nano.user.views.signup'),
     (r'^password/reset/$',      'nano.user.views.password_reset', {'project_name': 'CALS'}),
     (r'^password/change/$',     'nano.user.views.password_change'),
-
 
     (r'^feeds/languages/(.*)/$', 'django.contrib.syndication.views.feed', {'feed_dict': language_feeds}),
     (r'^feeds/people/(.*)/$', 'django.contrib.syndication.views.feed', {'feed_dict': people_feeds}),
@@ -89,12 +91,8 @@ urlpatterns = patterns('',
 
     (r'^translation/',          include('translation.urls')),
     (r'^badge/',                include('nano.badge.urls')),
+    (r'^help/',                 include('nano.faq.urls')),
     (r'^',                      include('cals.urls')),
-
-
-#     (r'^openid/login/$', 'openid_auth.views.login'),
-#     (r'^openid/ok/$', 'openid_auth.views.complete_openid_login'),
-#     (r'^openid/logout/$', 'openid_auth.views.logout', {'next_page' : '/'}),
 
 )
 
