@@ -20,5 +20,5 @@
     {{ patch|safe }}
     <h2>Revision as of {{ newest.last_modified|date:"Y-m-d H:i:s" }}, by {% showuser newest.last_modified_by %}</h2>
     {{ newest|safe }}
-    <p>Format: {{ newest.freetext_type }}</p>
+    <p><b>Format:</b> {{ newest.get_freetext_type_display }}</p>
 {% endblock content %}
