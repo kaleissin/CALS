@@ -47,16 +47,25 @@
 </ul>
 {% endif %}
 {% endblock submenu %}
+
 {% block content %}
+
+<h1>{{ object.name }}</h1>
+
+<p>
+{% shareicon %}
+</p>
+
 <form action="" method="post">
 <table>
-    <tr><th>External name:</th><td>{{ object.name }}</td></tr>
     <tr><th>Internal name:</th><td>{{ object.internal_name }}</td></tr>
     <tr><th>Author:</th><td>{{ object.author }}</td></tr>
     <tr><th>Homepage:</th><td>{% if object.homepage %}<a class="ext" href="{{ object.homepage }}">{{ object.homepage }}</a>{% else %}–{% endif %}</td></tr>
     <tr><th>Background:</th><td>{{ object.background }}</td></tr>
     <tr><th>Greeting:</th><td>{{ object.greeting|default:"" }}</td></tr>
     <tr><th>Vocabulary size:</th><td>{{ object.vocabulary_size|default:"NA" }}</td></tr>
+    <tr><th>Permalink:</th><td><a href=".">{{ request.path }}</td></tr>
+    <tr><th>Homepage:</th><td>{% if object.homepage %}<a class="ext" href="{{ object.homepage }}">{{ object.homepage }}</a>{% else %}–{% endif %}</td></tr>
     <tr><th>From earth:</th><td>{{ object.from_earth|yesno:"yes,no,unknown" }}</td></tr>
     <tr><th>Averageness:</th><td>{{ object.average_score }}/100, 
             {{ object.num_avg_features }} of {{ object.num_features }}</td></tr>

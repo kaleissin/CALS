@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load cals_tags %}
 {% block title %}Translation of "{{ translation.exercise.name }}" by {{ user }}{% endblock title %}
 {% block submenu %}
 <ul>
@@ -13,8 +14,7 @@
 {% endblock submenu %}
 {% block content %}
 <h2>Translation of "{{ translation.exercise.name }}" ({{ translation.exercise.category }})</h2>
-
-<form action="" method="post">
+<p>{% shareicon %}
 <table>
     <tr>
         <th>Original:</th>
@@ -29,5 +29,4 @@
         <td>{% if translation.il_xhtml %}{{ translation.il_xhtml|safe }} {% else %}{% if translation.interlinear %}<pre>{{ translation.interlinear }}</pre>{% else %}Not added{% endif %}{% endif %}</td>
     </tr>
 </table>
-</form>
 {% endblock content %}

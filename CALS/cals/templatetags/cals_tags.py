@@ -224,6 +224,11 @@ def restructuredtext(value):
         return mark_safe(markup_as_restructuredtext(value))
 restructuredtext.is_safe = True
 
+@register.inclusion_tag('shareicon.html', takes_context=True)
+def shareicon(context):
+    return { 'MEDIA_URL': context['MEDIA_URL'] }
+shareicon.is_safe = True
+
 # -------------- nano.pm
 
 @register.simple_tag
