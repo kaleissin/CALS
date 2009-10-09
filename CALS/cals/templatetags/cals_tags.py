@@ -15,11 +15,13 @@ from django.utils.safestring import mark_safe
 
 from pygooglechart import StackedVerticalBarChart, Axis
 
-from nano.tools import getLogger, grouper
+from nano.tools import grouper
 from nano.tools.templatetags.nano_tags import *
 from nano.badge.templatetags.badge_tags import show_badges
 from nano.privmsg.models import PM
-LOG = getLogger('cals.templatetags')
+
+import logging
+_LOG = logging.getLogger(__name__)
 
 from cals.models import Language, Feature, Profile, LanguageFeature
 from translation.models import Translation
