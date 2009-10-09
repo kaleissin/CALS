@@ -25,8 +25,8 @@ urlpatterns = patterns('django.views.generic',
 )
 
 urlpatterns += patterns('cals.views',
-        (r'^(?P<objects>[+0-9]+)/$',            'compare_feature'), 
         (r'^(?P<object_id>[0-9]+)/$',           'show_feature'),
+        (r'^(?P<objects>[+0-9]+)/$',            'compare_feature'), 
         (r'^(?P<object_id>[0-9]+)/change$',     'change_feature_description'),
         (r'^(?P<object_id>[0-9]+)/use$',        'revert_feature_description'),
         (r'^(?P<object_id>[0-9]+)/history/$',   'show_feature_history'),

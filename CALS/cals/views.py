@@ -177,7 +177,7 @@ def compare_feature(request, *args, **kwargs):
         return HttpResponseNotFound()
     if len(features) == 1:
         # 'One feature'
-        kwargs['object'] = features[0]
+        kwargs['object_id'] = features[0]
         return show_feature(request, *args, **kwargs)
     elif len(features) > 2:
         # 'Too many features'
@@ -237,7 +237,7 @@ def list_feature(request, *args, **kwargs):
 def show_feature(request, *args, **kwargs):
     me = 'feature'
     try:
-         feature = Feature.objects.active().get(id=kwargs['object'])
+         feature = Feature.objects.active().get(id=kwargs['object_id'])
     except Feature.DoesNotExist:
         return HttpResponseNotFound()
     cform = CompareTwoFeaturesForm()
