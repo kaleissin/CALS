@@ -15,8 +15,8 @@
         {% for lf in object.languagefeature_set.all %}
         <tr class="{% cycle odd,even %}">
             <td></td>
-            <td><a href="/language/{{ lf.language.slug }}"> {{ lf.language.name }}</a></td>
-            <td>{{ lf.description|safe }}</td>
+            <td><a href="/language/{{ lf.language.slug }}/feature/{{ lf.feature.id }}/"> {{ lf.language.name }}</a></td>
+            <td>{{ lf.description|default:""|safe }}</td>
         </tr>
         {% endfor %}
     </table>
