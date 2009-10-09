@@ -4,8 +4,10 @@ from django.shortcuts import get_object_or_404
 from django.views.generic.list_detail import object_list
 from django.views.generic.create_update import delete_object
 
-from nano.tools import getLogger, pop_error, render_page, get_user_model
-LOG = getLogger('translation.views')
+from nano.tools import pop_error, render_page, get_user_model
+
+import logging
+_LOG = logging.getLogger(__name__)
 
 from cals.views import _get_lang, _get_user, langs_for_user
 

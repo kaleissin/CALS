@@ -7,8 +7,8 @@ import string
 import sys
 sys.stderr = sys.stdout
 
-from cals import getLogger
-LOG = getLogger('cals.statistics')
+import logging
+_LOG = logging.getLogger(__name__)
 
 from django.contrib.contenttypes.models import ContentType
 from django.db import connection
@@ -112,8 +112,8 @@ def compare_languages(langs, same=True, different=True):
     features = Feature.objects.active().order_by('id')
     comparison = [(None,) + tuple(langs)]
     num_features = tuple(['Number of features'] + [lang.num_features for lang in langs])
-    LOG.info('2: compare_languages: %s %s' % (same, different))
-    LOG.info('3: num_features %s' % `num_features`)
+    _LOG.info('2: compare_languages: %s %s' % (same, different))
+    _LOG.info('3: num_features %s' % `num_features`)
     a, b, c = 0, 0, 0
     d = 0
     for feature in features:
@@ -139,7 +139,7 @@ def compare_languages(langs, same=True, different=True):
                 elif different and d:
                     comparison.append(tuple([feature] + lang_list))
                     c += 1
-    LOG.info('4: a %s b %s c %s d %s' % (a, b, c, d))
+    _LOG.info('4: a %s b %s c %s d %s' % (a, b, c, d))
     return comparison
 
 def country_most_common():
@@ -251,7 +251,7 @@ def joined():
     login = User.objects.dates('last_login', 'day')
     created = Language.objects.dates('created', 'day')
     last_modified = Language.objects.dates('last_modified', 'day')
-    LOG.info('Joined: %s' % joined[:5])
+    _LOG.info('Joined: %s' % joined[:5])
 
 def languages_ranked_by_averageness():
     unrankedlist = [(lang.average_score, lang) for lang in Language.objects.all()]

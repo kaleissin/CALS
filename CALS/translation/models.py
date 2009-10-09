@@ -2,8 +2,8 @@
 
 from datetime import datetime
 
-from cals import getLogger
-LOG = getLogger('cals.models')
+import logging
+_LOG = logging.getLogger(__name__)
 
 from django.contrib.auth.models import User
 from django.db import models

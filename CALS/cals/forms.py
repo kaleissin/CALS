@@ -1,5 +1,5 @@
-from cals import getLogger
-LOG = getLogger('cals.forms')
+import logging
+_LOG = logging.getLogger(__name__)
 
 import unicodedata
 
@@ -59,12 +59,12 @@ class LanguageForm(forms.ModelForm):
     def save(self, commit=True, user=None):
         new_manager = self.cleaned_data.get('manager', None)
         if new_manager:
-            manager = User.objects.get(id=new_manager.user)
+            manager = User.objects.get(id=new_manager.user.id)
             self.cleaned_data['manager'] = manager
 #         if user:
-#             LOG.info('CALS new language #1: %s', self.cleaned_data)
+#             _LOG.info('CALS new language #1: %s', self.cleaned_data)
 #             self.cleaned_data['added_by_id'] = user.id
-#             LOG.info('CALS new language #2: %s', self.cleaned_data)
+#             _LOG.info('CALS new language #2: %s', self.cleaned_data)
         return super(LanguageForm, self).save(commit)
 
 class CompareTwoForm(forms.Form):
