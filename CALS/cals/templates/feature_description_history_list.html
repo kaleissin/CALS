@@ -5,10 +5,8 @@
 <ul>
     <li><a href="/feature/">All features</a></li>
     <li><a href="../">Back to overview</a></li>
-    {% if user.is_authenticated %}
-    {% ifequal user lang.added_by %}
+    {% if user.is_authenticated and user.is_staff %}
     <li><a href="./change">Change description</a></li>
-    {% endifequal %}
     {% endif %}
     <li><b>History</b></li>
 </ul>
@@ -27,10 +25,8 @@
     {% if d.current %} 
     Current
     {% else %}
-    {% if user.is_authenticated %}
-    {% ifequal user lang.manager %}
+    {% if user.is_authenticated and user.is_staff %}
     (<a href="../use?id={{ d.id }}">Use this one</a>)
-    {% endifequal %}
     {% endif %}
     {% endif %}
     </li>
