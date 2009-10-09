@@ -4,10 +4,10 @@
 {% block submenu %}
 <ul>
     <li><a href="../">All features</a></li>
-    {% if user.is_authenticated %}
+    {% if user.is_authenticated and user.is_staff %}
     <li><a href="./change">Change</a></li>
-    <li><a href="./history/">History</a></li>
     {% endif %}
+    <li><a href="./history/">History</a></li>
 </ul>
     <hr />
     <form action="" method="post">
