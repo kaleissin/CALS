@@ -2,7 +2,7 @@
 {# {% load nano_web20_tags %} #}
 {% load cals_tags %}
 {% load badge_tags %}
-{% block title %}{{ object.username }}'s page{% endblock title %}
+{% block title %}{{ object.get_profile.display_name|default:object.username }}'s page{% endblock title %}
 {% block submenu %}
 <ul>
     <li><a href="../">All people</a></li>
@@ -13,21 +13,32 @@
 </ul>
 {% if user.is_authenticated %}
 <hr />
-<ul>
-    {% ifequal user.id object.id %}
-    <li><a href="./pm/archive/">Archived messages</a></li>
-    <li><a href="./pm/sent/">Sent messages</a></li>
-    {% else %}
-    <li><a href="./pm/add">Send {{ object.username }} a message</a></li>
-    {% endifequal %}
-</ul>
+{% ifequal user.id object.id %}
+    <ul>
+        <li><a href="./pm/archive/">Archived messages</a></li>
+        <li><a href="./pm/sent/">Sent messages</a></li>
+    </ul>
+    {% if user.marks.faved.count %}
+    <hr />
+    <h4>Favorites</h4>
+    <ul>
+    {% for mark in user.marks.faved %}
+        <li><a href="{{ mark.content_object.get_absolute_url }}">{{ mark.content_object }}</a></li>
+    {% endfor %}
+    </ul>
+    {% endif %}
+{% else %}
+    <ul>
+        <li><a href="./pm/add{% if whereami %}?next={{ whereami }}{% endif %}">Send {{ object.username }} a message</a></li>
+    </ul>
+{% endifequal %}
 {% endif %}
 {% endblock submenu %}
 {% block content %}
+    <h1>{% gravatar object 20 %} {{ profile.display_name|default:object.username }}</h1>
     <table>
         <tr><th>Username:</th><td>{{ object.username }}</td></tr>
-        <tr><th>Display name:</th><td>{{ profile.display_name|default:"NA" }}</td>
-        </tr>
+        <tr><th>Link:</th><td><a href="{{ profile.get_absolute_url }}">{{ request.SITE }}{{ profile.get_absolute_url }}</a></td></tr>
         {% ifequal user.username object.username %}
         <tr class="private"><th>Email:</th>
             <td>{% if object.email %}{{ object.email }}{% else %}None registered{% endif %} 
@@ -43,7 +54,7 @@
         {% if profile.homepage %}
         <tr>
             <th>Homepage:</th>
-            <td><a href="{{ profile.homepage }}">{{ profile.homepage_title|default:profile.homepage }}</a></td>
+            <td><a class="ext" href="{{ profile.homepage }}">{{ profile.homepage_title|default:profile.homepage }}</a></td>
         </tr>
         {% endif %}
         {% if profile.country %}
@@ -117,7 +128,7 @@
                     <tr class="{% cycle odd,even %}">
                         <th>{{ translation.exercise }}</th>
                         <td>{{ translation.language }}</td>
-                        <td><a href="/translation/language/{{ translation.language.slug }}/">{{ translation }}</a></td>
+                        <td><a href="/translation/language/{{ translation.language.slug }}/" class="plaintext">{{ translation }}</a></td>
                     </tr>
                 {% endfor %}
                 </table>
@@ -146,8 +157,8 @@
             {{ pm.text }}
             <div class="pm-footer">
             sent by {% showuser pm.sender %} at {{ pm.sent }} 
-            | <a href="{% url archive_pm object_id=pm.recipient.id,msgid=pm.id %}">archive</a></a>
-            | <a href="{% url delete_pm object_id=pm.recipient.id,msgid=pm.id %}">delete</a></a>
+            | <a href="{% url archive_pm object_id=pm.recipient.id,msgid=pm.id %}{% if whereami %}?next={{ whereami }}{% endif %}">archive</a></a>
+            | <a href="{% url delete_pm object_id=pm.recipient.id,msgid=pm.id %}{% if whereami %}?next={{ whereami }}{% endif %}">delete</a></a>
             </div>
             </div>
             {% endfor %}
