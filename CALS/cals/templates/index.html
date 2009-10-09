@@ -87,6 +87,12 @@ if (document.signup)
     <small><a href="/news/latest/">Older
     news</a></small>
     </h1>
+    {% for entry in devel_news %}
+    <h3>{{ entry.headline }}</h3>
+    <div>{{ entry.content|safe }}
+        <p>Pinned: {{ entry.pub_date|date:"Y-m-d H:i" }}</p>
+    </div>
+    {% endfor %}
     {% for entry in news %}
     <h3>{{ entry.pub_date|date:"Y-m-d H:i" }} {{ entry.headline }}</h3>
     <div>{{ entry.content|safe }}</div>
