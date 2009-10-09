@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load cals_tags %}
+{% load nano_mark_tags %}
 {% load comments %}
 {% block title %}Language: {{ object.name }}{% endblock title %}
 {% block submenu %}
@@ -40,7 +41,7 @@
 {% if categories %}
 <hr />
 <h4>Features</h4>
-<ul>  
+<ul>
     {% for category in categories %}
     <li><a href="#{{ category.name|slugify }}">{{ category.name }}</a></li>
     {% endfor %}
@@ -52,9 +53,12 @@
 
 <h1>{{ object.name }}</h1>
 
-<p>
-{% shareicon %}
-</p>
+<table>
+<tr>
+    <td style="vertical-align: middle; font-weight: bold">{% mark_faved object  %}</td>
+    <td>{% shareicon %}</td>
+</tr>
+</table>
 
 <form action="" method="post">
 <table>
