@@ -1,7 +1,16 @@
 # Django settings for cals project.
 
+import sys, os
+
+SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
+
+sys.path.append(os.path.join(SITE_ROOT, 'env'))
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
+
+SITES_PREFIX = '/home/django-sites'
+PATH_PREFIX = SITES_PREFIX + '/CALS'
 
 ADMINS = (
     ('Kaleissin', 'kaleissin@gmail.com'), # ('Your Name', 'your_email@domain.com'),
@@ -30,17 +39,17 @@ USE_I18N = True
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = '/home/django-media/CALS/'
+MEDIA_ROOT = PATH_PREFIX + '/media/'
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = 'http://media.aldebaaran.uninett.no/'
+MEDIA_URL = '/media/'
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
-ADMIN_MEDIA_PREFIX = 'http://media.aldebaaran.uninett.no/admin/'
+ADMIN_MEDIA_PREFIX = '/admin/media/'
 
 # Make this unique, and don't share it with anybody.
 
@@ -54,6 +63,7 @@ TEMPLATE_LOADERS = (
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django_notify.middleware.NotificationsMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.doc.XViewMiddleware',
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
@@ -65,7 +75,7 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    '/home/django-sites/CALS/templates/',
+    PATH_PREFIX + '/templates',
 )
 
 INSTALLED_APPS = (
@@ -81,9 +91,16 @@ INSTALLED_APPS = (
     'tagging',
     'countries',
 #    'profiles',
+
     'nano.blog',
     'nano.user',
 #    'nano.web20',
+    'nano.link',
+    'nano.badge',
+    'nano.faq',
+    'nano.privmsg',
+
+    'relay',
 )
 
 #AUTHENTICATION_BACKENDS = (
@@ -101,7 +118,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.debug',
     'django.core.context_processors.i18n',
     'django.core.context_processors.media',
-    'django.core.context_processors.request'
+    'django.core.context_processors.request',
+    'django_notify.context_processors.notifications',
 )
 
 INTERNAL_IPS = ('127.0.0.1', '158.38.62.153',)
@@ -110,21 +128,6 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 CACHE_BACKEND = 'memcached://127.0.0.1:11211/'
 
-# Application-specific
-
-#The trust root to use for OpenID requests
-#OPENID_TRUST_ROOT = [The host of the request]
-
-#The host to handle the response from the OpenID server
-#OPENID_RETURN_HOST = [The host of the request]
-
-#Setting to turn off OpenID iNames
-#OPENID_DISALLOW_INAMES = False
-
-#The CSS class to use for the openid_url form field
-#LOGIN_OPENID_URL_CLASS = 'openid'
-
-
 FORCE_LOWERCASE_TAGS = True
 
 
@@ -132,5 +135,26 @@ FORCE_LOWERCASE_TAGS = True
 NANO_LOG_FILE = '/tmp/cals.log'
 NANO_USER_EMAIL_SENDER = 'kaleissin@gmail.com'
 
-# Webalizer
-WEBALIZER_DIR = '/home/www/webalizer/CALS/'
+RESTRUCTUREDTEXT_FILTER_SETTINGS = {
+        'file_insertion_enabled': 0,
+        'raw_enabled': 0,
+        '_disable_config': 1}
+
+import logging, logging.handlers
+LOG_FORMAT = '%(asctime)s %(name)s %(pathname)s:%(lineno)d %(levelname)s %(message)s'
+LOG_FILE = '/tmp/cals.log'
+LOG_LEVEL = logging.DEBUG
+
+_logger = logging.getLogger('')
+_log_formatter = logging.Formatter(LOG_FORMAT)
+_log_handler = logging.handlers.TimedRotatingFileHandler(LOG_FILE, when='D', backupCount=30)
+_log_handler.setFormatter(_log_formatter)
+_logger.addHandler(_log_handler)
+_logger.setLevel(LOG_LEVEL)
+_logger.info('Set up logging for CALS')
+
+
+try:
+    from localsettings import *
+except ImportError:
+    pass
