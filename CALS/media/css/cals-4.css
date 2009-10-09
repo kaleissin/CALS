@@ -21,6 +21,7 @@ background-color: #bcd7ae;
     font-weight: bold;
 }
 td.diff_header { text-align: right }
+.diff_header .extra { text-align: center; }
 .diff_header { background-color: #eee }
 .diff_next { display: none }
 .diff_text { white-space: pre-wrap; }
@@ -283,7 +284,7 @@ a img {
 
 
 div.bgbuffer {
-    width: 230;
+    width: 230px;
 }
 
 td.bgimg { margin-right: 250px; }
@@ -368,7 +369,7 @@ ul {
     margin: 1ex;;
 }
 
-.error { 
+.system-message, .error { 
     padding: 1ex;
     border: 3px dashed #000; 
     background: #ffde28;
@@ -398,6 +399,7 @@ ul {
 .tagsize7 * { font-size: xx-large; color: #25331a; font-weight: 900}
 .tagsize * { font-size: xx-large; color: #25331a; font-weight: 900}
 
+table.feature tr, table.feature td, table.feature th { vertical-align: baseline; }
 table.feature th { width: 40em; }
 table.feature td.fv { width: 20em; }
 
@@ -457,11 +459,11 @@ input[type=text] {
 #login input {
     width: 10em;
 }
-#login input.openid {
+input#id_openid_url {
     background: url(/CALS/img/login-openid-bg.gif) no-repeat;
     background-position: 0 50%;
     padding-left: 16px;
-    width: 40em;
+    width: 25em;
 }
 
 .counter span {
@@ -474,8 +476,8 @@ input[type=text] {
 }
 
 .langname { width: 10em; }
-dd table { border: 1px solid #dec }
+dd table { border: 1px solid #dec; width: 100% }
 
 /* Interlinears */
-.interlinear .word { float: left; margin-right: 1ex;}
+.interlinear .word { display: inline-block; margin-right: 1ex;}
 .interlinear p { clear: left; font-style: italic }
