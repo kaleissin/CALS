@@ -32,6 +32,9 @@
     {% ifequal user lang.manager %}
     (<a href="../use?id={{ d.id }}">Use this one</a>)
     {% endifequal %}
+    {% if user.is_superuser %}
+    (<a href="./delete?id={{ d.id }}">Remove this one</a>)
+    {% endif %}
     {% endif %}
     {% endif %}
     </li>
