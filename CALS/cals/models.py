@@ -5,8 +5,8 @@ import unicodedata
 import datetime as dt
 from datetime import datetime
 
-from cals import getLogger
-LOG = getLogger('cals.models')
+import logging
+_LOG = logging.getLogger(__name__)
 
 from textile import textile
 
@@ -25,8 +25,8 @@ from tagging.fields import TagField
 from countries.models import Country
 #from nano.link.models import Link
 
-import sys
-#assert False, sys.path
+from interlinears import leipzig
+
 from cals import markup_as_restructuredtext
 
 # Create your models here.
@@ -81,11 +81,15 @@ class Freetext(models.Model):
         super(Freetext, self).save(*args, **kwargs)
 
     def make_xhtml(self):
+        plaintext_fmt = u'<pre class="plaintext">%s</pre>'
         if self.freetext_type == 'rst':
-            freetext_xhtml = markup_as_restructuredtext(self.freetext)
+            try:
+                freetext_xhtml = markup_as_restructuredtext(self.freetext)
+            except leipzig.InterlinearError, e:
+                freetext_xhtml = '<div class="error">%s<br />%s</div>' % (e.args[0], plaintext_fmt % self.freetext.strip())
         else:
             freetext = strip_tags(self.freetext)
-            freetext_xhtml = u'<pre class="plaintext">'+self.freetext.strip()+u'</pre>'
+            freetext_xhtml = plaintext_fmt % self.freetext.strip()
         return freetext_xhtml
 
 class DescriptionManager(models.Manager):
@@ -113,7 +117,6 @@ class Description(Freetext):
         if not batch:
             self.id = next_id(self.__class__)
             self.last_modified = datetime.now()
-            #self.freetext_xhtml = self.make_xhtml()
             if user:
                 self.last_modified_by = user
             Description.objects.filter(object_id=self.object_id).update(current=False)
@@ -154,7 +157,7 @@ class DescriptionMixin(object):
         self_type = ContentType.objects.get_for_model(self)
         description_type = ContentType.objects.get(app_label="cals", model="description")
         try:
-            return Description.objects.get(object_id=self.id, current=True)
+            return Description.objects.get(object_id=self.id, current=True, content_type=self_type)
         except Description.DoesNotExist:
             return None
 
