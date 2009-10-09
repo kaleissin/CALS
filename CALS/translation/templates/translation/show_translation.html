@@ -1,10 +1,12 @@
 {% extends "base.html" %}
 {% load cals_tags %}
+{% load nano_mark_tags %}
 {% block title %}Translation of "{{ translation.exercise.name }}" by {{ user }}{% endblock title %}
 {% block submenu %}
 <ul>
     <li><a href="/translation/">All</a></li>
     <li><a href="/translation/{{ translation.exercise.slug }}/">All for <b>{{ translation.exercise }}</b></a></li>
+    <li><a href="/translation/{{ translation.exercise.slug }}/language/{{ translation.language.slug }}/">All for <b>{{ translation.exercise }}</b> in <b>{{ translation.language }}</b></a></li>
     <li><b>Details</b></li>
     {% ifequal user translation.translator %}
     <li><a href="../change">Change</a></li>
@@ -14,11 +16,16 @@
 {% endblock submenu %}
 {% block content %}
 <h2>Translation of "{{ translation.exercise.name }}" ({{ translation.exercise.category }})</h2>
-<p>{% shareicon %}
+<table>
+<tr>
+    <td>{% mark_faved translation %}</td>
+    <td>{% shareicon %}</td>
+</tr>
+<table>
 <table>
     <tr>
         <th>Original:</th>
-        <th>{{ translation.exercise.exercise }}</th>
+        <th class="plaintext">{{ translation.exercise.exercise }}</th>
     </tr>
     <tr>
         <th>Translation:</th>

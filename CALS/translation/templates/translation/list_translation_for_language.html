@@ -9,14 +9,16 @@
 </ul>
 {% endblock submenu %}
 {% block content %}
-<h2>Translations of "{{ exercise.name }}" ({{ exercise.category }}) for {{ lang }}</h2>
+<h1>Translations of "{{ exercise.name }}" ({{ exercise.category }}) for {{ lang }}</h1>
 
-<p><b>Original:</b> {{ exercise.exercise }}</p>
+<h2>Original</h2>
+<div class="plaintext">{{ exercise.exercise }}</div>
 
 <table>
     <tr>
-        <th>Translation</th>
-        <th>Translator</th>
+        <th><h2>Translation</h2></th>
+        <th><h2>Translator</h2></th>
+    </tr>
     {% for object in object_list %}
     <tr class="{% cycle odd,even %}">
         <td>

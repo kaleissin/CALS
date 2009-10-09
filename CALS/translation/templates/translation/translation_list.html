@@ -19,7 +19,7 @@
         <table>
         {% for translation in object.translations.all %}
             <tr>
-                <td class="langname"><a href="{{ object.slug }}/language/{{ translation.language.slug }}/">{{ translation.language }}</a>:</td>
+                <td class="langname"><a href="{{ object.slug }}/language/{{ translation.language.slug }}/{{ translation.translator.username }}/">{{ translation.language }}</a>:</td>
                 <td>
 <div class="plaintext">{% ifequal translation.translator user %}<a href="/translation/{{ translation.exercise.slug }}/language/{{ translation.language.slug }}/change">{{ translation }}</a>{% else %}{{ translation }}{% endifequal %}</div>
                 </td>
