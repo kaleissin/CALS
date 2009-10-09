@@ -4,8 +4,8 @@
 from pprint import pprint, pformat
 import difflib
 
-from cals import getLogger
-LOG = getLogger('cals.tools')
+import logging
+_LOG = logging.getLogger(__name__)
 
 from django.contrib.contenttypes.models import ContentType
 from django.http import HttpResponseNotFound, HttpResponseForbidden
@@ -60,7 +60,7 @@ class BetterHtmlDiff(difflib.HtmlDiff):
         return '<td class="diff_header"%s>%s</td><td %s>%s</td>' \
                % (id,linenum,text_class,text)
 
-def description_diff(oldest, newest, link_prefix):
+def description_diff(oldest, newest, link_prefix, may_revert=False, may_remove=False):
 
     def make_link_piece(obj, piece):
         if obj:
@@ -80,7 +80,20 @@ def description_diff(oldest, newest, link_prefix):
     diff_header_template = loader.get_template('cals/diff_header.html')
     differ = BetterHtmlDiff()
 
+    if may_revert:
+        use_this_button = u'<a href="../use?id=%i"><button>Use this</button></a>'
+    else:
+        use_this_button = u''
+
+    if may_remove:
+        remove_button = u'<a href="./delete?id=%i"><button>Remove this</button></a>'
+    else:
+        remove_button = u''
+
     # prev header
+    prev_use_this_button = use_this_button % oldest.id if may_revert else u'' 
+    prev_remove_button = remove_button % oldest.id if may_remove else u''
+    prev_extra = prev_use_this_button + prev_remove_button
     old_prev_url = get_next_prev_links(oldest.prev_version(),
             newest, 'Previous')
     if not old_prev_url:
@@ -93,9 +106,12 @@ def description_diff(oldest, newest, link_prefix):
         old_next_url += u' →'
     prev_version = Context({'prev_version': old_prev_url,
             'next_version': old_next_url,
+            'extra': prev_extra,
             'last_modified': oldest.last_modified,
             'last_modified_by': oldest.last_modified_by })
 
+    # next header
+    new_extra = ''
     new_prev_url = get_next_prev_links(oldest,
             newest.prev_version(), 'Previous')
     if new_prev_url:
@@ -104,9 +120,15 @@ def description_diff(oldest, newest, link_prefix):
             newest.next_version(), 'Next') + u' →'
     if newest.current:
         new_next_url = '<b>Current</b>'
-
+    else:
+        next_use_this_button = use_this_button % newest.id if may_revert else u'' 
+        next_remove_button = remove_button % newest.id if may_remove else u''
+        next_extra = next_use_this_button + next_remove_button
+        new_extra = use_this_button % newest.id if use_this_button else u''
+    
     next_version = Context({'prev_version': new_prev_url,
             'next_version': new_next_url,
+            'extra': new_extra,
             'last_modified': newest.last_modified,
             'last_modified_by': newest.last_modified_by })
 
@@ -116,3 +138,4 @@ def description_diff(oldest, newest, link_prefix):
             diff_header_template.render(prev_version),
             diff_header_template.render(next_version),
             )
+
