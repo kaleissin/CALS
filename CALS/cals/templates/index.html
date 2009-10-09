@@ -9,6 +9,8 @@ Home
 <link rel="alternate" type="application/atom+xml" title="Recently changed conlangs" href="/feeds/languages/last_modified/" />
 <link rel="alternate" type="application/atom+xml" title="Recently joined people" href="/feeds/people/recent/" />
 <meta name="y_key" content="0f4f0fec0e8eceb3" />
+<meta name="verify-v1" content="Ogg2GMii+ZXlMGMqUGIf2PDuCjhxfQCFiTpf9T6159o=" />
+{% comment %}
 <!--
 <script language="javascript" type="text/javascript">
 
@@ -30,6 +32,7 @@ if (document.signup)
 
 </script>
 -->
+{% endcomment %}
 {% endblock head %}{% block no_submenu %}{% endblock no_submenu %}
 {% block loginbox %}
     <form method="post" action=".">
@@ -46,9 +49,7 @@ if (document.signup)
                 </tr>
                 <tr><td></td>
                     <td>
-                        <button type="submit" name="login"
-                            value="login">Log in</button>&nbsp;<a
-                            href="/signup/">Sign up</a>
+                        <button type="submit" name="login" value="login">Log in</button>&nbsp;<a href="/signup/">Sign up</a>
                        <!-- <button type="submit" name="signup" value="signup">Sign up</button> -->
                     </td>
                 </tr>
@@ -115,7 +116,7 @@ usable at all?</li>
     <tr>
         <td>
             <h3>
-                <a href="http://cals.conlang.org/feeds/languages/newest/"><img src="{{ MEDIA_URL }}img/feed-icon-14x14.png" alt="Feed: New languages"/></a>
+                <a href="/feeds/languages/newest/"><img class="icon" src="{{ MEDIA_URL }}img/feed-icon-14x14.png" alt="Feed: New languages"/></a>
                 Newly added</h3>
             <ul>
             {% for lang in langs_newest %}
@@ -125,7 +126,7 @@ usable at all?</li>
         </td>
         <td>
             <h3>
-                <a href="http://cals.conlang.org/feeds/languages/last_modified/"><img src="{{ MEDIA_URL }}img/feed-icon-14x14.png" alt="Feed: Changed languages"/></a>
+                <a href="/feeds/languages/last_modified/"><img class="icon" src="{{ MEDIA_URL }}img/feed-icon-14x14.png" alt="Feed: Changed languages"/></a>
                 Last modified</h3>
             <ul>
             {% for lang in langs_modified %}
@@ -135,7 +136,7 @@ usable at all?</li>
         </td>
         <td>
             <h3>
-                <a href="/feeds/people/recent/"><img src="{{ MEDIA_URL }}img/feed-icon-14x14.png" alt="Feed: Recently joined"/></a>
+                <a href="/feeds/people/recent/"><img class="icon" src="{{ MEDIA_URL }}img/feed-icon-14x14.png" alt="Feed: Recently joined"/></a>
                 Recently joined</h3>
             <ul>
             {% for person in people %}
