@@ -5,12 +5,12 @@ from cals.models import Profile
 
 # people
 people_list_dict = {
-        'queryset': Profile.objects.all().order_by('display_name'),
+        'queryset': Profile.objects.filter(user__is_active=True).order_by('display_name'),
         'extra_context': { 'me': 'people' },
 }
 
 people_detail_dict = {
-        'queryset': User.objects.all().select_related(),
+        'queryset': User.objects.filter(is_active=True).select_related(),
         'extra_context': { 'me': 'people' },
 }
 
