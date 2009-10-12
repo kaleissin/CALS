@@ -97,7 +97,7 @@ def currently_logged_in():
 
 @register.simple_tag
 def graphline(barsize):
-    string = u'<img src="%simg/background.jpg" width="%%i" height="16" />' % MEDIA_URL
+    string = u'<img src="%simg/gradient.png" width="%%i" height="16" />' % MEDIA_URL
     return string % (int(barsize) * 10)
 
 @register.simple_tag
