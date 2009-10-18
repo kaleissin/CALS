@@ -181,11 +181,6 @@ class CategoryForm(forms.ModelForm):
 
 class FeatureForm(forms.ModelForm):
 
-    def __init__(self, *args, **kwargs):
-        super(FeatureForm, self).__init__(*args, **kwargs)
-        self.fields['description'].required = True
-        self.fields['description'].widget = forms.Textarea(attrs={'rows': 40, 'cols': 80})
-
     class Meta:
         model = Feature
 
