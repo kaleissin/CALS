@@ -1,6 +1,8 @@
 
 from datetime import timedelta, datetime
 
+from django.conf import settings
+
 from nano.blog import add_entry_to_blog
 from nano.blog.models import Entry
 
@@ -10,8 +12,17 @@ def new_user_anywhere(sender, **kwargs):
     new = kwargs[u'created']
     if new:
         new_user = kwargs[u'instance']
-        blog_template = 'blog/new_user.html'
-        add_entry_to_blog(new_user, '%s just joined' % new_user.username, blog_template, date_field='date_joined')
+        test_users = getattr(settings, 'NANO_USER_TEST_USERS', ())
+
+        # Add blog-entry
+        for test_user in test_users:
+            if new_user.username.startswith(test_user):
+                break
+        else:
+            blog_template = 'blog/new_user.html'
+            add_entry_to_blog(new_user, '%s just joined' % new_user.username, blog_template, date_field='date_joined')
+
+        # Make sure there is a profile
         try:
             profile = new_user.get_profile()
         except Profile.DoesNotExist:
