@@ -330,7 +330,7 @@ def vocab_size():
             'mode': mode }
 
 def get_all_lurkers():
-    users = User.objects.filter(profile__is_visible=True)
+    users = User.objects.filter(is_active=True, profile__is_visible=True)
     lurkers = users.filter(edits__isnull=True,
             manages__isnull=True,
             translations__isnull=True, 
@@ -344,7 +344,7 @@ def generate_global_stats():
     features = Feature.objects.active()
     fvs = FeatureValue.objects.filter(feature__active=True) #value_counts()
     langs = Language.objects.all()
-    users = Profile.objects.filter(is_visible=True)
+    users = Profile.objects.filter(user__is_active=True, is_visible=True)
     lfs = LanguageFeature.objects.all()
 
     user100 = User.objects.get(id=139)
