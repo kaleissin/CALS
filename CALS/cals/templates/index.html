@@ -8,6 +8,7 @@ Home
 <link rel="alternate" type="application/atom+xml" title="Recently added conlangs" href="/feeds/languages/newest/" />
 <link rel="alternate" type="application/atom+xml" title="Recently changed conlangs" href="/feeds/languages/last_modified/" />
 <link rel="alternate" type="application/atom+xml" title="Recently joined people" href="/feeds/people/recent/" />
+<link rel="alternate" type="application/atom+xml" title="Newest translation exercises" href="/feeds/translations/exercises/" />
 <meta name="y_key" content="0f4f0fec0e8eceb3" />
 <meta name="verify-v1" content="Ogg2GMii+ZXlMGMqUGIf2PDuCjhxfQCFiTpf9T6159o=" />
 {% comment %}
@@ -137,6 +138,17 @@ usable at all?</li>
             <ul>
             {% for lang in langs_modified %}
             <li>{% show_lang lang %}</li>
+            {% endfor %}
+            </ul>
+        </td>
+        <td>
+            <h3>
+                <a href="/feeds/translations/exercises/"><img
+                class="icon" src="{{ MEDIA_URL }}img/feed-icon-14x14.png" alt="Feed: New translation exercises"/></a>
+                New translation exercises</h3>
+            <ul>
+            {% for ex in trans_exs_newest %}
+            <li><a href="/translation/{{ ex.slug }}/">{{ ex.name }}</a></li>
             {% endfor %}
             </ul>
         </td>
