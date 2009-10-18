@@ -877,6 +877,7 @@ def auth_login(request, *args, **kwargs):
     langs_modified = langs.order_by('-last_modified')[:5]
     people = User.objects.exclude(username='countach')
     people_recent = people.order_by('-date_joined')[:5]
+    trans_ex_recent = TranslationExercise.objects.order_by('-added')[:5]
     if u'next' in request.REQUEST:
         next = request.REQUEST[u'next']
     if request.method == 'POST':
@@ -927,6 +928,7 @@ def auth_login(request, *args, **kwargs):
             'language_cloud': l_cloud,
             'langs_newest': langs_newest,
             'langs_modified': langs_modified,
+            'trans_exs_newest': trans_ex_recent,
             'people': people_recent,}
     return render_page(request, 'index.html', data)
 
