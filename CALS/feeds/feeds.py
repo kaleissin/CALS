@@ -1,6 +1,7 @@
 import djatom as atom
 from nano.blog.models import Entry
 from cals.models import Language, Profile
+from translation.models import TranslationExercise
 from django.template.loader import render_to_string
 
 STANDARD_AUTHORS = ({'name': 'admin'},)
@@ -97,7 +98,7 @@ class AllPeopleFeed(AbstractFeed):
     _item_template = 'feeds/people_description_all.html'
 
     def items(self):
-        return Profile.objects.filter(user__is_active=True).exclude(username='countach').order_by('display_name')
+        return Profile.objects.filter(user__is_active=True).exclude(username__startswith='countach').order_by('display_name')
 
     def item_id(self, item):
         return item.display_name
@@ -128,7 +129,7 @@ class RecentlyJoinedFeed(AbstractFeed):
     _item_template = 'feeds/people_description.html'
 
     def items(self):
-        return Profile.objects.exclude(username='countach').order_by('-user__date_joined')[:15]
+        return Profile.objects.exclude(user__is_active=False, username__startswith='countach').order_by('-user__date_joined')[:15]
 
     def item_id(self, item):
         return item.display_name
@@ -148,4 +149,34 @@ class RecentlyJoinedFeed(AbstractFeed):
 
     def item_published(self, item):
         return item.user.date_joined
+
+class NewTranslationExerciseFeed(AbstractFeed):
+    feed_title = "CALS: new translation exercises"
+    feed_id = "http://cals.conlang.org/feeds/translations/"
+    #title_template = 'feeds/people_title_all.html'
+
+#     description = "The people that most recently joined CALS"
+    _item_template = 'feeds/transex_description.html'
+
+    def items(self):
+        return TranslationExercise.objects.order_by('-added')[:15]
+
+    def item_id(self, item):
+        return item.slug
+
+    def item_title(self, item):
+        return 'To translate: "%s"' % item.name
+
+    def item_content(self, item):
+        d = {'obj': item}
+        return {"type": "html",}, render_to_string(self._item_template, d)
+
+    def item_authors(self, item):
+        return ({'name': unicode(item.added_by)},)
+
+    def item_updated(self, item):
+        return item.added
+
+    def item_published(self, item):
+        return item.added
 

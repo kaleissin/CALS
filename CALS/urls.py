@@ -6,6 +6,9 @@ from CALS.feeds.feeds import *
 from django.contrib import admin
 admin.autodiscover()
 
+translation_feeds = { 'exercises': NewTranslationExerciseFeed,
+        }
+
 language_feeds = {
         'last_modified': UpdatedLanguagesFeed,
         'newest': NewestLanguagesFeed,
@@ -87,6 +90,7 @@ urlpatterns = patterns('',
     (r'^password/reset/$',      'nano.user.views.password_reset', {'project_name': 'CALS'}),
     (r'^password/change/$',     'nano.user.views.password_change'),
 
+    (r'^feeds/translations/(.*)/$', 'django.contrib.syndication.views.feed', {'feed_dict': translation_feeds}),
     (r'^feeds/languages/(.*)/$', 'django.contrib.syndication.views.feed', {'feed_dict': language_feeds}),
     (r'^feeds/people/(.*)/$', 'django.contrib.syndication.views.feed', {'feed_dict': people_feeds}),
     (r'^feeds/(.*)/$', 'django.contrib.syndication.views.feed', {'feed_dict': all_feeds}),
