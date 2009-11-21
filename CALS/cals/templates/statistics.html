@@ -96,11 +96,14 @@
     </dl>
 
 <h2><a name="people"></a>Frequency of conlanger countries</h2>
-<ol class="statistics">
+<table class="statistics">
 {% for country in users.countries %}
-    <li>{{ country.country.printable_name }} {{ country.count|default:"0" }}</li>
+    <tr><td>{{ country.country.printable_name }}</td>
+        <td class="right">{{ country.count|default:"0" }}</td>
+        <td>{% graphline country.count %}</td>
+    </tr>
 {% endfor %}
-</ol>
+</table>
 
 <h2>Conlang-specific stats</h2>
 
