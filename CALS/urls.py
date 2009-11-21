@@ -99,7 +99,7 @@ urlpatterns = patterns('',
     (r'^news/',                 include('nano.blog.urls')),
     (r'^comments/',             include('django.contrib.comments.urls')),
 
-    (r'^translation/',          include('translation.urls')),
+    (r'^translation/',          include('translations.urls')),
     (r'^badge/',                include('nano.badge.urls')),
     (r'^faq/',                  include('nano.faq.urls')),
     (r'^',                      include('cals.urls')),

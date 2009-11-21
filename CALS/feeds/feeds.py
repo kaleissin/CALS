@@ -1,7 +1,7 @@
 import djatom as atom
 from nano.blog.models import Entry
 from cals.models import Language, Profile
-from translation.models import TranslationExercise
+from translations.models import TranslationExercise
 from django.template.loader import render_to_string
 
 STANDARD_AUTHORS = ({'name': 'admin'},)

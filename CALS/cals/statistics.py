@@ -19,7 +19,7 @@ from pygooglechart import StackedVerticalBarChart, Axis, SimpleLineChart
 
 from cals.models import *
 from cals.forms import *
-from translation.models import Translation
+from translations.models import Translation
 
 def language_alphabetic_letters(num = 10):
     top_letters = """SELECT 

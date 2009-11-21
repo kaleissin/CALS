@@ -24,7 +24,7 @@ import logging
 _LOG = logging.getLogger(__name__)
 
 from cals.models import Language, Feature, Profile, LanguageFeature
-from translation.models import Translation
+from translations.models import Translation
 
 from cals import markup_as_restructuredtext
 

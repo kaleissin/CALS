@@ -35,7 +35,7 @@ from cals.forms import *
 from cals.statistics import *
 from cals.tools import *
 
-from translation.models import TranslationExercise, Translation
+from translations.models import TranslationExercise, Translation
 
 from nano.tools import *
 from nano.blog.models import Entry
