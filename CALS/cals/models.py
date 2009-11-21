@@ -251,7 +251,6 @@ class FeatureValue(models.Model, DescriptionMixin):
     name = models.CharField(max_length=64)
     position = models.IntegerField(null=True)#, editable=False)
 
-
     class Meta:
         unique_together = ('feature', 'name')
         ordering = ['feature__id', 'position']
@@ -263,6 +262,16 @@ class FeatureValue(models.Model, DescriptionMixin):
 
 # END Features
 
+class ProfileManager(models.Manager):
+    def autobiographers(self):
+        return self._query_set().exclude(
+                country__isnull=True, 
+                homepage_title__isnull=True,
+                latitude__isnull=True, 
+                longitude__isnull=True).exclude(
+                Q(homepage__isnull=True) | Q(homepage_title='')
+        )
+
 class Profile(models.Model):
 # TODO: change date-format on profile-page, needs new date-filter
 #     CHOICE_DATE = datetime(2008, 5, 1, 14, 0, 0, 7, UTC())
@@ -271,7 +280,8 @@ class Profile(models.Model):
 #             ('Y-m-d H:i O', CHOICE_DATE.),
 #             ('r', ''),
 #             )
-    user = models.ForeignKey(User, unique=True, related_name='profile', primary_key=True)
+    user = models.OneToOneField(User, related_name='profile', primary_key=True)
+    #user = models.ForeignKey(User, unique=True, related_name='profile', primary_key=True)
     # Denormalization of django.contrib.auth.models.User - allows public
     # backup of database without exposing passwords and email-addresses
     username = models.CharField(max_length=30, unique=True, editable=False)
@@ -289,6 +299,9 @@ class Profile(models.Model):
     altitude = models.IntegerField(blank=True,null=True, default=0)
     date_format = models.CharField(max_length=16, default="Y-m-d H:i O")
     is_visible = models.BooleanField(default=True)
+    seen_profile = models.BooleanField(default=False, editable=False)
+
+    objects = ProfileManager()
 
     class Meta:
         ordering = ('display_name',)
