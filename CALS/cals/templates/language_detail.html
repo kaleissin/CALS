@@ -68,7 +68,6 @@
     <tr><th>Greeting:</th><td>{{ object.greeting|default:"" }}</td></tr>
     <tr><th>Vocabulary size:</th><td>{{ object.vocabulary_size|default:"NA" }}</td></tr>
     <tr><th>Permalink:</th><td><a href=".">{{ request.path }}</td></tr>
-    <tr><th>Homepage:</th><td>{% if object.homepage %}<a class="ext" href="{{ object.homepage }}">{{ object.homepage }}</a>{% else %}–{% endif %}</td></tr>
     <tr><th>From earth:</th><td>{{ object.from_earth|yesno:"yes,no,unknown" }}</td></tr>
     <tr><th>Averageness:</th><td>{{ object.average_score }}/100, 
             {{ object.num_avg_features }} of {{ object.num_features }}</td></tr>
@@ -115,4 +114,5 @@
 </table>
 {% endfor %}
 </form>
+{% load_shareicon_library %}
 {% endblock content %}
