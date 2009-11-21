@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Changing {{ user }}{% endblock title %}
+{% block submenu %}
+<ul>
+    <li><a href="/translation/">All</a></li>
+    <li><a href="./">Details</a></li>
+    <li><b>Change</b></li>
+    <li><a href="./delete">Delete</a></li>
+</ul>
+{% endblock submenu %}
+{% block content %}
+<h2>Translating "{{ exercise.name }}" ({{ exercise.category }})</h2>
+{% if exercise.comment %}
+<div class="help">{{ exercise.comment|safe }}</div>
+{% endif %}
+
+<form action="" method="post">
+<table>
+    <tr>
+        <th>Original:</th>
+        <th class="plaintext">{{ exercise.exercise }}</th>
+        <td class="help">A <b>$</b> in the original acts as a placeholder in
+the text. It is used for instance when auto-generating a greeting: if
+there is a <b>$</b>, it is replaced with the name. If
+there is no <b>$</b>, the name is placed after the greeting with a space
+in-between.</td>
+        <td></td>
+    </tr>
+    <tr>
+        <th>{{ form.translation.label_tag }}:</th>
+        <td>{{ form.translation }}</td>
+        <td class="help">{{ form.translation.help_text }}</td>
+        <td class="errors">{{ form.translation.errors }}</td>
+    </tr>
+    <tr>
+        <th>{{ form.interlinear.label_tag }}:</th>
+        <td colspan="3">{{ form.interlinear }}<br />
+        <span class="help">{{ form.interlinear.help_text|safe }}</span>
+        {% if form.interlinear.errors %}<p class="errors">{{ form.interlinear.errors }}</p>{% endif %}
+        </td>
+    </tr>
+    <tr>
+        <th>{{ form.il_format.label_tag }}:</th>
+        <td colspan="3">{{ form.il_format }}<br />
+        <span class="help">{{ form.il_format.help_text|safe }}</span>
+        {% if form.il_format.errors %}<p class="errors">{{ form.il_format.errors }}</p>{% endif %}
+        </td>
+    </tr>
+    <tr><td></td><td><input type="submit" /></td></tr>
+</table>
+{{ form.errors }}
+</form>
+{% endblock content %}

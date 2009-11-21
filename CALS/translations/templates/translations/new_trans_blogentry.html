@@ -1,0 +1,5 @@
+<div class="translation">
+<p>{{ obj }}</p>
+{% if obj.il_xhtml %}<div>{{ obj.il_xhtml|safe }}</div>{% else %}{% if obj.interlinear %}<pre>{{ obj.interlinear }}</pre>{% endif %}{% endif %}
+<p class="plaintext">{{ obj.exercise.exercise }}</p>
+</div>

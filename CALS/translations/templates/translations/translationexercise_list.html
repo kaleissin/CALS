@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load cals_tags %}
+{% block submenu %}
+<ul>
+    <li><a href="/translation/">All</a></li>
+    <li><b>{{ exercise }}</b></li>
+    {% comment %}
+    <li><b>All</b></li>
+    {% endcomment %}
+</ul>
+{% endblock submenu %}
+{% block content %}
+<h2>{{ exercise }}</h2>
+<p class="plaintext">{{ exercise.exercise }}</p>
+{% if exercise.comment %}
+<div class="help">{{ exercise.comment|safe }}</div>
+{% endif %}
+<table>
+        <tr>
+            <th>Language</th>
+            <th>Translation</th>
+            <th>Interlinear?</th>
+            <th>Translator</th>
+        </tr>
+        {% for object in object_list %}
+        <tr class="{% cycle odd,even %}">
+            <th><a href="/translation/{{ exercise.slug }}/language/{{ object.language.slug }}/">{{ object.language }}</a></th>
+            <td>
+                {% ifequal object.translator request.user %}
+                <a href="/translation/{{ exercise.slug }}/language/{{ object.language.slug }}/change">{{ object }}</a>
+                {% else %}
+                {{ object }}
+                {% endifequal %}
+            </td>
+            <td>{% if object.interlinear %}Yes{% else %}No{% endif %}</td>
+            <td>{% showuser object.translator.get_profile %}</td>
+        </tr>
+        {% endfor %}
+</table>
+
+{% if user.is_authenticated %}
+<p>You may translate this exercise into</p>
+<table>
+{% for langrow in langs|partition:6 %}
+<tr>
+{% for lang in langrow %}
+{% if lang %}
+<td><a href="/translation/{{ exercise.slug }}/language/{{ lang.slug }}/new">{{ lang }}</a></td>
+{% else %}
+<td></td>
+{% endif %}
+{% endfor %}
+</tr>
+{% endfor %}
+</tr>
+</table>
+{% endif %}
+{% endblock content %}
