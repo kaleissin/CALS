@@ -231,6 +231,11 @@ def shareicon(context):
     return { 'MEDIA_URL': context['MEDIA_URL'] }
 shareicon.is_safe = True
 
+@register.inclusion_tag('shareicon_library.html', takes_context=True)
+def load_shareicon_library(context):
+    return { 'MEDIA_URL': context['MEDIA_URL'] }
+load_shareicon_library.is_safe = True
+
 # -------------- nano.pm
 
 @register.simple_tag
