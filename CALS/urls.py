@@ -86,9 +86,6 @@ urlpatterns = patterns('',
 
     (r'^logged_in$',            direct_to_template, login_params),
     (r'^logout$',               'django.contrib.auth.views.logout_then_login'),
-    (r'^signup/$',              'nano.user.views.signup'),
-    (r'^password/reset/$',      'nano.user.views.password_reset', {'project_name': 'CALS'}),
-    (r'^password/change/$',     'nano.user.views.password_change'),
 
     (r'^feeds/translations/(.*)/$', 'django.contrib.syndication.views.feed', {'feed_dict': translation_feeds}),
     (r'^feeds/languages/(.*)/$', 'django.contrib.syndication.views.feed', {'feed_dict': language_feeds}),
@@ -96,6 +93,11 @@ urlpatterns = patterns('',
     (r'^feeds/(.*)/$', 'django.contrib.syndication.views.feed', {'feed_dict': all_feeds}),
 #    (r'^feeds/all/$', 'django.contrib.syndication.views.feed', {'feed_dict': {'all': AllFeed,},}),
 
+    (r'^account/',              include('nano.user.urls')),
+    # redirect the three links below into account/...
+    (r'^signup/$',              'nano.user.views.signup'),
+    (r'^password/reset/$',      'nano.user.views.password_reset', {'project_name': 'CALS'}),
+    (r'^password/change/$',     'nano.user.views.password_change'),
     (r'^news/',                 include('nano.blog.urls')),
     (r'^comments/',             include('django.contrib.comments.urls')),
 
