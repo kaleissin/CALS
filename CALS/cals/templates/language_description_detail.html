@@ -16,14 +16,12 @@
 {% endblock submenu %}
 {% block content %}
     <h1>{{ lang.name }}: {{ feature.feature.category.name }}: {{ feature.feature.name }}: {{ feature.value.name }}</h1>
-    <table>
-        {% if description.freetext_xhtml %}
-        {{ description.freetext_xhtml|safe }}
-        {% else %}
-        <p>Local description missing.</p>
-        {% endif %}
-        {% if description.freetext_link %}
-        <p>Even more info at <a href="{{ description.freetext_link }}">{{ description.freetext_link }}</a></p>
-        {% endif %}
-    </table>
+    {% if description.freetext_xhtml %}
+    {{ description.freetext_xhtml|safe }}
+    {% else %}
+    <p>Local description missing.</p>
+    {% endif %}
+    {% if description.freetext_link %}
+    <p>Even more info at <a href="{{ description.freetext_link }}">{{ description.freetext_link }}</a></p>
+    {% endif %}
 {% endblock content %}
