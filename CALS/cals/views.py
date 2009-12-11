@@ -828,6 +828,9 @@ def show_profile(request, *args, **kwargs):
         profile = user.get_profile()
     except Profile.DoesNotExist:
         return HttpResponseNotFound()
+    seen = profile.seen_profile
+    if seen:
+        Profile.objects.filter(user=profile.user).update(seen_profile=True)
     pms, pms_archived, pms_sent = (), (), ()
     if request.user == user:
         pms = PM.objects.received(user)
@@ -836,6 +839,7 @@ def show_profile(request, *args, **kwargs):
     data = {'object': user, 
             'profile': profile, 
             'me': me, 
+            'seen': seen,
             'pms': pms,
             'pms_archived': pms_archived,
             'pms_sent': pms_sent,
