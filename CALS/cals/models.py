@@ -264,7 +264,7 @@ class FeatureValue(models.Model, DescriptionMixin):
 
 class ProfileManager(models.Manager):
     def autobiographers(self):
-        return self._query_set().exclude(
+        return self.get_query_set().exclude(
                 country__isnull=True, 
                 homepage_title__isnull=True,
                 latitude__isnull=True, 
