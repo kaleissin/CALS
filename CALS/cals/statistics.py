@@ -36,23 +36,23 @@ def firstletter_langnames(langtype=LANGTYPES.ALL):
         langs = Language.objects.all()
     return [l.name.upper().strip()[0] for l in langs.only('name').all()]
 
-def letter_statistics(strings):
+def string_statistics(strings):
     """Counts how many times each string occurs and calculates percentages"""
     num_strings = float(len(strings))
     outdict = {}
     for string in strings:
         outdict[string] = outdict.get(string, 0) + 1 
-    return [(letter, count, count/num_strings*100) for string, count in outdict.items()]
+    return [(string, count, count/num_strings*100) for (string, count) in outdict.items()]
 
 def language_alphabetic_letters(num = 10):
     letters = firstletter_langnames(langtype=LANGTYPES.CONLANG)
-    letters = letter_statistics(letters)
+    letters = string_statistics(letters)
 
     return {'letters': [{'char': l, 'count': c, 'percentage': p} for l, c, p in letters]}
 
 def language_first_letters(num = 10):
     letters = firstletter_langnames(langtype=LANGTYPES.CONLANG)
-    letters = letter_statistics(letters)
+    letters = string_statistics(letters)
 
     #dsd
     letters = reversed(sorted([(c, l, p) for l, c, p in letters]))
