@@ -27,7 +27,7 @@ class LANGTYPES(object):
 
     types = (ALL, NATLANG, CONLANG)
 
-def firstletter_langnames(langtype=LANGTYPES.ALL):
+def get_langs(langtype=LANGTYPES.ALL):
     assert langtype in LANGTYPES.types
     if langtype == LANGTYPES.CONLANG:
         langs = Language.objects.conlangs()
@@ -35,6 +35,11 @@ def firstletter_langnames(langtype=LANGTYPES.ALL):
         langs = Language.natlangs.all()
     else:
         langs = Language.objects.all()
+    return langs
+
+def firstletter_langnames(langtype=LANGTYPES.ALL):
+    assert langtype in LANGTYPES.types
+    langs = get_langs(langtype=langtype)
     return [l.name.upper().strip()[0] for l in langs.only('name').all()]
 
 def string_statistics(strings):
@@ -224,10 +229,10 @@ def set_averageness_for_langs(langtype=LANGTYPES.ALL):
     assert langtype in LANGTYPES.types
     max_values = language_most_average_internal(langtype=langtype)
     average_features = [v['value'].id for k, v in max_values.items()]
-    for l in Language.objects.all():
+    for l in get_langs(langtype=langtype):
         num = l.features.count()
         if not num: continue
-        freq = get_averageness_for_lang(l, max_values=max_values, average_features=average_features)
+        freq = get_averageness_for_lang(l, max_values=max_values, average_features=average_features, langtype=langtype)
         if freq == None: continue
         l.num_avg_features = freq
         l.num_features = num
@@ -338,6 +343,7 @@ def generate_global_stats():
     num_lurkers = len(get_all_lurkers())
 
     most_average = conlangs.exclude(num_features=0).order_by('-average_score', '-num_features')
+    most_average_natlangs = natlangs.order_by('-average_score', '-num_features')[:20]
     lma = most_average.count()
     least_average = tuple(most_average)[-10:]
     most_average = most_average[:20]
@@ -373,6 +379,7 @@ def generate_global_stats():
             'first_letters': language_first_letters(),
             'alpha_letters': language_alphabetic_letters(),
             'most_average': most_average,
+            'most_average_natlangs': most_average_natlangs,
             'least_average': least_average,
             'lma': lma-10,
             'skeleton_langs': skeleton_langs,
