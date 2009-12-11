@@ -346,8 +346,40 @@ def revert_feature_description(request, *args, **kwargs):
 
 # language
 
+def _generate_comparison_type(comparison_type):
+    same = None
+    different = None
+    if comparison_type == 'different':
+        same = False
+        different = True
+    elif comparison_type == 'same':
+        same = True
+        different = False
+    return same, different
+
+def _compare(request, langs):
+    # langs should be a non-string iterator/generator over strings
+    assert len(langs)
+    langs = tuple(langs)
+
+    # Get existing comparison-type
+    comparison_type = request.REQUEST.get('compare', None)
+    same, different = _generate_comparison_type(comparison_type)
+
+    cform = CompareTwoForm(data=request.POST)
+    if cform.is_valid():
+        lang2 = cform.cleaned_data['lang2']
+        url = '+'.join(tuple(langs + (lang2.slug,)))
+        redirect_to = '/language/%s/' % url
+        if comparison_type in ('same', 'different'):
+            redirect_to = redirect_to + comparison_type
+        return HttpResponseRedirect(redirect_to)
+    return HttpResponseRedirect('.')
+
 def compare_language(request, *args, **kwargs):
     me = 'language'
+
+    # Check that langslugs are for existing langs
     langslugs = _get_url_pieces(name='slugs', **kwargs)
     comparison_type = kwargs.get('opt', None)
     _LOG.info('%s will compare %s' % (request.user, langslugs))
@@ -363,14 +395,13 @@ def compare_language(request, *args, **kwargs):
         except Language.DoesNotExist:
             continue
         langs.append(lang)
-    same = None
-    different = None
-    if comparison_type == 'different':
-        same = False
-        different = True
-    elif comparison_type == 'same':
-        same = True
-        different = False
+
+    if request.method == 'POST':
+        cform = CompareTwoForm(data=request.POST)
+        if cform.is_valid():
+            return _compare(request, langslugs)
+    cform = CompareTwoForm()
+    same, different = _generate_comparison_type(comparison_type)
     _LOG.debug('0: %s' % comparison_type)
     _LOG.debug('1: same %s, different %s' % (same, different))
     comparison = compare_languages(langs, same=same, different=different)
@@ -378,6 +409,7 @@ def compare_language(request, *args, **kwargs):
     data = {
             'comparison': comparison, 
             'me': me,
+            'cform': cform,
             'langs': langs,
             'comparison_type': comparison_type,
             }
@@ -396,24 +428,13 @@ def show_language(request, *args, **kwargs):
             continue
         if lf:
             cats.append({'name': category.name, 'features': lf})
+
+    # Nav for comparisons
     cform = CompareTwoForm()
     if request.method == 'POST':
         cform = CompareTwoForm(data=request.POST)
         if cform.is_valid():
-            lang2 = cform.cleaned_data['lang2']
-            same = None
-            different = None
-            comparison_type = request.REQUEST.get('compare', None)
-            if comparison_type == 'different':
-                same = False
-                different = True
-            elif comparison_type == 'same':
-                same = True
-                different = False
-            redirect_to = '/language/%s+%s/' % (lang.slug, lang2.slug)
-            if comparison_type in ('same', 'different'):
-                redirect_to = redirect_to + comparison_type
-            return HttpResponseRedirect(redirect_to)
+            return _compare(request, (lang.slug,))
     data = {'object': lang, 
             'categories': cats, 
             'me': me, 
