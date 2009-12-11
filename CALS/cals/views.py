@@ -268,7 +268,7 @@ def change_feature_description(request, *args, **kwargs):
             form = DescriptionForm(data=request.POST)
         if form.is_valid():
             featured = form.save(commit=False)
-            
+            featured.freetext_type = 'rst'
             if request.POST.get('preview'):
                 preview = featured.make_xhtml()
                 msg = "You are previewing the description of this feature"
@@ -276,7 +276,6 @@ def change_feature_description(request, *args, **kwargs):
             elif request.POST.get('submit'):
                 featured.content_type = ContentType.objects.get_for_model(feature)
                 featured.object_id = feature.id
-                featured.freetext_type = 'rst'
                 featured.save()
                 return HttpResponseRedirect(link)
     else:
