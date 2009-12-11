@@ -28,10 +28,11 @@ class LANGTYPES(object):
     types = (ALL, NATLANG, CONLANG)
 
 def firstletter_langnames(langtype=LANGTYPES.ALL):
+    assert langtype in LANGTYPES.types
     if langtype == LANGTYPES.CONLANG:
         langs = Language.objects.conlangs()
     if langtype == LANGTYPES.NATLANG:
-        langs = Language.objects.conlangs()
+        langs = Language.natlangs.all()
     else:
         langs = Language.objects.all()
     return [l.name.upper().strip()[0] for l in langs.only('name').all()]
@@ -221,7 +222,7 @@ def get_averageness_for_lang(lang, scale=100, max_values=None, average_features=
 
 def set_averageness_for_langs(langtype=LANGTYPES.ALL):
     assert langtype in LANGTYPES.types
-    max_values = language_most_average_internal()
+    max_values = language_most_average_internal(langtype=langtype)
     average_features = [v['value'].id for k, v in max_values.items()]
     for l in Language.objects.all():
         num = l.features.count()
