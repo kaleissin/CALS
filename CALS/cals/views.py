@@ -596,12 +596,14 @@ def list_languages(request, *args, **kwargs):
     for value in ('jrk', 'jrklist'):
         if in_kwargs_or_get(request, kwargs, 'action', value):
             return language_jrklist(request, *args, **kwargs)
+    if in_kwargs_or_get(request, kwargs, 'action', 'natlang'):
+        return language_list(request, natlang=True, *args, **kwargs)
     if not kwargs or kwargs.get('action', None) is None:
         return language_list(request, *args, **kwargs)
 
 def language_cloud(request, *args, **kwargs):
     me = 'language'
-    queryset = Language.objects.all().order_by('name')
+    queryset = Language.objects.conlangs().order_by('name')
     langs = []
     for lang in queryset:
         langs.append({'slug': lang.slug,
@@ -613,13 +615,17 @@ def language_cloud(request, *args, **kwargs):
             data)
 
 def language_jrklist(request, *args, **kwargs):
-    queryset = Language.objects.exclude(background='').order_by('name')
+    queryset = Language.objects.conlangs().exclude(background='').order_by('name')
     return object_list(request, queryset, 
             template_name='jrklist.html',
             extra_context={'me': 'language'})
 
-def language_list(request, *args, **kwargs):
-    queryset = Language.objects.all().order_by('name')
+def language_list(request, natlang=False, *args, **kwargs):
+    if natlang or in_kwargs_or_get(request, kwargs, 'action', 'natlang'):
+        natlang = True
+        queryset = Language.natlangs.all().order_by('name')
+    else:
+        queryset = Language.objects.conlangs().order_by('name')
     paginator = NamePaginator(queryset, on="name")
     page = page_in_kwargs_or_get(request, kwargs) or 1
 
@@ -630,6 +636,7 @@ def language_list(request, *args, **kwargs):
 
     data = {u'me': u'language',
             u'object_list': page.object_list,
+            u'natlang': natlang,
             u'page_obj': page,
             u'paginator': paginator,
             u'is_paginated': True}

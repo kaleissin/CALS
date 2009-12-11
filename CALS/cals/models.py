@@ -332,6 +332,31 @@ class Profile(models.Model):
 #         return ('profiles_profile_detail', (), { 'username': self.user.username })
 #     get_absolute_url = models.permalink(get_absolute_url)
 
+class LangtypeQuerySet(QuerySet):
+    def conlangs(self):
+        return self.exclude(natlang=True)
+
+    def natlangs(self):
+        return self.filter(natlang=True)
+
+class DefaultLanguageManager(models.Manager):
+    def get_query_set(self):
+        return LangtypeQuerySet(self.model).filter(visible=True)
+
+    def conlangs(self):
+        return self.get_query_set().conlangs()
+
+    def natlangs(self):
+        return self.get_query_set().natlangs()
+
+class NaturalLanguageManager(models.Manager):
+    def get_query_set(self):
+        return super(NaturalLanguageManager, self).get_query_set().filter(natlang=True)
+
+class DescriptionManager(models.Manager):
+    def get_query_set(self):
+        return super(DescriptionManager, self).get_query_set().filter(current=True)
+
 class Language(models.Model):
     name = models.CharField('External name', max_length=64, 
             help_text=u'Anglified name, safe for computing. ASCII!')
@@ -353,12 +378,18 @@ class Language(models.Model):
             db_column='greeting')
     vocabulary_size = models.PositiveIntegerField(null=True, blank=True,
             help_text="Estimated vocabulary size")
+    natlang = models.BooleanField(default=False, editable=False)
+
+    # statistics
     # Denormalization, real-time average-score is expensive
     average_score = models.IntegerField(editable=False, default=0)
     # Denormalization, real-time num-of-features can't be sorted on
     num_features = models.IntegerField(editable=False, default=0)
     # Denormalization, real-time num-of-features can't be sorted on
     num_avg_features = models.IntegerField(editable=False, default=0)
+
+    # Permissions and metadata
+    visible = models.BooleanField(default=True)
     tags = TagField(help_text="Separate tags with commas or spaces")
     public = models.BooleanField('Editable by all', default=True,
             help_text="""If yes/on, all logged in may edit. If no/off, only the
@@ -379,7 +410,9 @@ class Language(models.Model):
     last_modified_by = models.ForeignKey(User, editable=False, blank=True, null=True, related_name='languages_modified')
 
     # Managers
-    objects = models.Manager()
+    objects = DefaultLanguageManager()
+    natlangs = NaturalLanguageManager()
+    all_langs = models.Manager()
 
     class Meta:
         ordering = ['name']

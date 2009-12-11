@@ -54,7 +54,7 @@ class LanguageForm(forms.ModelForm):
 
     class Meta:
         model = Language
-        exclude = ('created', 'editors', 'last_modified_by')
+        exclude = ('created', 'editors', 'last_modified_by', 'visible', 'natlang')
 
     def save(self, commit=True, user=None):
         new_manager = self.cleaned_data.get('manager', None)

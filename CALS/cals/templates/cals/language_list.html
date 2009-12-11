@@ -2,9 +2,18 @@
 {% load paginator %}
 {% block submenu %}
 <ul>
+    {% if not natlang %}
     <li><b>All</b></li>
+    {% else %}
+    <li><a href="/language/">All</a></li>
+    {% endif %}
     <li><a href="/language/?jrk">Kennaway-style</a></li>
     <li><a href="/language/?cloud">Cloud</a></li>
+    {% if natlang %}
+    <li><b>Natlangs</b></li>
+    {% else %}
+    <li><a href="/language/?natlang">Natlangs</a></li>
+    {% endif %}
     {% if user.is_authenticated %}
     <li><a href="/language/new">Add</a></li>
     {% endif %}
@@ -16,8 +25,10 @@
         {% for object in object_list %}
         <li class="{% cycle odd,even %}">
             <a href="/language/{{ object.slug }}/">{{ object }}</a>
+            {% if not natlang %}
             {% if object.author %}by {{ object.author }}{% endif %} 
             ({{ object.features.count }} feature{{ object.features.count|pluralize }})</li>
+            {% endif %}
         {% endfor %}
     </ul>
     {% paginator %}

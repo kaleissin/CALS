@@ -7,6 +7,7 @@
     <li><a href="../">All</a></li>
     {% if user.is_authenticated %}
     <li><a href="../new">Add</a></li>
+    {% if not object.natlang %}
         {% if object.public %}
     <li><a href="./change">Change</a></li>
         {% else %}
@@ -14,6 +15,7 @@
     <li><a href="./change">Change</a></li>
             {% endifequal %}
         {% endif %}
+    {% endif %}
     {% endif %}
 </ul>
 <hr />
@@ -62,7 +64,9 @@
 <form action="" method="post">
 <table>
     <tr><th>Internal name:</th><td>{{ object.internal_name }}</td></tr>
+    {% if not object.natlang %}
     <tr><th>Author:</th><td>{{ object.author }}</td></tr>
+    {% endif %}
     <tr><th>Homepage:</th><td>{% if object.homepage %}<a class="ext" href="{{ object.homepage }}">{{ object.homepage }}</a>{% else %}–{% endif %}</td></tr>
     <tr><th>Background:</th><td>{{ object.background }}</td></tr>
     <tr><th>Greeting:</th><td>{{ object.greeting|default:"" }}</td></tr>

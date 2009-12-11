@@ -1,11 +1,9 @@
 # Create your views here.
-from pprint import pprint, pformat
 from random import choice, sample
 import time
 import unicodedata
 import string
 import sys
-sys.stderr = sys.stdout
 
 import logging
 _LOG = logging.getLogger(__name__)
@@ -14,6 +12,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import connection
 from django.http import HttpResponseNotFound, HttpResponseForbidden
 from django.shortcuts import render_to_response, get_object_or_404
+from django.db.models import Q, Count, Avg, Max, Min
 
 from pygooglechart import StackedVerticalBarChart, Axis, SimpleLineChart
 
@@ -21,49 +20,43 @@ from cals.models import *
 from cals.forms import *
 from translations.models import Translation
 
-def language_alphabetic_letters(num = 10):
-    top_letters = """SELECT 
-    substr(upper(name), 1, 1) AS char, 
-    count(substr(upper(name), 1, 1)) 
-    FROM cals_language GROUP BY char ORDER BY char, count DESC
-    """
+class LANGTYPES(object):
+    CONLANG = 1
+    NATLANG = 2
+    ALL = CONLANG + NATLANG
 
-    num_langs = Language.objects.count()
-    cursor = connection.cursor()
-    cursor.execute(top_letters)
-    max_count = 0
-    rows = []
-    for row in cursor.fetchall():
-        count = row[1]
-        rows.append({'char': row[0], 'count': count, 'percentage':
-            row[1]/float(num_langs)*100})
-        if count > max_count:
-            max_count = count
-    num_letters = len(rows)
-    cursor.close()
-    return {'letters':rows}
+    types = (ALL, NATLANG, CONLANG)
+
+def firstletter_langnames(langtype=LANGTYPES.ALL):
+    if langtype == LANGTYPES.CONLANG:
+        langs = Language.objects.conlangs()
+    if langtype == LANGTYPES.NATLANG:
+        langs = Language.objects.conlangs()
+    else:
+        langs = Language.objects.all()
+    return [l.name.upper().strip()[0] for l in langs.only('name').all()]
+
+def letter_statistics(strings):
+    """Counts how many times each string occurs and calculates percentages"""
+    num_strings = float(len(strings))
+    outdict = {}
+    for string in strings:
+        outdict[string] = outdict.get(string, 0) + 1 
+    return [(letter, count, count/num_strings*100) for string, count in outdict.items()]
+
+def language_alphabetic_letters(num = 10):
+    letters = firstletter_langnames(langtype=LANGTYPES.CONLANG)
+    letters = letter_statistics(letters)
+
+    return {'letters': [{'char': l, 'count': c, 'percentage': p} for l, c, p in letters]}
 
 def language_first_letters(num = 10):
-    top_letters = """SELECT 
-    substr(upper(name), 1, 1) AS char, 
-    count(substr(upper(name), 1, 1)) 
-    FROM cals_language GROUP BY char ORDER BY count DESC, char
-    """
+    letters = firstletter_langnames(langtype=LANGTYPES.CONLANG)
+    letters = letter_statistics(letters)
 
-    num_langs = Language.objects.count()
-    cursor = connection.cursor()
-    cursor.execute(top_letters)
-    max_count = 0
-    rows = []
-    for row in cursor.fetchall():
-        count = row[1]
-        rows.append({'char': row[0], 'count': count, 'percentage':
-            row[1]/float(num_langs)*100})
-        if count > max_count:
-            max_count = count
-    num_letters = len(rows)
-    cursor.close()
-    return {'letters':rows}
+    #dsd
+    letters = reversed(sorted([(c, l, p) for l, c, p in letters]))
+    return {'letters': [{'char': l, 'count': c, 'percentage': p} for c, l, p in letters]}
 
 def compare_value_sets(values1, values2):
     v1 = set(values1)
@@ -143,64 +136,56 @@ def compare_languages(langs, same=True, different=True):
     return comparison
 
 def country_most_common():
-    count_countries = """SELECT country_id, count(country_id) 
-    FROM "cals_profile" 
-    WHERE country_id IS NOT NULL 
-    GROUP BY country_id
-    ORDER BY count DESC"""
+    return Country.objects.annotate(count=Count('profile')).filter(count__gt=0).order_by('-count')
 
-    cursor = connection.cursor()
-    cursor.execute(count_countries)
-    return [{'country': Country.objects.get(iso=country[0]), 'count': country[1]} 
-            for country in cursor.fetchall()]
-
-def feature_usage(feature_order=False, max_count=None, limit=0):
-    feature_usage = """SELECT fv.*, count(lf.id) AS languages
-    FROM "cals_featurevalue" AS fv 
-    INNER JOIN "cals_feature" AS f ON fv.feature_id = f.id
-    LEFT JOIN "cals_languagefeature" AS lf ON lf.value_id = fv.id
-    WHERE f.active = true
-    %s 
-    GROUP BY fv.id, fv.feature_id, fv.name, fv.position 
-    %s
-    %s
+def unused_featurevalues():
+    """Returns feature values not used by conlangs.
+    
+    That is, values only used by natlangs are also included.
     """
 
-    where_unused = 'AND lf.id IS NULL '
-    having_count = 'HAVING count(lf.id) = %i '
-    order_feature = 'ORDER BY fv.feature_id, fv.position ' 
-    order_languages = 'ORDER BY languages DESC '
+    fvs = FeatureValue.objects.filter(feature__active=True)
+    unused_fvs = fvs.filter(languagefeature__isnull=True)
+    natlang_only_fvs = fvs.filter(languagefeature__language__natlang=True).exclude(languagefeature__language__natlang=False)
 
-    where = ''
-    having = ''
-    if max_count is not None:
-        if max_count == 0:
-            where = where_unused
-        elif max_count > 0:
-            having = having_count % max_count
-    else:
-        where = ''
-    if feature_order:
-        order = order_feature
-    else:
-        order = order_languages
+    if not natlang_only_fvs:
+        # Natlangs had no unique features so return early
+        return unused_fvs
+
+    # dsd
+    decorate = ((fv.id, fv) for fv in set(unused_fvs) | set(natlang_only_fvs))
+    sort = sorted(decorate)
+    return [fv for (_, fv) in sort]
+
+def feature_usage(langtype=LANGTYPES.ALL, limit=0):
+    assert langtype in LANGTYPES.types
+
+    fvs = FeatureValue.objects.filter(feature__active=True)
+    ls = Language.objects
+    if langtype == LANGTYPES.NATLANG:
+        ls = ls.natlangs()
+        fvs = fvs.filter(languagefeature__language__natlang=True)
+    elif langtype == LANGTYPES.CONLANG:
+        ls = ls.conlangs()
+        fvs = fvs.filter(languagefeature__language__natlang=False)
+
+    num_langs = ls.count()
+    fvs = fvs.annotate(count=Count('languagefeature')).order_by('-count')
+
     if limit:
-        feature_usage += 'LIMIT '+str(limit)
+        fvs = fvs[:limit]
 
-    num_langs = Language.objects.count()
-    cursor = connection.cursor()
-    cursor.execute(feature_usage % (where, having, order))
-    rows = [{'value': FeatureValue.objects.get(id=row[0]),
-            'feature': Feature.objects.active().get(id=row[1]), 
-            'languages': row[4],
-            'percentage': str(row[4]/float(num_langs)*100) }
-            for row in cursor.fetchall()]
-    cursor.close()
+    rows = [{'value': fv,
+            'feature': fv.feature,
+            'languages': fv.count,
+            'percentage': str(fv.count/float(num_langs)*100) }
+            for fv in fvs]
     return rows
 
-def language_most_average_internal():
+def language_most_average_internal(langtype=LANGTYPES.ALL):
+    assert langtype in LANGTYPES.types
     features = {}
-    for f in feature_usage():
+    for f in feature_usage(langtype=langtype):
         feature = f['feature']
         value = f['value']
         languages = f['languages']
@@ -222,9 +207,10 @@ def most_popular_values():
     cursor.execute(max_value_string)
     pass
 
-def get_averageness_for_lang(lang, scale=100, max_values=None, average_features=None):
+def get_averageness_for_lang(lang, scale=100, max_values=None, average_features=None, langtype=LANGTYPES.ALL):
+    assert langtype in LANGTYPES.types
     if not max_values:
-        max_values = language_most_average_internal()
+        max_values = language_most_average_internal(langtype=langtype)
     if not average_features:
         average_features = [v['value'].id for k, v in max_values.items()]
     values = [lf.value.id for lf in lang.features.all()]
@@ -233,7 +219,8 @@ def get_averageness_for_lang(lang, scale=100, max_values=None, average_features=
     frequency = compare_value_sets(average_features, values)
     return frequency
 
-def set_averageness_for_langs():
+def set_averageness_for_langs(langtype=LANGTYPES.ALL):
+    assert langtype in LANGTYPES.types
     max_values = language_most_average_internal()
     average_features = [v['value'].id for k, v in max_values.items()]
     for l in Language.objects.all():
@@ -242,6 +229,7 @@ def set_averageness_for_langs():
         freq = get_averageness_for_lang(l, max_values=max_values, average_features=average_features)
         if freq == None: continue
         l.num_avg_features = freq
+        l.num_features = num
         l.set_average_score()
         l.save(solo=False)
 
@@ -254,7 +242,7 @@ def joined():
     _LOG.info('Joined: %s' % joined[:5])
 
 def languages_ranked_by_averageness():
-    unrankedlist = [(lang.average_score, lang) for lang in Language.objects.all()]
+    unrankedlist = [(lang.average_score, lang) for lang in Language.objects.conlangs().all()]
     unranked = {}
     for short in shortlist:
         unranked.setdefault(short[0], []).append(short[1])
@@ -279,49 +267,31 @@ def vocab_size():
         mode = row[0]
         break
 
-    avg_max_min = """SELECT AVG(vocabulary_size),
-    MAX(vocabulary_size),
-    MIN(vocabulary_size)
-    FROM cals_language
-    WHERE vocabulary_size IS NOT NULL AND id != 80"""
+    ls = Language.objects.only('vocabulary_size').conlangs().filter(vocabulary_size__isnull=False).exclude(id=80)
+    avg_max_min = ls.aggregate(avg=Avg('vocabulary_size'), max=Max('vocabulary_size'), min=Min('vocabulary_size'))
+    avg = avg_max_min['avg']
+    max = avg_max_min['max']
+    min = avg_max_min['min']
 
-    cursor.execute(avg_max_min)
-    for row in cursor.fetchall():
-        avg, max, min = row
-        break
-
-    curve = """SELECT vocabulary_size 
-    FROM cals_language
-    WHERE vocabulary_size IS NOT NULL AND id != 80 
-    ORDER BY vocabulary_size DESC"""
-
-    cursor.execute(curve)
-    rows = [row[0] for row in cursor.fetchall()]
+    curve = ls.order_by('-vocabulary_size')
+    rows = [v.vocabulary_size for v in curve]
 
     chart = SimpleLineChart(400, 200, y_range=(0, max))
     chart.add_data(rows)
-    chart.set_axis_labels(Axis.LEFT, ['0', '2000', '4000',
-    '6000', '8000', '10000', '12000', '14000', str(int(max))])
+    chart.set_axis_labels(Axis.LEFT, 
+            ['0', '2000', '4000',
+            '6000', '8000', '10000', 
+            '12000', '14000', str(int(max))])
     chart_url = chart.get_url()
-#     median = """SELECT vocabulary_size as median FROM
-#         (SELECT l1.id, l1.vocabulary_size, COUNT(l1.vocabulary_size) AS rank
-#         FROM cals_language AS l1, cals_language AS l2
-#         WHERE l1.vocabulary_size < l2.vocabulary_size
-#             OR (l1.vocabulary_size = l2.vocabulary_size AND l1.id <= l2.id)
-#         GROUP BY l1.id, l1.vocabulary_size
-#         ORDER BY l1.vocabulary_size DESC) AS l3
-#     WHERE rank = (SELECT (COUNT(*)+1 DIV 2 FROM cals_language)"""
-#     
-#     cursor.execute(median)
-#     for row in cursor.fetchall():
-#         median = row
-#         break
+
+    # median
     num_rows = len(rows)
     middle = num_rows / 2
     if num_rows % 2:
         median = rows[middle-1]
     else:
         median = (rows[middle] + rows[middle+1]) / 2
+    
     return {'average': avg, 
             'min': min, 
             'max': max, 
@@ -344,35 +314,39 @@ def generate_global_stats():
     features = Feature.objects.active()
     fvs = FeatureValue.objects.filter(feature__active=True) #value_counts()
     langs = Language.objects.all()
+    conlangs = Language.objects.conlangs()
+    natlangs = Language.natlangs.all()
     users = Profile.objects.filter(user__is_active=True, is_visible=True)
     lfs = LanguageFeature.objects.all()
 
     user100 = User.objects.get(id=139)
     user150 = User.objects.get(id=200)
-    lang100 = Language.objects.get(id=154)
-    lang150 = Language.objects.get(id=271)
+    lang100 = conlangs.get(id=154)
+    lang150 = conlangs.get(id=271)
 
     num_features = features.count()
-    num_langs = langs.count()
+    num_conlangs = conlangs.count()
+    num_natlangs = natlangs.count()
+    num_langs = num_conlangs + num_natlangs
     num_users = users.count()
     num_lfs = lfs.count()
-    num_greetings = Language.objects.exclude(greeting__isnull=True).count()
-    num_backgrounds = Language.objects.exclude(background__isnull=True).exclude(background='').count()
+    num_greetings = Language.objects.conlangs().exclude(greeting__isnull=True).count()
+    num_backgrounds = Language.objects.conlangs().exclude(background__isnull=True).exclude(background='').count()
     num_translations = Translation.objects.count();
     num_countries = users.filter(country__isnull=False).count()
     num_lurkers = len(get_all_lurkers())
 
-    most_average = langs.exclude(num_features=0).order_by('-average_score', '-num_features')
+    most_average = conlangs.exclude(num_features=0).order_by('-average_score', '-num_features')
     lma = most_average.count()
     least_average = tuple(most_average)[-10:]
     most_average = most_average[:20]
 
     features_mu = feature_usage(limit=20)
-    not_used = feature_usage(feature_order=True, max_count=0)
+    not_used = unused_featurevalues()
 
     countries = country_most_common()
 
-    skeleton_langs = langs.filter(num_features=0)
+    skeleton_langs = conlangs.filter(num_features=0)
 
     data = {}
     data['milestones'] = { 
@@ -389,7 +363,8 @@ def generate_global_stats():
             'num_not_used': len(not_used),
             }
     data['langs'] = { 
-            'number': num_langs, 
+            'number': num_conlangs, 
+            'number_natlangs': num_natlangs, 
             'features_per_lang': str(num_lfs/float(num_langs)),
             'percentage_greetings': str(num_greetings/float(num_langs)*100),
             'percentage_backgrounds': str(num_backgrounds/float(num_langs)*100),

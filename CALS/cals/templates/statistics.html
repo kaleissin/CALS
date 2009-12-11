@@ -29,6 +29,11 @@
         <td>conlangs</td>
     </tr>
     <tr>
+        <td class="integer">{{ langs.number_natlangs }}</td>
+        <td></td>
+        <td>natlangs</td>
+    </tr>
+    <tr>
         <td class="integer">{{ langs.features_per_lang|integer }}</td>
         <td class="fraction">.{{ langs.features_per_lang|fraction }}</td>
         <td>features per language, on average</td>
@@ -98,7 +103,7 @@
 <h2><a name="people"></a>Frequency of conlanger countries</h2>
 <table class="statistics">
 {% for country in users.countries %}
-    <tr><td>{{ country.country.printable_name }}</td>
+    <tr><td>{{ country.printable_name }}</td>
         <td class="right">{{ country.count|default:"0" }}</td>
         <td>{% graphline country.count %}</td>
     </tr>
@@ -206,8 +211,8 @@
 
 <h3><a name="unused_features"></a>Unused values for features ({{ features.num_not_used }})</h3>
 <ul class="statistics">
-{% for feature in features.not_used %}
-    <li><a href="/value/{{ feature.value.id }}/">{{ feature.feature }}: {{ feature.value }}</a></li>
+{% for fv in features.not_used %}
+    <li><a href="/value/{{ fv.id }}/">{{ fv.feature }}: {{ fv.name }}</a></li>
 {% endfor %}
 </ul>
 

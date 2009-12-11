@@ -23,11 +23,32 @@ Comparing: {{ langs|join:", " }}
     <li><a href="#{{ category.name|slugify }}">{{ category.name }}</a></li>
     {% endfor %}
     {% endcomment %}
-    <hr />
+</ul>
+<hr />
+<ul>
     {% for lang in langs %}
     <li><a href="/language/{{ lang.slug }}/">{{ lang }}</a></li>
     {% endfor %}
 </ul>
+<hr />
+<form action="" method="post">
+    <div>{{ cform.lang2 }}</div>
+    <div><button type="submit">Compare</button></div>
+    <table>
+        <tr>
+            <td><input id="compare_all" type="radio" name="compare" value="all" checked="checked" /></td>
+            <td><label for="compare_all">All</label></td>
+        </tr>
+        <tr>
+            <td><input id="compare_same" type="radio" name="compare" value="same" /></td>
+            <td><label for="compare_same">Same</label></td>
+        </tr>
+        <tr>
+            <td><input id="compare_different" type="radio" name="compare" value="different" /></td>
+            <td><label for="compare_different">Different</label></td>
+        </tr>
+    </table>
+</form>
 {% endblock submenu %}
 {% block content %}
 <table>
