@@ -44,18 +44,26 @@ _wals_description = '<sup class="wals"><a href="%s/description/%%i" target="_bla
 _wals_feature = '<sup class="wals"><a href="%s/%%i" target="_blank">WALS</a><sup>' % _wals_path
 
 def _get_display_name(user):
-    """Given an id (int) or a user-object, returns preferred name to
-    display and user-object.""" 
-    if type(user) == type(User()):
+    """Given an id (int), a user-object or a user-name, returns
+    preferred name to display and user-object.""" 
+    try:
+        dispay_name = user.get_profile().display_name.strip()
+        return dispay_name, user
+    except AttributError:
+        if type(user) == type(Profile()):
+            user = user.user
+        elif type(user) == type(5):
+            user = User.objects.get(id=int(user))
+        else:
+            try:
+                user = User.objects.get(username=str(user))
+            except:
+                raise template.TemplateSyntaxError, 'wrong argument type: %s' % type(user)
+        # implicit fallback: User()
         display_name = user.get_profile().display_name.strip()
-    elif type(user) == type(Profile()):
-        display_name = user.display_name.strip()
-    elif type(user) == type(5):
-        user = User.objects.get(id=int(user))
-        display_name = user.get_profile().display_name.strip()
-    else:
-        raise TemplateSyntaxError, 'wrong argument type'
-    return display_name, user
+        return display_name, user
+    except:
+        raise
 
 #def _make_userlink(user):
 def _make_userlink(user, icon=False):
