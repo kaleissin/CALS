@@ -460,6 +460,21 @@ def show_language(request, *args, **kwargs):
     }
     return render_page(request, 'language_detail.html', data)
 
+def set_featurevalues_for_lang(lang, valuelist):
+    """Given a (saved but not committed) language and a list of feature
+    value pairs in the form 'featureid_valueid'... """
+    for value in valuelist:
+        feature_id, value_id = value.split('_')
+        if not value_id:
+            continue
+        set_language_feature_value(lang, feature_id, value_id)
+    freq = get_averageness_for_lang(lang, scale=100)
+    _LOG.info('Freq now: %s' % repr(freq))
+    lang.num_features = LanguageFeature.objects.filter(language=lang).count()
+    lang.num_avg_features = freq
+    lang.set_average_score()
+    return lang
+
 @login_required
 def create_language(request, *args, **kwargs):
     me = 'language'
@@ -480,6 +495,7 @@ def create_language(request, *args, **kwargs):
             lang.last_modified_by = user
             if not lang.manager:
                 lang.manager = user
+            # Must save early since is foreign-key in many other tables
             lang.save(user=user, solo=False)
             editorform = EditorForm(data=request.POST, instance=lang)
             if editorform.is_valid():
@@ -491,17 +507,11 @@ def create_language(request, *args, **kwargs):
                 trans = Translation(translation=lang.greeting,language=lang,
                         translator=user,exercise=greetingexercise)
                 trans.save()
+
             # values
-            for value in request.POST.getlist(u'value'):
-                feature_id, value_id = value.split('_')
-                if not value_id:
-                    continue
-                set_language_feature_value(lang, feature_id, value_id)
-            freq = get_averageness_for_lang(lang, scale=100)
-            _LOG.info('Freq now: %s' % repr(freq))
-            lang.num_features = LanguageFeature.objects.filter(language=lang).count()
-            lang.num_avg_features = freq
-            lang.set_average_score()
+            lang = set_featurevalues_for_lang(lang, request.POST.getlist(u'value'))
+
+            # Final save
             lang.save(user=user)
             return HttpResponseRedirect('.')
         else:
@@ -521,11 +531,11 @@ def change_language(request, *args, **kwargs):
     lang = _get_lang(*args, **kwargs)
     user = request.user
 
-    _LOG.info('%s about to change %s' % (user, lang))
-
     may_edit, (is_admin, is_manager) = may_edit_lang(user, lang)
     if not may_edit:
         return HttpResponseForbidden(error_forbidden)
+
+    _LOG.info('%s about to change %s' % (user, lang))
 
     langform = LanguageForm(instance=lang)
     #moreinfoformset = ExternalInfoFormSet(queryset=lang.externalinfo.all())
@@ -586,13 +596,9 @@ def change_language(request, *args, **kwargs):
 #                 assert False, moreinfo
 # 
             # values
-            for value in request.POST.getlist(u'value'):
-                feature_id, value_id = value.split('_')
-                set_language_feature_value(lang, feature_id, value_id)
-            freq = get_averageness_for_lang(lang, scale=100)
-            lang.num_features = LanguageFeature.objects.filter(language=lang).count()
-            lang.num_avg_features = freq
-            lang.set_average_score()
+            lang = set_featurevalues_for_lang(lang, request.POST.getlist(u'value'))
+
+            # Final save
             lang.save(user=user)
             return HttpResponseRedirect('.')
         else:
