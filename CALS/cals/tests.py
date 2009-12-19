@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.test.client import Client
 
+import models, views, admin, urls
 from cals.models import *
 
 test_user = {
@@ -38,6 +39,59 @@ class LoginTest(TestCase):
 
     def test_login(self):
         response = self.client.post('/', data=test_user)
+
+# class FlatPageTest(TestCase):
+#     def test_about_page(self):
+#         response = self.client.get('/about/')
+#         self.failUnlessEqual(response.status_code, 200)
+# 
+#     def test_changes_page(self):
+#         response = self.client.get('/changes/')
+#         self.failUnlessEqual(response.status_code, 200)
+# 
+#     def test_copyright_page(self):
+#         response = self.client.get('/copyright/')
+#         self.failUnlessEqual(response.status_code, 200)
+# 
+#     def test_privacy_page(self):
+#         response = self.client.get('/privacy/')
+#         self.failUnlessEqual(response.status_code, 200)
+# 
+#     def test_terms_page(self):
+#         response = self.client.get('/terms/')
+#         self.failUnlessEqual(response.status_code, 200)
+
+class PageTest(TestCase):
+    #fixtures = ['fixed.json', 'test_cals.json']
+
+    def test_index(self):
+        response = self.client.get('/')
+        self.failUnlessEqual(response.status_code, 200)
+
+class LanguagePageTest(TestCase):
+
+    def test_language(self):
+        response = self.client.get('/language/')
+        self.failUnlessEqual(response.status_code, 301)
+
+    def test_language_paged(self):
+        response = self.client.get('/language/p1/')
+        self.failUnlessEqual(response.status_code, 200)
+
+class FeaturePageTest(TestCase):
+    
+    def test_feature(self):
+        response = self.client.get('/feature/')
+        self.failUnlessEqual(response.status_code, 301)
+
+    def test_feature_paged(self):
+        response = self.client.get('/feature/p1/')
+        self.failUnlessEqual(response.status_code, 200)
+
+    def test_feature_details_page(self):
+        for feature in range(1, 142):
+            response = self.client.get('/feature/%i/' % feature)
+            self.failUnlessEqual(response.status_code, 200, 'Failure in feature #%i' % feature)
 
 # __test__ = {"doctest": """
 # Another way to test that 1 + 1 is equal to 2.
