@@ -359,31 +359,34 @@ def _generate_comparison_type(comparison_type):
         different = False
     return same, different
 
-def _compare(request, langs):
+def _generate_comparison_url(langs, comparison_type=''):
+    redirect_to = '/language/%s/' % '+'.join(langs)
+    if comparison_type in ('same', 'different'):
+        redirect_to += comparison_type
+    return redirect_to
+
+def _compare(request, langs, comparison_type=None):
     # langs should be a non-string iterator/generator over strings
     assert len(langs)
     langs = tuple(langs)
 
     # Get existing comparison-type
-    comparison_type = request.REQUEST.get('compare', None)
+    comparison_type = comparison_type or request.REQUEST.get('compare', None)
     same, different = _generate_comparison_type(comparison_type)
 
     cform = CompareTwoForm(data=request.POST)
     if cform.is_valid():
         lang2 = cform.cleaned_data['lang2']
-        url = '+'.join(tuple(langs + (lang2.slug,)))
-        redirect_to = '/language/%s/' % url
-        if comparison_type in ('same', 'different'):
-            redirect_to = redirect_to + comparison_type
-        return HttpResponseRedirect(redirect_to)
-    return HttpResponseRedirect('.')
+        redirect_to = _generate_comparison_url(langs + (lang2.slug,), comparison_type)
+    else:
+        redirect_to = _generate_comparison_url(langs, comparison_type)
+    return HttpResponseRedirect(redirect_to)
 
 def compare_language(request, *args, **kwargs):
     me = 'language'
 
     # Check that langslugs are for existing langs
     langslugs = _get_url_pieces(name='slugs', **kwargs)
-    comparison_type = kwargs.get('opt', None)
     _LOG.info('%s will compare %s' % (request.user, langslugs))
     if not langslugs:
         return HttpResponseForbidden(error_forbidden)
@@ -397,13 +400,25 @@ def compare_language(request, *args, **kwargs):
         except Language.DoesNotExist:
             continue
         langs.append(lang)
+    langslugs = [l.slug for l in langs] 
 
     if request.method == 'POST':
-        cform = CompareTwoForm(data=request.POST)
-        if cform.is_valid():
-            return _compare(request, langslugs)
-    cform = CompareTwoForm()
+        comparison_type = request.POST.get('compare', kwargs.get('opt', None))
+        same, different = _generate_comparison_type(comparison_type)
+
+        # remove slugs from langslugs
+        remove_langs = request.POST.getlist('removelang')
+        if remove_langs:
+            langslugs = [l for l in langslugs if l not in remove_langs]
+            redirect_to = _generate_comparison_url(langslugs, comparison_type)
+            return HttpResponseRedirect(redirect_to)
+
+        # Add a slug to langslugs
+        return _compare(request, langslugs, comparison_type)
+
+    comparison_type = kwargs.get('opt', request.REQUEST.get('compare', None))
     same, different = _generate_comparison_type(comparison_type)
+    cform = CompareTwoForm()
     _LOG.debug('0: %s' % comparison_type)
     _LOG.debug('1: same %s, different %s' % (same, different))
     comparison = compare_languages(langs, same=same, different=different)

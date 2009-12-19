@@ -26,9 +26,12 @@ Comparing: {{ langs|join:", " }}
 </ul>
 <hr />
 <ul>
+    <form action="" method="post">
     {% for lang in langs %}
-    <li><a href="/language/{{ lang.slug }}/">{{ lang }}</a></li>
+    <li><a href="/language/{{ lang.slug }}/">{{ lang }}</a><input class="remove" type="checkbox" name="removelang" value="{{ lang.slug }}" /></li>
     {% endfor %}
+    <button type="submit">Remove</button>
+    </form>
 </ul>
 <hr />
 <form action="" method="post">
@@ -36,15 +39,15 @@ Comparing: {{ langs|join:", " }}
     <div><button type="submit">Compare</button></div>
     <table>
         <tr>
-            <td><input id="compare_all" type="radio" name="compare" value="all" checked="checked" /></td>
+            <td><input id="compare_all" type="radio" name="compare" value="all" {% if not comparison_type %}checked="checked" {% endif %}/></td>
             <td><label for="compare_all">All</label></td>
         </tr>
         <tr>
-            <td><input id="compare_same" type="radio" name="compare" value="same" /></td>
+            <td><input id="compare_same" type="radio" name="compare" value="same" {% ifequal comparison_type 'same' %}checked="checked" {% endifequal %}/></td>
             <td><label for="compare_same">Same</label></td>
         </tr>
         <tr>
-            <td><input id="compare_different" type="radio" name="compare" value="different" /></td>
+            <td><input id="compare_different" type="radio" name="compare" value="different" {% ifequal comparison_type 'different' %}checked="checked" {% endifequal %}/></td>
             <td><label for="compare_different">Different</label></td>
         </tr>
     </table>
@@ -80,17 +83,29 @@ Comparing: {{ langs|join:", " }}
     <tr><th>Added:</th>{% for lang in langs %}<td>{{ lang.created|date:"Y-m-d H:i" }}</td>{% endfor %}</tr>
     <tr><th>Last change:</th>{% for lang in langs %}<td>{{ lang.last_modified|date:"Y-m-d H:i"}}</td>{% endfor %}</tr>
 </table>
-<h2>Features:</h2>
+<h2>Comparing {{ comparison|slice:"1:"|length }} features:</h2>
 <table class="feature">
-    <tr><td></td>{% for lang in langs %}<th><a href="/language/{{ lang.slug }}/">{{ lang }}</a></th>{% endfor %}</tr>
-    <tr class="even"><th>{{ comparison.1.0 }}</th>{% for num in comparison.1|slice:"1:" %}<td>{{ num }}</td>{% endfor %}</tr>
-    {% for line in comparison|slice:"2:" %}
-    <tr class="feature {% cycle odd,even %}">
+    {% ifequal comparison_type 'same' %}
+    {% spaceless %}<tr class="odd"><td></td><th>
+    {% with langs|first as lang %}<a href="{{ lang.get_absolute_url }}">{{ lang }}</a>{% endwith %}{% for lang in langs|slice:"1:-1" %}, <a href="{{ lang.get_absolute_url }}">{{ lang }}</a>{% endfor %}
+    {% with langs|last as lang %} and <a href="{{ lang.get_absolute_url }}">{{ lang }}</a>{% endwith %}
+    </th></tr>{% endspaceless %}
+    {% for line in comparison|slice:"1:" %}
+    <tr class="feature {% cycle even,odd %}">
+        <th>{{ line.0 }} {% wals line.0.id %}</th>
+        <td>{{ line.1|default:"&#x2013;" }}</td>
+    </tr>
+    {% endfor %}
+    {% else %}
+    <tr class="odd"><td></td>{% for lang in langs %}<th><a href="{{ lang.get_absolute_url }}">{{ lang }}</a></th>{% endfor %}</tr>
+    {% for line in comparison|slice:"1:" %}
+    <tr class="feature {% cycle even,odd %}">
         <th>{{ line.0 }} {% wals line.0.id %}</th>
         {% for value in line|slice:"1:" %}
         <td>{{ value|default:"&#x2013;" }}</td>
         {% endfor %}
     </tr>
     {% endfor %}
+    {% endifequal %}
 </table>
 {% endblock content %}
