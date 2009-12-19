@@ -24,7 +24,7 @@ from django.views.generic.create_update import delete_object
 from django.utils.encoding import smart_unicode
 from django.db.models import Q
 
-from snippets.namepaginator import NamePaginator, InvalidPage
+from snippets.stringpaginator import SingleLetterPaginator, InvalidPage
 
 from tagging.models import Tag
 
@@ -51,7 +51,9 @@ class CALSError(Exception):
 class CALSUserExistsError(CALSError):
     pass
 
-def _get_lang(*args, **kwargs):
+def _get_lang(all=False, *args, **kwargs):
+    if all:
+        return get_object_or_404(Language.all_langs, slug=kwargs.get('lang', None))
     return get_object_or_404(Language, slug=kwargs.get('lang', None))
 
 def _get_feature(*args, **kwargs):
@@ -417,7 +419,7 @@ def compare_language(request, *args, **kwargs):
 
 def show_language(request, *args, **kwargs):
     me = 'language'
-    lang = _get_lang(*args, **kwargs)
+    lang = _get_lang(all=True, *args, **kwargs)
     may_edit, (is_admin, is_manager) = may_edit_lang(request.user, lang)
     categories = Category.objects.all().select_related().order_by('id')
     cats = []
@@ -623,10 +625,10 @@ def language_jrklist(request, *args, **kwargs):
 def language_list(request, natlang=False, *args, **kwargs):
     if natlang or in_kwargs_or_get(request, kwargs, 'action', 'natlang'):
         natlang = True
-        queryset = Language.natlangs.all().order_by('name')
+        queryset = Language.object.natlangs().order_by('name')
     else:
         queryset = Language.objects.conlangs().order_by('name')
-    paginator = NamePaginator(queryset, on="name")
+    paginator = SingleLetterPaginator(queryset, on="name", request=request)
     page = page_in_kwargs_or_get(request, kwargs) or 1
 
     try:
