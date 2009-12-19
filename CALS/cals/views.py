@@ -216,7 +216,7 @@ def compare_feature(request, *args, **kwargs):
             }
     return render_page(request, 'feature_compare.html', data)
 
-@login_required()
+@login_required
 def change_or_add_feature(request, *args, **kwargs):
     categoryform = CategoryForm()
     featureform = FeatureForm()
@@ -253,7 +253,7 @@ def show_feature(request, *args, **kwargs):
             'cform': cform}
     return render_page(request, 'feature_detail.html', data)
 
-@login_required()
+@login_required
 def change_feature_description(request, *args, **kwargs):
     me = 'feature'
     feature = get_object_or_404(Feature, id=kwargs.get('object_id', None))
@@ -445,7 +445,7 @@ def show_language(request, *args, **kwargs):
     }
     return render_page(request, 'language_detail.html', data)
 
-@login_required()
+@login_required
 def create_language(request, *args, **kwargs):
     me = 'language'
     state = 'new'
@@ -499,7 +499,7 @@ def create_language(request, *args, **kwargs):
             'state': state,}
     return render_page(request, 'language_form.html', data)
 
-@login_required()
+@login_required
 def change_language(request, *args, **kwargs):
     me = 'language'
     state = 'change'
@@ -752,7 +752,7 @@ def remove_languagefeature_description_version(request, *args, **kwargs):
     request.notification.add('Version as of %s is deleted')
     return HttpResponseRedirect(link_format)
 
-@login_required()
+@login_required
 def describe_languagefeature(request, *args, **kwargs):
     me = 'language'
     lang = _get_lang(*args, **kwargs)
@@ -856,7 +856,7 @@ def show_profile(request, *args, **kwargs):
             }
     return render_page(request, 'profile_detail.html', data)
 
-@login_required()
+@login_required
 def change_profile(request, *args, **kwargs):
     me = 'people'
     user = _get_profile(*args, **kwargs)
