@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 import sys
 sys.path.append('/home/python/django-trunk/')
 sys.path.append('/home/python/django-sites/')
@@ -58,6 +59,17 @@ def connoiseurs():
     connoiseurs = [u for u in User.objects.all() 
             if u.marks.filter(marktype__slug__startswith='fav').count()]
     batchbadge(badge, connoiseurs)
+
+def yearlings():
+    badge = Badge.objects.get(name='Yearling')
+    now = datetime.now()
+    # averaged year
+    a_year_ago = now - timedelta(days=365, seconds=6*60*60)
+    # averaged month
+    a_month_ago = now - timedelta(days=30, seconds=10.56*60*60)
+    yearlings = [u for u in User.objects.all() 
+            if u.date_joined <= a_year_ago and u.last_login > a_month_ago]
+    batchbadge(badge, yearlings)
 
 # -- helpers
 
@@ -138,6 +150,7 @@ _batch_jobs = {
         'testbunnies': testbunnies,
         'dreamers': dreamers,
         'nudgers': nudgers,
+        'yearlings': yearlings,
 }
 
 def run_batch():
