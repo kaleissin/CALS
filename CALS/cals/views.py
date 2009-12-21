@@ -130,9 +130,15 @@ def set_language_feature_value(lang, feature_id, value_id):
         if lf: # delete
             lf.delete()
 
-def make_feature_list_for_lang(lang=None):
+def fvlist_to_fvdict(fvlist):
+    if fvlist:
+        return dict([(fv.feature, fv) for fv in fvlist])
+    return {}
+
+def make_feature_list_for_lang(lang=None, fvlist=None):
     categories = Category.objects.all().select_related().order_by('id')
     cats = []
+    fvdict = fvlist_to_fvdict(fvlist)
     for category in categories:
         try:
             fvs = FeatureValue.objects.filter(feature__category=category)
@@ -142,15 +148,23 @@ def make_feature_list_for_lang(lang=None):
         f = []
         for feature in features:
             form = FeatureValueForm(feature=feature)
+
             lf = None
-            if lang:
-                try:
-                    lf = LanguageFeature.objects.get(language=lang, feature=feature)
+
+            if lang or fvdict:
+                value = None
+                if fvdict:
+                    value = fvdict.get(feature, None)
+                else:
+                    try:
+                        lf = LanguageFeature.objects.get(language=lang, feature=feature)
+                        value = lf.value
+                    except LanguageFeature.DoesNotExist:
+                        pass
+                if value:
                     form = FeatureValueForm(feature=feature,
-                            initial={'value': '%s_%s' % (feature.id, lf.value.id)})
-                            #instance=lf.value, initial={'name': lf.value.id})
-                except LanguageFeature.DoesNotExist:
-                    pass
+                    initial={'value': '%s_%s' % (feature.id, value.id)})
+            
             f.append({'feature': feature, 'form':form, 'value': lf})
         if f:
             cats.append({'name': category.name, 'features': f})
@@ -382,17 +396,7 @@ def _compare(request, langs, comparison_type=None):
         redirect_to = _generate_comparison_url(langs, comparison_type)
     return HttpResponseRedirect(redirect_to)
 
-def compare_language(request, *args, **kwargs):
-    me = 'language'
-
-    # Check that langslugs are for existing langs
-    langslugs = _get_url_pieces(name='slugs', **kwargs)
-    _LOG.info('%s will compare %s' % (request.user, langslugs))
-    if not langslugs:
-        return HttpResponseForbidden(error_forbidden)
-    if len(langslugs) == 1:
-        kwargs['slug'] = langslugs[0]
-        return show_language(request, *args, **kwargs)
+def _check_langslugs(langslugs):
     langs = []
     for langslug in langslugs:
         try:
@@ -400,7 +404,37 @@ def compare_language(request, *args, **kwargs):
         except Language.DoesNotExist:
             continue
         langs.append(lang)
-    langslugs = [l.slug for l in langs] 
+    return langs
+
+def dispatch_langslugs(request, func_one, func_many, *args, **kwargs):
+    """Returns a tuple of (True, payload) if the func is to
+    be returned, (False, payload) if the payload will be further
+    processed.
+    """
+    # Check that langslugs are for existing langs
+    langslugs = _get_url_pieces(name='slugs', **kwargs)
+    if not langslugs:
+        return True, HttpResponseForbidden(error_forbidden)
+    langs = _check_langslugs(langslugs)
+    if len(langs) == 1:
+        return func_one(request, langs[0], *args, **kwargs)
+    else:
+        return func_many(request, langs, *args, **kwargs)
+
+def compare_language(request, *args, **kwargs):
+    me = 'language'
+
+    def single_lang(request, lang, *args, **kwargs):
+        kwargs['slug'] = lang.slug
+        return True, show_language(request, *args, **kwargs)
+
+    def multi_lang(request, langs, *args, **kwargs):
+        return False, (langs, [l.slug for l in langs])
+
+    finished, payload = dispatch_langslugs(request, single_lang, multi_lang, *args, **kwargs)
+    if finished:
+        return payload
+    langs, langslugs = payload
 
     if request.method == 'POST':
         comparison_type = request.POST.get('compare', kwargs.get('opt', None))
@@ -452,6 +486,7 @@ def show_language(request, *args, **kwargs):
         cform = CompareTwoForm(data=request.POST)
         if cform.is_valid():
             return _compare(request, (lang.slug,))
+
     data = {'object': lang, 
             'categories': cats, 
             'me': me, 
@@ -476,16 +511,30 @@ def set_featurevalues_for_lang(lang, valuelist):
     return lang
 
 @login_required
-def create_language(request, *args, **kwargs):
+def create_language(request, lang=None, fvlist=None, clone=False, *args, **kwargs):
     me = 'language'
     state = 'new'
-    langform = LanguageForm()
     user = request.user
+
+    # sort values into categories
+    cats = make_feature_list_for_lang(lang=lang, fvlist=fvlist)
 
     editorform = EditorForm()
 
-    # sort values into categories
-    cats = make_feature_list_for_lang()
+    if clone:
+        author = request.user.get_profile().display_name
+        name = 'Clone'
+        if lang:
+            name = 'Clone of %s' % lang
+        elif fvlist:
+            name = 'Clone of %i features' % len(fvlist)
+        description = name
+        langform = LanguageForm(initial={
+                'name': name, 
+                'description': description,
+                'author': author}) 
+    else:
+        langform = LanguageForm()
 
     if request.method == 'POST':
         langform = LanguageForm(data=request.POST, initial=request.POST)
@@ -513,16 +562,39 @@ def create_language(request, *args, **kwargs):
 
             # Final save
             lang.save(user=user)
-            return HttpResponseRedirect('.')
+            request.notifications.add(u'You successfully added the language %s to CALS' % lang.name, 'info')
+            return HttpResponseRedirect('/language/%s/' % lang.slug)
         else:
-            error = "Couldn't store language-description: " + str(form.errors) 
-            request.notifications.add(error, 'error')
+            if not clone:
+                error = "Couldn't store language-description: " + str(langform.errors) 
+                request.notifications.add(error, 'error')
+            else:
+                help = "Remember to fill out the name and author of the language"
+                request.notifications.add(help, 'help')
     data = {'form': langform, 
             'categories': cats, 
             'me': me, 
             'editorform': editorform,
             'state': state,}
     return render_page(request, 'language_form.html', data)
+
+@login_required
+def clone_language(request, *args, **kwargs):
+    me = 'language'
+    state = 'clone'
+    user = request.user
+
+    def single_lang(request, lang, *args, **kwargs):
+        return True, create_language(request, lang=lang, clone=True)
+
+    def multi_lang(request, langs, *args, **kwargs):
+        comparison = compare_languages(langs, same=True, different=False)[1:]
+        fvlist = [featureline[1] for featureline in comparison]
+        return True, create_language(request, fvlist=fvlist, clone=True)
+
+    _, payload = dispatch_langslugs(request, single_lang, multi_lang, *args, **kwargs)
+
+    return payload
 
 @login_required
 def change_language(request, *args, **kwargs):

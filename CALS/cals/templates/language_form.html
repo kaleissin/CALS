@@ -62,12 +62,17 @@ $("#id_background").keyup(function() {
 <ul>  
     <li><a href="/language/">All</a></li>
     {% if user.is_authenticated %}
-    {% ifequal request.META.REQUEST_URI '/language/new' %}
+    {% if request.META.REQUEST_URI|startswith:"/language/new" %}
     <li><b>Add</b></li>
     {% else %}
+    {% if request.META.REQUEST_URI|endswith:"/clone" %}
+    <li><b>Clone</b></li>
     <li><a href="/language/new">Add</a></li>
+    {% else %}
     <li><b>Change</b></li>
-    {% endifequal %}
+    <li><a href="/language/new">Add</a></li>
+    {% endif %}
+    {% endif %}
     {% endif %}
     <hr />
     {% for category in categories %}
@@ -77,6 +82,7 @@ $("#id_background").keyup(function() {
 {% endblock submenu %}
 {% block content %}
 <form action="" method="post">
+<h2>Basic information</h2>
 <table>
     {% comment %}
     {% for field in form %}
@@ -107,13 +113,6 @@ $("#id_background").keyup(function() {
         <td>{{ form.author }}</td>
         <td class="help">{{ form.author.help_text }}
         {% if form.author.errors %}<div class="error">{{ form.author.errors }}</div>{% endif %}</td>
-    </tr>
-    <tr>
-        <th>Homepage
-            {% if form.homepage.field.required %}<span class="required">*</span>{% endif %}</th>
-        <td>{{ form.homepage }}</td>
-        <td class="help">{{ form.homepage.help_text }}
-        {% if form.homepage.errors %}<div class="error">{{ form.homepage.errors }}</div>{% endif %}</td>
     </tr>
     <tr>
         <th>Background
@@ -150,6 +149,51 @@ $("#id_background").keyup(function() {
         <td class="help">{{ form.tags.help_text }}
         {% if form.tags.errors %}<div class="error">{{ form.tags.errors }}</div>{% endif %}</td>
     </tr>
+    <tr><td></td><td><input type="submit" /></td></tr>
+</table>
+<h2>More information</h2>
+<table id="external_info">
+{% comment %}
+    <tr>
+        <td colspan="3">
+        <table>
+            <tr>
+                <th>Category</th>
+                <th>On request</th>
+                <th>External link</th>
+            </tr>
+            {{ moreinfoformset.management_form }}
+            {% for infoform in moreinfoformset.forms %}
+            <tr class="{% cycle odd,even %}">
+                <td>{{ infoform.id }}{{ infoform.category }}
+                {% if infoform.category.help_text %}<div class="help">{{ infoform.category.help_text }} </div>{% endif %}</td>
+                {% if infoform.category.errors %}<div class="error">{{ infoform.category.errors }}</div>{% endif %}
+                </td>
+                <td>{{ infoform.on_request }}
+                {% if infoform.on_request.help_text %}<div class="help">{{ infoform.on_request.help_text }} </div>{% endif %}</td>
+                {% if infoform.on_request.errors %}<div class="error">{{ infoform.on_request.errors }}</div>{% endif %}
+                </td>
+                <td>{{ infoform.link }}
+                {% if infoform.link.help_text %}<div class="help">{{ infoform.link.help_text }} </div>{% endif %}</td>
+                {% if infoform.link.errors %}<div class="error">{{ infoform.link.errors }}</div>{% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        </td>
+    </tr>
+{% endcomment %}
+    <tr>
+        <th>Homepage
+            {% if form.homepage.field.required %}<span class="required">*</span>{% endif %}</th>
+        <td>{{ form.homepage }}</td>
+        <td class="help">{{ form.homepage.help_text }}
+        {% if form.homepage.errors %}<div class="error">{{ form.homepage.errors }}</div>{% endif %}</td>
+    </tr>
+    <tr><td></td><td><input type="submit" /></td></tr>
+</table>
+<h2>Changers</h2>
+<table>
     {% ifequal state 'new' %}
     <tr>
         <th>Manager
@@ -208,7 +252,7 @@ $("#id_background").keyup(function() {
     </tr>
     <tr><td></td><td><input type="submit" /></td></tr>
 </table>
-<h2>Features:</h2>
+<h2>Features</h2>
 {% for category in categories %}
 <h3><a name="{{ category.name|slugify }}"></a><a href="#top">{{ category.name }}</a></h3>
 <table class="feature">
