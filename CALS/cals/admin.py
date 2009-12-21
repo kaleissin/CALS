@@ -6,7 +6,7 @@ class LanguageAdmin(admin.ModelAdmin):
     model = Language
     ordering = ('name',)
     list_display = ('name', 'added_by', 'from_earth', 'last_modified')
-    list_filter = ('from_earth', 'added_by',)
+    list_filter = ('from_earth', 'natlang', 'added_by',)
     search_fields = ('name', 'internal_name', 'added_by__display_name',)
     #radio_fields = {'from_earth': admin.VERTICAL }
 admin.site.register(Language, LanguageAdmin)
