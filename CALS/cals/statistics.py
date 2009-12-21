@@ -32,7 +32,7 @@ def get_langs(langtype=LANGTYPES.ALL):
     if langtype == LANGTYPES.CONLANG:
         langs = Language.objects.conlangs()
     if langtype == LANGTYPES.NATLANG:
-        langs = Language.natlangs.all()
+        langs = Language.objects.natlangs()
     else:
         langs = Language.objects.all()
     return langs
@@ -321,7 +321,7 @@ def generate_global_stats():
     fvs = FeatureValue.objects.filter(feature__active=True) #value_counts()
     langs = Language.objects.all()
     conlangs = Language.objects.conlangs()
-    natlangs = Language.natlangs.all()
+    natlangs = Language.objects.natlangs()
     users = Profile.objects.filter(user__is_active=True, is_visible=True)
     lfs = LanguageFeature.objects.all()
 
