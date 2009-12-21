@@ -61,6 +61,7 @@ urlpatterns += patterns('cals.views',
         (r'^(?P<lang>[-\w]+)/feature/(?P<object_id>[0-9]+)/history/$', 'show_languagefeature_history'), 
         (r'^(?P<lang>[-\w]+)/feature/(?P<object_id>[0-9]+)/history/compare$', 'compare_languagefeature_history'), 
         (r'^(?P<lang>[-\w]+)/change$',     'change_language'),
+        (r'^(?P<slugs>[-+\w]+)/clone$',      'clone_language'), 
         (r'^(?P<slugs>[-+\w]+)/(?P<opt>[^/]*?)/?$',      'compare_language'), 
 )
 
