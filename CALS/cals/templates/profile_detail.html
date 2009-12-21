@@ -175,7 +175,7 @@
             {% if pms %}
             {% for pm in pms %}
             <div class="pm">
-            {{ pm.text }}
+            <div class="plaintext">{{ pm.text }}</div>
             <div class="pm-footer">
             sent by {% showuser pm.sender %} at {{ pm.sent }} 
             | <a href="{% url add_pm object_id=pm.sender.id %}{% if whereami %}?next={{ whereami }}{% endif %}">send pm</a></a>
