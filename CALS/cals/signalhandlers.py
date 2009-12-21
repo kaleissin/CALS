@@ -6,10 +6,13 @@ from django.conf import settings
 from nano.blog import add_entry_to_blog
 from nano.blog.models import Entry
 
+from nano.badge import add_badge, batchbadge
+from nano.badge.models import Badge
+
 from cals.models import Profile
 
 def new_user_anywhere(sender, **kwargs):
-    new = kwargs[u'created']
+    new = kwargs.get(u'created', False)
     if new:
         new_user = kwargs[u'instance']
         test_users = getattr(settings, 'NANO_USER_TEST_USERS', ())
@@ -37,9 +40,19 @@ def new_or_changed_language(sender, **kwargs):
         return
     new_title = 'New language: %s' % lang.name
     changed_title = 'Changed language: %s' % lang.name
+
+    # Add relevant badge to conlanger
+    badge = Badge.objects.get(name='Conlanger')
+    add_badge(badge, lang.manager)
+    batchbadge(badge, lang.editors.all())
+
+    # Report on new language
     if new:
+        # New language
         add_entry_to_blog(lang, new_title, 'feeds/languages_newest_description.html', date_field='created')
     else:
+        if lang.natlang: return
+        # Changed language, has code to prevent duplicates
         latest = Entry.objects.latest()
         one_minute = timedelta(0, 60, 0)
         if latest.headline != changed_title:
