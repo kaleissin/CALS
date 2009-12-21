@@ -2,9 +2,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-    <link rel="shortcut icon"
-    href="http://media.aldebaaran.uninett.no/CALS/img/favicon.ico"
-    type="image/vnd.microsoft.icon" />
+    <meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <link rel="shortcut icon" href="http://media.aldebaaran.uninett.no/CALS/img/favicon.ico" type="image/vnd.microsoft.icon" />
     <link rel="stylesheet" type="text/css" href="http://media.aldebaaran.uninett.no/CALS/css/cals-4.css" />
     <title>CALS: {% block title %}Conlang Atlas of Language Structure{% endblock title %}</title>
 {% block head %}
@@ -92,7 +91,8 @@
                 <td class="nav right">
                     <a {% ifequal request.path '/about/' %}class="me"{% endifequal %} href="/about/">About</a> | 
                     <a {% ifequal request.path '/copyright/' %}class="me"{% endifequal %} href="/copyright/">Copyright</a> |
-                    <a {% ifequal request.path '/help/' %}class="me"{% endifequal %} href="/help/">Help</a> |
+                    <a {% if request.path|startswith:"/faq/" %}class="me"{% endif %} href="/faq/">FAQ</a> |
+                    <a {% if request.path|startswith:"/help/" %}class="me"{% endif %} href="/help/">Help</a> |
                     <a {% ifequal request.path '/privacy/' %}class="me"{% endifequal %} href="/privacy/">Privacy</a> | 
                     <a {% ifequal me 'news' %}class="me"{% endifequal %} href="/news/latest/">News</a> |
                     <a {% ifequal request.path '/terms/' %}class="me"{% endifequal %} href="/terms/">Terms of service</a>
