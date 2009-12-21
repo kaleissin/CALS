@@ -69,11 +69,15 @@
     <tr><th>Author:</th><td>{{ object.author }}</td></tr>
     {% endif %}
     <tr><th>Homepage:</th><td>{% if object.homepage %}<a class="ext" href="{{ object.homepage }}">{{ object.homepage }}</a>{% else %}–{% endif %}</td></tr>
+    {% if not object.natlang %}
     <tr><th>Background:</th><td>{{ object.background }}</td></tr>
     <tr><th>Greeting:</th><td>{{ object.greeting|default:"" }}</td></tr>
     <tr><th>Vocabulary size:</th><td>{{ object.vocabulary_size|default:"NA" }}</td></tr>
-    <tr><th>Permalink:</th><td><a href=".">{{ request.path }}</td></tr>
     <tr><th>From earth:</th><td>{{ object.from_earth|yesno:"yes,no,unknown" }}</td></tr>
+    {% else %}
+    <tr><th>Natlang:</th><td>yes</td>
+    {% endif %}
+    <tr><th>Permalink:</th><td><a href=".">{{ request.path }}</td></tr>
     <tr><th>Averageness:</th><td>{{ object.average_score }}/100, 
             {{ object.num_avg_features }} of {{ object.num_features }}</td></tr>
     <tr><th>Number of features:</th><td>{{ object.num_features }}</td></tr>
@@ -107,8 +111,10 @@
         <th><a href="/language/{{ object.slug }}/feature/{{ feature.feature.id }}/">{{ feature.feature }}</a> {% wals feature.feature.id %}</th>
         {#<th><b>{{ feature.feature }}</b> {% wals feature.feature.id %}</th>#}
         <td class="fv">{{ feature.value }}</td>
+        {% if not object.natlang %}
         {% if may_edit %}
         <td><a href="/language/{{ object.slug }}/feature/{{ feature.feature.id }}/change">Edit</a></td>
+        {% endif %}
         {% endif %}
     </tr>
     {% if feature.description %}
