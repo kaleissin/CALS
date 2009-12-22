@@ -259,22 +259,26 @@ def list_feature(request, *args, **kwargs):
     return object_list(queryset=queryset, template_name=template,
             extra_context=extra_context)
 
-def show_feature(request, *args, **kwargs):
+def show_feature(request, features=None, object_id=None, template_name='feature_detail.html', *args, **kwargs):
     me = 'feature'
+    if not features:
+        features = Feature.objects.active()
     try:
-        feature = Feature.objects.active().get(id=kwargs['object_id'])
+        feature = features.get(id=object_id)
     except Feature.DoesNotExist:
         return HttpResponseNotFound()
+
     cform = CompareTwoFeaturesForm()
     if request.method == 'POST':
         cform = CompareTwoFeaturesForm(data=request.POST)
         if cform.is_valid():
             feature2 = cform.cleaned_data['feature2']
             return HttpResponseRedirect('/feature/%s+%s/' % (feature.id, feature2.id))
+    
     data = {'object': feature, 
             'me': me, 
             'cform': cform}
-    return render_page(request, 'feature_detail.html', data)
+    return render_page(request, template_name, data)
 
 @login_required
 def change_feature_description(request, *args, **kwargs):
