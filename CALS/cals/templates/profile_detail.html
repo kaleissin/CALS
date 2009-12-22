@@ -112,7 +112,7 @@
             <td>
                 <ul>
                 {% for language in object.languages.all %}
-                    <li><a href="/language/{{ language.slug }}">{{ language }}</a></li>
+                    <li><a href="/language/{{ language.slug }}/">{{ language }}</a></li>
                 {% endfor %}
                 </ul>
             </td>
@@ -123,7 +123,7 @@
             <td>
                 <ul>
                 {% for language in object.manages.all %}
-                    <li><a href="/language/{{ language.slug }}">{{ language }}</a></li>
+                    <li><a href="/language/{{ language.slug }}/">{{ language }}</a></li>
                 {% endfor %}
                 </ul>
             </td>
