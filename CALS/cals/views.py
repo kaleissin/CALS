@@ -3,7 +3,6 @@ from pprint import pprint, pformat
 from random import choice, sample
 import time
 import unicodedata
-import string
 import sys
 from datetime import datetime
 sys.stderr = sys.stdout
@@ -11,6 +10,7 @@ sys.stderr = sys.stdout
 import logging
 _LOG = logging.getLogger(__name__)
 
+from django.contrib.contenttypes.models import ContentType
 from django.contrib import auth #.authenticate, auth.login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -28,16 +28,25 @@ from snippets.stringpaginator import SingleLetterPaginator, InvalidPage
 
 from tagging.models import Tag
 
-from pygooglechart import StackedVerticalBarChart, Axis
-
 from cals.models import *
+from cals.models import Language, Feature, FeatureValue, \
+        LanguageFeature, Profile, User, Category, Description
 from cals.forms import *
+from cals.forms import FeatureValueForm, CategoryForm, FeatureForm, \
+        NewFeatureValueFormSet, CompareTwoFeaturesForm, DescriptionForm, \
+        CompareTwoForm, LanguageForm, EditorForm, UserForm, ProfileForm
 from cals.statistics import *
+from cals.statistics import generate_global_stats
 from cals.tools import *
+from cals.tools import description_diff
+from cals.tools import *
+from cals.tools import compare_features, compare_languages, \
+        get_averageness_for_lang
 
 from translations.models import TranslationExercise, Translation
 
 from nano.tools import *
+from nano.tools import render_page
 from nano.blog.models import Entry
 from nano.privmsg.models import PM
 
@@ -172,7 +181,7 @@ def make_feature_list_for_lang(lang=None, fvlist=None):
             cats.append({'name': category.name})
     return cats
 
-def revert(user, descriptions, revert_to):
+def revert_description(user, descriptions, revert_to):
     if revert_to:
         try:
             description = descriptions.get(id=int(revert_to))
@@ -253,7 +262,7 @@ def list_feature(request, *args, **kwargs):
 def show_feature(request, *args, **kwargs):
     me = 'feature'
     try:
-         feature = Feature.objects.active().get(id=kwargs['object_id'])
+        feature = Feature.objects.active().get(id=kwargs['object_id'])
     except Feature.DoesNotExist:
         return HttpResponseNotFound()
     cform = CompareTwoFeaturesForm()
@@ -343,9 +352,10 @@ def compare_feature_history(request, *args, **kwargs):
     return render_page(request, 'feature_description_history_compare.html', data)
 
 @login_required
-def revert_feature_description(request, *args, **kwargs):
+def revert_feature_description(request, lang=None, object_id=None, *args, **kwargs):
     me = 'language'
-    feature = get_object_or_404(Feature, id=kwargs.get('object_id', None))
+    lang = get_object_or_404(Language, slug=lang)
+    feature = get_object_or_404(Feature, id=object_id)
     feature_type = ContentType.objects.get(app_label="cals", model="feature")
     may_edit, (is_admin, is_manager) = may_edit_lang(request.user, lang)
     if not may_edit:
@@ -355,7 +365,7 @@ def revert_feature_description(request, *args, **kwargs):
     link_format = '/feature/%i/history/compare?' % feature.id
 
     revert_to = request.GET.get('id', 0)
-    error = revert(request.user, descriptions, revert_to)
+    error = revert_description(request.user, descriptions, revert_to)
     if error:
         request.notification.add(error, 'error')
     return HttpResponseRedirect(link_format)
@@ -528,10 +538,10 @@ def create_language(request, lang=None, fvlist=None, clone=False, *args, **kwarg
             name = 'Clone of %s' % lang
         elif fvlist:
             name = 'Clone of %i features' % len(fvlist)
-        description = name
+        background = name
         langform = LanguageForm(initial={
                 'name': name, 
-                'description': description,
+                'background': background,
                 'author': author}) 
     else:
         langform = LanguageForm()
@@ -553,8 +563,8 @@ def create_language(request, lang=None, fvlist=None, clone=False, *args, **kwarg
             if lang.greeting:
                 # use signal instead?
                 greetingexercise = TranslationExercise.objects.get(id=1)
-                trans = Translation(translation=lang.greeting,language=lang,
-                        translator=user,exercise=greetingexercise)
+                trans = Translation(translation=lang.greeting, language=lang,
+                        translator=user, exercise=greetingexercise)
                 trans.save()
 
             # values
@@ -718,7 +728,7 @@ def language_jrklist(request, *args, **kwargs):
 def language_list(request, natlang=False, *args, **kwargs):
     if natlang or in_kwargs_or_get(request, kwargs, 'action', 'natlang'):
         natlang = True
-        queryset = Language.object.natlangs().order_by('name')
+        queryset = Language.objects.natlangs().order_by('name')
     else:
         queryset = Language.objects.conlangs().order_by('name')
     paginator = SingleLetterPaginator(queryset, on="name", request=request)
@@ -798,10 +808,11 @@ def compare_languagefeature_history(request, *args, **kwargs):
     return render_page(request, 'language_description_history_compare.html', data)
 
 @login_required
-def revert_languagefeature_description(request, *args, **kwargs):
+def revert_languagefeature_description(request, lang=None, object_id=None, *args, **kwargs):
     me = 'language'
     lang = _get_lang(*args, **kwargs)
-    feature = get_object_or_404(Feature, id=kwargs.get('object_id', None))
+    lang = get_object_or_404(Language, slug=lang)
+    feature = get_object_or_404(Feature, id=object_id)
     lf_type = ContentType.objects.get(app_label="cals", model="languagefeature")
     lf = get_object_or_404(LanguageFeature, language=lang, feature=feature)
     may_edit, (is_admin, is_manager) = may_edit_lang(request.user, lang)
@@ -812,16 +823,16 @@ def revert_languagefeature_description(request, *args, **kwargs):
     link_format = '/language/%s/feature/%i/' % (lang.slug, feature.id)
 
     revert_to = request.GET.get('id', 0)
-    error = revert(request.user, descriptions, revert_to)
+    error = revert_description(request.user, descriptions, revert_to)
     if error:
         request.notification.add(error, 'error')
     return HttpResponseRedirect(link_format)
 
 @login_required
-def remove_languagefeature_description_version(request, *args, **kwargs):
+def remove_languagefeature_description_version(request, lang=None, object_id=None, *args, **kwargs):
     me = 'language'
-    lang = _get_lang(*args, **kwargs)
-    feature = get_object_or_404(Feature, id=kwargs.get('object_id', None))
+    lang = get_object_or_404(Language, slug=lang)
+    feature = get_object_or_404(Feature, id=object_id)
     lf_type = ContentType.objects.get(app_label="cals", model="languagefeature")
     lf = get_object_or_404(LanguageFeature, language=lang, feature=feature)
     may_edit, (is_admin, is_manager) = may_edit_lang(request.user, lang)
@@ -853,7 +864,6 @@ def describe_languagefeature(request, *args, **kwargs):
     if not may_edit:
         return HttpResponseForbidden(error_forbidden)
 
-    error = pop_error(request)
     feature = get_object_or_404(Feature, id=kwargs.get('object_id', None))
     lf = get_object_or_404(LanguageFeature, language=lang, feature=feature)
     value_str = '%s_%s' % (feature.id, lf.value.id)
