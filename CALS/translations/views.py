@@ -87,12 +87,10 @@ def add_languagetranslations(request, *args, **kwargs):
     if request.method == 'POST':
         form = TranslationForm(request.POST)
         if form.is_valid():
-            trans = Translation()
-            trans.translation = form.cleaned_data['translation']
+            trans = form.save(commit=False)
             trans.translator = user
             trans.language = lang
             trans.exercise = exercise
-            trans.interlinear = form.cleaned_data['interlinear']
             trans.save(user=request.user)
             return HttpResponseRedirect('/translation/%s/language/%s/' %
                     (trans.exercise.slug, lang.slug))
