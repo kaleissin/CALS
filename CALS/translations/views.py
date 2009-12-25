@@ -22,6 +22,11 @@ def get_translationexercise(*args, **kwargs):
     return get_object_or_404(TranslationExercise, slug=kwargs.get('exercise', None))
 
 def show_languagetranslations(request, *args, **kwargs):
+    """List all translations for a specific language.
+    
+    Specific translations is reached by show_translation_for_language().
+    """
+
     me = 'translation'
     template = 'translations/languagetranslation_list.html'
     lang = _get_lang(*args, **kwargs)
@@ -40,6 +45,11 @@ def show_languagetranslations(request, *args, **kwargs):
 
 
 def list_translation_for_language(request, *args, **kwargs):
+    """List all translations of a specific exercise for a specific language.
+    
+    Specific translations is reached by show_translation_for_language().
+    """
+
     me = 'translation'
     template = 'translations/list_translation_for_language.html'
     lang = _get_lang(*args, **kwargs)
@@ -52,6 +62,10 @@ def list_translation_for_language(request, *args, **kwargs):
     return render_page(request, template, data)
 
 def show_translation_for_language(request, *args, **kwargs):
+    """Show a specific translation by a specific user for a specific
+    language."""
+
+    # TODO: Allow several translations per person?
     me = 'translation'
     template = 'translations/show_translation.html'
     lang = _get_lang(*args, **kwargs)
@@ -71,6 +85,9 @@ def show_translation_for_language(request, *args, **kwargs):
 
 @login_required
 def add_languagetranslations(request, *args, **kwargs):
+    """Add a specific translation by a specific user for a specific
+    language."""
+
     me = 'translation'
     template = 'translations/languagetranslation_form.html'
     help_message = ''
@@ -105,6 +122,9 @@ def add_languagetranslations(request, *args, **kwargs):
 
 @login_required
 def change_languagetranslations(request, *args, **kwargs):
+    """Change a specific translation by a specific user for a specific
+    language."""
+
     me = 'translation'
     template = 'translations/languagetranslation_form.html'
     help_message = ''
@@ -126,17 +146,21 @@ def change_languagetranslations(request, *args, **kwargs):
             'me': me}
     return render_page(request, template, data)
 
-def list_all_translations(request, *args, **kwargs):
+def list_all_translations(request, template_name='translations/translation_list.html', *args, **kwargs):
+    """List all translations."""
+
     me = 'translation'
-    template = 'translations/translation_list.html'
     exercises = TranslationExercise.objects.all()
     extra_context = {'me': me,}
-    return object_list(request, queryset=exercises, template_name=template,
+    return object_list(request, queryset=exercises, template_name=template_name,
             extra_context=extra_context)
 
-def show_translationexercise(request, *args, **kwargs):
+def show_translationexercise(request, template_name='translations/translationexercise_list.html', *args, **kwargs):
+    """List all translations for a specific exercise, and provide links
+    to add more translations.
+    """
+
     me = 'translation'
-    template = 'translations/translationexercise_list.html'
     exercise = get_translationexercise(*args, **kwargs)
     trans = exercise.translations.exclude(translation__isnull=True).exclude(translation='').order_by('language')
     natlangs, other_conlangs, own_conlangs = None, None, None
@@ -152,17 +176,20 @@ def show_translationexercise(request, *args, **kwargs):
             'own_conlangs': own_conlangs,
             'other_conlangs': other_conlangs,
             }
-    return object_list(request, queryset=trans, template_name=template,
+    return object_list(request, queryset=trans, template_name=template_name,
             extra_context=extra_context)
 
 @login_required
-def delete_languagetranslations(request, *args, **kwargs):
+def delete_languagetranslations(request, template_name='delete.html', *args, **kwargs):
+    """Delete a specific translation for a specific language."""
+
     me = 'translation'
-    template = 'delete.html'
     lang = _get_lang(*args, **kwargs)
     exercise = get_translationexercise(*args, **kwargs)
     trans = Translation.objects.get(language=lang, translator=request.user, exercise=exercise)
     extra_context = {'me': me,}
     return delete_object(request, model=Translation, object_id=trans.id,
-            post_delete_redirect="/translation/language/%s/" % lang.slug, extra_context=extra_context)
+            template_name=template_name,
+            post_delete_redirect="/translation/language/%s/" % lang.slug, 
+            extra_context=extra_context)
 
