@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404
 from django.views.generic.list_detail import object_list
 from django.views.generic.create_update import delete_object
 
-from nano.tools import pop_error, render_page, get_user_model
+from nano.tools import render_page, get_user_model
 
 import logging
 _LOG = logging.getLogger(__name__)
@@ -23,7 +23,6 @@ def get_translationexercise(*args, **kwargs):
 
 def show_languagetranslations(request, *args, **kwargs):
     me = 'translation'
-    error = pop_error(request)
     template = 'translations/languagetranslation_list.html'
     lang = _get_lang(*args, **kwargs)
     trans = lang.translations.exclude(translation__isnull=True).exclude(translation='')
@@ -35,15 +34,13 @@ def show_languagetranslations(request, *args, **kwargs):
         exercises = TranslationExercise.objects.exclude(translations__language=lang)
     extra_context = {'lang': lang,
             'exercises': exercises, 
-            'me': me,
-            'error': error,}
+            'me': me,}
     return object_list(request, queryset=trans, template_name=template,
             extra_context=extra_context)
 
 
 def list_translation_for_language(request, *args, **kwargs):
     me = 'translation'
-    error = pop_error(request)
     template = 'translations/list_translation_for_language.html'
     lang = _get_lang(*args, **kwargs)
     exercise = get_translationexercise(*args, **kwargs)
@@ -51,13 +48,11 @@ def list_translation_for_language(request, *args, **kwargs):
     data = {'exercise': exercise,
             'lang': lang,
             'object_list': trans,
-            'me': me, 
-            'error': error,}
+            'me': me,}
     return render_page(request, template, data)
 
 def show_translation_for_language(request, *args, **kwargs):
     me = 'translation'
-    error = pop_error(request)
     template = 'translations/show_translation.html'
     lang = _get_lang(*args, **kwargs)
     exercise = get_translationexercise(*args, **kwargs)
@@ -71,14 +66,12 @@ def show_translation_for_language(request, *args, **kwargs):
         raise Http404
     data = {'lang': lang,
             'translation': trans,
-            'me': me, 
-            'error': error,}
+            'me': me,}
     return render_page(request, template, data)
 
 @login_required
 def add_languagetranslations(request, *args, **kwargs):
     me = 'translation'
-    error = pop_error(request)
     template = 'translations/languagetranslation_form.html'
     help_message = ''
     lang = _get_lang(*args, **kwargs)
@@ -101,24 +94,20 @@ def add_languagetranslations(request, *args, **kwargs):
             trans.exercise = exercise
             trans.interlinear = form.cleaned_data['interlinear']
             trans.save(user=request.user)
-            request.session['error'] = None
             return HttpResponseRedirect('/translation/%s/language/%s/' %
                     (trans.exercise.slug, lang.slug))
         else:
             error = 'Form not valid'
-            request.session['error'] = error
     trans = lang.translations.exclude(translation__isnull=True).exclude(translation='')
     data = {'form': form,
             'exercise': exercise, 
             'help_message': help_message,
-            'error': error, 
             'me': me}
     return render_page(request, template, data)
 
 @login_required
 def change_languagetranslations(request, *args, **kwargs):
     me = 'translation'
-    error = pop_error(request)
     template = 'translations/languagetranslation_form.html'
     help_message = ''
     lang = _get_lang(*args, **kwargs)
@@ -133,25 +122,22 @@ def change_languagetranslations(request, *args, **kwargs):
         form = TranslationForm(data=request.POST, instance=trans)
         if form.is_valid():
             trans = form.save()
-            request.session['error'] = None
             return HttpResponseRedirect('./%s/' % request.user)
     data = {'form': form,
             'exercise': exercise, 'help_message': help_message,
-            'error':error, 'me': me}
+            'me': me}
     return render_page(request, template, data)
 
 def list_all_translations(request, *args, **kwargs):
     me = 'translation'
-    error = pop_error(request)
     template = 'translations/translation_list.html'
     exercises = TranslationExercise.objects.all()
-    extra_context = {'me': me, 'error': error,}
+    extra_context = {'me': me,}
     return object_list(request, queryset=exercises, template_name=template,
             extra_context=extra_context)
 
 def show_translationexercise(request, *args, **kwargs):
     me = 'translation'
-    error = pop_error(request)
     template = 'translations/translationexercise_list.html'
     exercise = get_translationexercise(*args, **kwargs)
     trans = exercise.translations.exclude(translation__isnull=True).exclude(translation='').order_by('language')
@@ -163,7 +149,6 @@ def show_translationexercise(request, *args, **kwargs):
         other_conlangs = conlangs.exclude(id__in=[l.id for l in own_conlangs])
     extra_context = {
             'me': me, 
-            'error': error, 
             'exercise': exercise,
             'natlangs': natlangs,
             'own_conlangs': own_conlangs,
@@ -176,11 +161,10 @@ def show_translationexercise(request, *args, **kwargs):
 def delete_languagetranslations(request, *args, **kwargs):
     me = 'translation'
     template = 'delete.html'
-    error = pop_error(request)
     lang = _get_lang(*args, **kwargs)
     exercise = get_translationexercise(*args, **kwargs)
     trans = Translation.objects.get(language=lang, translator=request.user, exercise=exercise)
-    extra_context = {'me': me, 'error': error,}
+    extra_context = {'me': me,}
     return delete_object(request, model=Translation, object_id=trans.id,
             post_delete_redirect="/translation/language/%s/" % lang.slug, extra_context=extra_context)
 
