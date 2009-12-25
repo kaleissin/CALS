@@ -155,14 +155,19 @@ def show_translationexercise(request, *args, **kwargs):
     template = 'translations/translationexercise_list.html'
     exercise = get_translationexercise(*args, **kwargs)
     trans = exercise.translations.exclude(translation__isnull=True).exclude(translation='').order_by('language')
-    langs = None
+    natlangs, other_conlangs, own_conlangs = None, None, None
     if request.user.is_authenticated():
-        langs = Language.objects.all()
+        natlangs = Language.objects.natlangs()
+        conlangs = Language.objects.conlangs()
+        own_conlangs = langs_for_user(request.user)
+        other_conlangs = conlangs.exclude(id__in=[l.id for l in own_conlangs])
     extra_context = {
             'me': me, 
             'error': error, 
             'exercise': exercise,
-            'langs': langs,
+            'natlangs': natlangs,
+            'own_conlangs': own_conlangs,
+            'other_conlangs': other_conlangs,
             }
     return object_list(request, queryset=trans, template_name=template,
             extra_context=extra_context)
