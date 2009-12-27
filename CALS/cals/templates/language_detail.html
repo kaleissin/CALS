@@ -55,16 +55,24 @@
 
 <h1>{{ object.name }}</h1>
 
+{% if object.natlang %}
+<p>This language is cloned from <a href="{{ object.homepage }}">WALS</a>. If
+you need to cite or disagree with any data on this language, you will
+have to do so at WALS, not here.</p>
+{% endif %}
+
 <table>
 <tr>
-    <td style="vertical-align: middle; font-weight: bold">{% mark_faved object  %}</td>
+    <td style="vertical-align: middle; font-weight: bold">{% mark_faved object %}</td>
     <td>{% shareicon %}</td>
 </tr>
 </table>
 
 <form action="" method="post">
 <table>
+    {% ifnotequal object.internal_name object.name %}
     <tr><th>Internal name:</th><td>{{ object.internal_name }}</td></tr>
+    {% endifnotequal %}
     {% if not object.natlang %}
     <tr><th>Author:</th><td>{{ object.author }}</td></tr>
     {% endif %}
