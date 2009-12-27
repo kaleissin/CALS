@@ -423,16 +423,22 @@ class Language(models.Model):
         return self.name
 
     def save(self, user=None, solo=True, *args, **kwargs):
+        now = datetime.utcnow()
         # New lang
         if not self.id and user:
             self.added_by = user
             self.manager = user
         if solo:
-            self.last_modified = datetime.now()
+            self.last_modified = now
         if not self.internal_name:
             self.internal_name = self.name
             self.name = asciify(self.name)
         self.slug = slugify(self.name)
+
+        # Save name-changes in separate table
+        LanguageNames.objects.get_or_create(language=self, name=self.name, added=now)
+        LanguageNames.objects.get_or_create(language=self, name=self.internal_name, added=now)
+
         if not self.manager:
             self.manager = self.added_by or user
         # XXX Cannot set average score here as there would be an
@@ -490,6 +496,27 @@ class Language(models.Model):
         weighted_num_features = self.num_features * feature_weight
         density = (weighted_num_features + density) / (num_features + singles)
         return density
+
+class LanguageNames(models.Model):
+    language = models.ForeignKey(Language, related_name="alternate_names")
+    added = models.DateTimeField(default=datetime.utcnow, editable=False)
+    name = models.CharField(max_length=64)
+
+    class Meta:
+        db_table = 'cals_languagenames'
+
+    def __unicode__(self):
+        return "%i: %s" % (self.language.id, self.name)
+
+class WALSCodes(models.Model):
+    language = models.OneToOneField(Language, primary_key=True, related_name="wals_code")
+    walscode = models.CharField(max_length=3)
+
+    class Meta:
+        db_table = 'cals_walscodes'
+
+    def __unicode__(self):
+        return "%i: %s" % (self.language.id, self.walscode)
 
 class LanguageFeature(models.Model, DescriptionMixin):
     language = models.ForeignKey(Language, related_name='features')
