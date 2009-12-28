@@ -84,6 +84,9 @@ have to do so at WALS, not here.</p>
     <tr><th>From earth:</th><td>{{ object.from_earth|yesno:"yes,no,unknown" }}</td></tr>
     {% else %}
     <tr><th>Natlang:</th><td>yes</td>
+    {% if object.family %}
+    <tr><th>Family:</th><td>{{ object.family.get_path|join:" > " }}</td></tr>
+    {% endif %}
     {% endif %}
     <tr><th>Permalink:</th><td><a href=".">{{ request.path }}</td></tr>
     <tr><th>Averageness:</th><td>{{ object.average_score }}/100, 

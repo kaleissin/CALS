@@ -357,6 +357,78 @@ class DescriptionManager(models.Manager):
     def get_query_set(self):
         return super(DescriptionManager, self).get_query_set().filter(current=True)
 
+class UnorderedTreeMixin(models.Model):
+    part_of = models.ForeignKey('self', blank=True, null=True, default=None)
+    path = models.CharField(max_length=255, blank=True, default='')
+
+    _sep = u'/'
+
+    class Meta:
+        abstract = True
+
+    @property
+    def level(self):
+        return unicode(self.path).count(self._sep)
+
+    def roots(self):
+        return self._default_manager.filter(part_of__isnull=True)
+
+    def get_path(self):
+        return [self._default_manager.get(id=p) for p in unicode(self.path).split(self._sep)]
+
+    def descendants(self):
+        return self._default_manager.filter(path__startswith=self.path).exclude(id=self.id)
+
+    def parent(self):
+        return self.part_of
+
+    def siblings(self):
+        return [p for p in self.part_of.descendants() if p.level == self.level]
+
+    def children(self):
+        return [p for p in self.descendants() if p.level == self.level + 1]
+
+    def is_sibling_of(self, node):
+        return self.part_of == node.part_of
+
+    def is_child_of(self, node):
+        return self.part_of == node
+
+    def is_root(self):
+        """Roots have no parents"""
+
+        return bool(self.part_of)
+
+    def is_leaf(self):
+        """Leaves have no descendants"""
+
+        return self.descendants().count() == 0
+
+class LanguageFamily(UnorderedTreeMixin):
+    name = models.CharField(max_length=64)
+    slug = models.SlugField(editable=False, blank=True, null=True)
+
+    class Meta:
+        db_table = 'cals_languagefamily'
+        verbose_name_plural = 'language families'
+
+    def __unicode__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name)
+
+        if not self.id:
+            super(LanguageFamily, self).save(*args, **kwargs)
+
+        # Set path
+        if self.part_of:
+            self.path = "%s/%i" % (self.part_of.path, self.id)
+        else:
+            self.path = "%i" % self.id
+
+        super(LanguageFamily, self).save(*args, **kwargs)
+
 class Language(models.Model):
     name = models.CharField('External name', max_length=64, 
             help_text=u'Anglified name, safe for computing. ASCII!')
@@ -378,6 +450,7 @@ class Language(models.Model):
             db_column='greeting')
     vocabulary_size = models.PositiveIntegerField(null=True, blank=True,
             help_text="Estimated vocabulary size")
+    family = models.ForeignKey(LanguageFamily, blank=True, null=True)
     natlang = models.BooleanField(default=False, editable=False)
 
     # statistics
@@ -566,4 +639,4 @@ from nano.user import new_user_created
 from signalhandlers import new_or_changed_language, new_user_anywhere
 
 post_save.connect(new_user_anywhere, sender=User)
-post_save.connect(new_or_changed_language, sender=Language)
+#post_save.connect(new_or_changed_language, sender=Language)
