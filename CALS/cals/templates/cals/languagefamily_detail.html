@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load cals_tags %}
+{% load nano_mark_tags %}
+{% block title %}Language Family: {{ object.name }}{% endblock title %}
+{% block submenu %}
+<ul>  
+    <li><a href="../">All</a></li>
+    <li><b>{{ object.name }}</b></li>
+</ul>
+{% endblock submenu %}
+
+{% block content %}
+
+<h1>{{ object.name }}</h1>
+
+{% if object.part_of %}
+<h2>Superfamily</h2>
+<p><a href="../{{ object.part_of.slug }}/">{{ object.part_of }}</a></p>
+{% endif %}
+
+{% if object.languages.count %}
+<h2>Languages</h2>
+<ul>
+{% for l in object.languages.all %}
+<li>{% show_lang l %}</li>
+{% endfor %}
+</ul>
+{% else %}
+{% endif %}
+
+{% if object.descendants %}
+<h2>Sub-families</h2>
+<ul>
+{% for d in object.descendants %}
+<li><a href="../{{ d.slug }}/">{{ d }}</a>
+{% if d.languages.count %}
+<ul>
+{% for sf in d.languages.all %}
+<li>{% show_lang sf %}</li>
+{% endfor %}
+</ul>
+{% endif %}
+</li>
+{% endfor %}
+</ul>
+{% endif %}
+
+{% endblock content %}

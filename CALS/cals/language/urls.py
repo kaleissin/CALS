@@ -4,6 +4,9 @@ from django.contrib.auth.models import User
 from tagging.models import Tag
 
 from cals.models import Language, Feature, FeatureValue, Category, Profile
+from cals.models import LanguageFamily
+
+SLUG_RE = r'(?P<slug>[-\w]+)/'
 
 ## tagging
 tags_language_dict = {
@@ -18,12 +21,19 @@ taglist_language_dict = {
         'extra_context': { 'me': 'language' },
 }
 
+langfam_dict = {
+    'queryset': LanguageFamily.objects.all(),
+    'extra_context': { 'me': 'language' },
+}
+
 urlpatterns = patterns('tagging.views',
         (r'^tag/(?P<tag>[- \w\d]+)/$', 'tagged_object_list', tags_language_dict),
 )
 
 urlpatterns += patterns('django.views.generic',
         (r'^tag/$',                        'list_detail.object_list', taglist_language_dict),
+        (r'family/$',                      'list_detail.object_list', langfam_dict), 
+        (r'family/'+SLUG_RE+r'$',          'list_detail.object_detail', langfam_dict), 
 # #        (r'^latest/$', 'date_based.archive_index', language_by_date),
 # #        (r'^(?P<year>\d{4})/$',            'date_based.archive_year', language_by_year),
         #(r'^(?P<year>\d{4})/w(?P<week>[a-z]{3})/$', 'date_based.archive_week', language_by_week),

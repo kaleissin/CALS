@@ -366,6 +366,21 @@ class UnorderedTreeMixin(models.Model):
     class Meta:
         abstract = True
 
+    def save(self, *args, **kwargs):
+        if not self.id:
+            super(UnorderedTreeMixin, self).save(*args, **kwargs)
+
+        self._set_path()
+        super(UnorderedTreeMixin, self).save(*args, **kwargs)
+
+
+    def _set_path(self):
+
+        if self.part_of:
+            self.path = "%s%i/" % (self.part_of.path, self.id)
+        else:
+            self.path = "%i/" % self.id
+
     @property
     def level(self):
         return unicode(self.path).count(self._sep)
@@ -411,21 +426,13 @@ class LanguageFamily(UnorderedTreeMixin):
     class Meta:
         db_table = 'cals_languagefamily'
         verbose_name_plural = 'language families'
+        ordering = ('name',)
 
     def __unicode__(self):
         return self.name
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
-
-        if not self.id:
-            super(LanguageFamily, self).save(*args, **kwargs)
-
-        # Set path
-        if self.part_of:
-            self.path = "%s/%i" % (self.part_of.path, self.id)
-        else:
-            self.path = "%i" % self.id
 
         super(LanguageFamily, self).save(*args, **kwargs)
 
@@ -450,7 +457,8 @@ class Language(models.Model):
             db_column='greeting')
     vocabulary_size = models.PositiveIntegerField(null=True, blank=True,
             help_text="Estimated vocabulary size")
-    family = models.ForeignKey(LanguageFamily, blank=True, null=True)
+    family = models.ForeignKey(LanguageFamily, blank=True, null=True,
+            related_name='languages')
     natlang = models.BooleanField(default=False, editable=False)
 
     # statistics

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load paginator %}
+{% block submenu %}
+<ul>
+    <li><b>All</b></li>
+</ul>
+{% endblock submenu %}
+{% block content %}
+    {% paginator %}
+    <ul>
+        {% for object in object_list %}
+        {% if object.descendants.count or object.languages.count %}
+        <li class="{% cycle odd,even %}">
+            <a href="/language/family/{{ object.slug }}/">{{ object }}</a>
+            ({{ object.descendants.count }} sub-famil{{ object.descendants.count|pluralize:"y,ies" }})
+            ({{ object.languages.count }} language{{ object.languages.count|pluralize }})</li>
+        {% endif %}
+        {% endfor %}
+    </ul>
+    {% paginator %}
+
+{% endblock content %}
