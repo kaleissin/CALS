@@ -24,17 +24,20 @@ from django.views.generic.create_update import delete_object
 from django.utils.encoding import smart_unicode
 from django.db.models import Q
 
-from snippets.stringpaginator import SingleLetterPaginator, InvalidPage
+from paginators.stringpaginator import SingleLetterPaginator, InvalidPage
+from paginators import Paginator
 
 from tagging.models import Tag
 
 from cals.models import *
 from cals.models import Language, Feature, FeatureValue, \
-        LanguageFeature, Profile, User, Category, Description
+        LanguageFeature, Profile, User, Category, Description, \
+        LanguageName
 from cals.forms import *
 from cals.forms import FeatureValueForm, CategoryForm, FeatureForm, \
         NewFeatureValueFormSet, CompareTwoFeaturesForm, DescriptionForm, \
-        CompareTwoForm, LanguageForm, EditorForm, UserForm, ProfileForm
+        CompareTwoForm, LanguageForm, EditorForm, UserForm, ProfileForm, \
+        SearchForm
 from cals.statistics import *
 from cals.statistics import generate_global_stats
 from cals.tools import *
@@ -479,6 +482,44 @@ def compare_language(request, *args, **kwargs):
             'comparison_type': comparison_type,
             }
     return render_page(request, 'language_compare.html', data)
+
+def search_languages(request, *args, **kwargs):
+    me = 'language'
+
+    raw_q = request.GET.get('q', '')
+    limit = int(request.GET.get('limit', 10))
+    anywhere = request.GET.get('anywhere', False)
+    q = slugify(raw_q)
+
+    if raw_q:
+        if q:
+            ls = Language.objects.filter(id__in=[ln.language.id for ln in LanguageName.objects.find(q, anywhere)])
+        else:
+            ls = Language.objects.filter(id__in=[ln.language.id for ln in LanguageName.objects.filter(slug='')])
+        ls = ls.order_by()
+    else:
+        ls = []
+
+    paginator = Paginator(ls, request, per_page=limit, allow_empty_first_page=True)
+    pagenum = page_in_kwargs_or_get(request, kwargs) or 1
+
+    try:
+        page = paginator.page(pagenum)
+    except (InvalidPage):
+        raise
+        page = paginator.page(paginator.num_pages)
+
+    form = SearchForm(initial={'q': raw_q, 'anywhere': anywhere, 'limit': limit})
+    data = {u'me': me, 
+            u'q': raw_q, 
+            u'anywhere': anywhere,
+            u'limit': limit,
+            u'searchform': form,
+            u'object_list': page.object_list,
+            u'page_obj': page,
+            u'paginator': paginator,
+            u'is_paginated': True}
+    return render_page(request, 'cals/languagenames_search.html', data)
 
 def show_language(request, *args, **kwargs):
     me = 'language'

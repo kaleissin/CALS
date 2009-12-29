@@ -8,8 +8,8 @@
         <b><a href="?{{ page_obj.previous_page_querystring }}">&lt;</a></b>
         {% endif %}
         {% for p in page_obj.paginator.pages %}
-        {% ifequal p page_obj %}
-        <b class="selected">{{ page_obj }}</b>
+        {% ifequal p.number page_obj.number %}
+        <b class="selected">{{ p }}</b>
         {% else %}
         <b><a href="?{{ p.number_querystring }}">{{ p }}</a></b>
         {% endifequal %}

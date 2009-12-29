@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load cals_tags %}
+{% load paginator %}
+{% block submenu %}
+<ul>
+    <li><a href="/language/">Overview</a></li>
+    <li><b>Search</b></li>
+    <li><a href="/language/?conlang">Conlangs</a></li>
+    <li><a href="/language/?jrk">Kennaway-style</a></li>
+    <li><a href="/language/?cloud">Cloud</a></li>
+    <li><a href="/language/?natlang">Natlangs</a></li>
+    {% if user.is_authenticated %}
+    <li><a href="/language/new">Add</a></li>
+    {% endif %}
+</ul>
+{% endblock submenu %}
+{% block content %}
+    <form class="search" action="./search" method="get">
+    {{ searchform.q }}
+    <input type="submit" value="Search" /><br />
+    {{ searchform.anywhere }} Search within words
+    {{ searchform.limit }} per page
+    </form>
+    {% if q %}
+    <p>Found {{ page_obj.paginator.count }} instance{{ page_obj.paginator.count|pluralize }} 
+    {% if not anywhere %}beginning with{% else %}of{% endif %} <b>"{{ q }}"</b></p>
+    {% if page_obj.paginator.count %}
+    <div class="searchlist">
+        {% for object in object_list %}
+        <div class="searchitem">
+        <div>{% show_lang object %}</div>
+        {% if object.alternates %}<div>aka. {{ object.alternates|join:", " }}</div>{% endif %}
+        {% if object.background %}<div>{{ object.background }}</div>{% endif %}
+        </div>
+        {% endfor %}
+    {% paginator %}
+    </div>
+    {% endif %}
+    {% endif %}
+
+{% endblock content %}

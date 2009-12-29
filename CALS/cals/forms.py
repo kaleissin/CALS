@@ -45,6 +45,19 @@ class EditorForm(forms.ModelForm):
         self.cleaned_data['editors'] = User.objects.filter(id__in=[e.user_id for e in editors])
         return super(EditorForm, self).save(commit)
 
+class SearchForm(forms.Form):
+    """Generalized search-form"""
+    LIMITS = (
+        ('10', '10'),
+        ('20', '20'),
+        ('50', '50'),
+        ('100', '100'),
+    )
+
+    q = forms.CharField(max_length=64)
+    anywhere = forms.BooleanField(required=False, initial=False)
+    limit = forms.TypedChoiceField(choices=LIMITS, coerce=int, required=False, initial='10')
+
 class LanguageForm(forms.ModelForm):
     background = TruncCharField(required=False, max_length=256,
             widget=forms.Textarea(attrs={'cols': '64', 'rows': '4'}),
@@ -183,11 +196,13 @@ class FeatureForm(forms.ModelForm):
 
     class Meta:
         model = Feature
+        exclude = ('added_by',)
 
 class NewFeatureValueForm(forms.Form):
     name = forms.CharField(max_length=60)
 
 NewFeatureValueFormSet = formset_factory(NewFeatureValueForm, extra=10, max_num=10, can_order=True)
+ChangeFeatureValueFormSet = formset_factory(NewFeatureValueForm, extra=10, max_num=10, can_order=True, can_delete=True)
 
 # class _ExternalInfoBaseModelFormSet(BaseModelFormSet):
 #     def add_fields(self, form, index):

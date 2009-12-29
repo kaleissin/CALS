@@ -63,10 +63,11 @@ language_by_date = {
         }
 
 urlpatterns += patterns('cals.views',
-        (r'^([?](?P<action>[a-z]+))?$', 'list_languages'),
-        (r'^jrklist/$',                             'language_jrklist'),
-        (r'^p(?P<page>[0-9]+)/$',          'language_list'),
-        (r'^new$',                         'create_language'),
+        (r'^search$',                         'search_languages'),
+        (r'^([?](?P<action>[a-z]+))?$',       'list_languages'),
+        (r'^jrklist/$',                       'language_jrklist'),
+        (r'^p(?P<page>[0-9]+)/$',             'language_list'),
+        (r'^new$',                            'create_language'),
         (LANG_RE+r'$',                        'show_language'), 
         (LANG_RE+r'change$',                  'change_language'),
         (LANG_FEAT_RE+r'$',                   'show_languagefeature'), 

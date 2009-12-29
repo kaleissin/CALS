@@ -517,8 +517,8 @@ class Language(models.Model):
         self.slug = slugify(self.name)
 
         # Save name-changes in separate table
-        LanguageNames.objects.get_or_create(language=self, name=self.name, added=now)
-        LanguageNames.objects.get_or_create(language=self, name=self.internal_name, added=now)
+        LanguageName.objects.get_or_create(language=self, name=self.name, added=now)
+        LanguageName.objects.get_or_create(language=self, name=self.internal_name, added=now)
 
         if not self.manager:
             self.manager = self.added_by or user
@@ -578,16 +578,47 @@ class Language(models.Model):
         density = (weighted_num_features + density) / (num_features + singles)
         return density
 
-class LanguageNames(models.Model):
+    def alternates(self):
+        return [l for l in LanguageName.objects.filter(language=self) 
+                if l.name != l.language.name] 
+
+class SearchManager(models.Manager):
+    def find_prefix(self, q):
+        assert q
+        return self.get_query_set().filter(slug__istartswith=q)
+
+    def find_anywhere(self, q):
+        assert q
+        return self.get_query_set().filter(slug__icontains=q)
+
+    def find(self, q, anywhere=False):
+        if anywhere:
+            return self.find_anywhere(q)
+        else:
+            return self.find_prefix(q)
+
+class LanguageName(models.Model):
     language = models.ForeignKey(Language, related_name="alternate_names")
     added = models.DateTimeField(default=datetime.utcnow, editable=False)
     name = models.CharField(max_length=64)
+    slug = models.SlugField(max_length=64, editable=False, blank=True)
+
+    objects = SearchManager()
 
     class Meta:
         db_table = 'cals_languagenames'
+        unique_together = ('language', 'name')
+        verbose_name_plural = 'language names'
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name)
+        super(LanguageName, self).save(*args, **kwargs)
 
     def __unicode__(self):
-        return "%i: %s" % (self.language.id, self.name)
+        return self.name
+
+    def is_current(self):
+        return (self.name == self.language.name) or (self.name == self.language.internal_name)
 
 class WALSCodes(models.Model):
     language = models.OneToOneField(Language, primary_key=True, related_name="wals_code")
