@@ -5,7 +5,7 @@ from cals.models import *
 class LanguageAdmin(admin.ModelAdmin): 
     model = Language
     ordering = ('name',)
-    list_display = ('name', 'added_by', 'from_earth', 'last_modified')
+    list_display = ('name', 'added_by', 'from_earth', 'family', 'last_modified')
     list_filter = ('from_earth', 'natlang', 'added_by',)
     search_fields = ('name', 'internal_name', 'added_by__display_name',)
     #radio_fields = {'from_earth': admin.VERTICAL }
@@ -48,9 +48,20 @@ admin.site.register(Profile, ProfileAdmin)
 
 class DescriptionAdmin(admin.ModelAdmin): 
     model = Description
-    #ordering = ('display_name',)
     list_display = ('object_id', 'content_type', 'current', 'last_modified', 'last_modified_by')
     list_filter = ('current', 'content_type',)
 admin.site.register(Description, DescriptionAdmin)
+
+class LanguageFamilyAdmin(admin.ModelAdmin): 
+    model = LanguageFamily
+    list_display = ('name', 'part_of', 'path',)
+admin.site.register(LanguageFamily, LanguageFamilyAdmin)
+
+class LanguageNameAdmin(admin.ModelAdmin): 
+    model = LanguageName
+    ordering = ('language',)
+    list_display = ('name', 'language', 'added')
+    ordering = ('name', 'language', '-added')
+admin.site.register(LanguageName, LanguageNameAdmin)
 
 #admin.site.register(ExternalInfo)
