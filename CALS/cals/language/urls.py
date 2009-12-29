@@ -6,6 +6,10 @@ from tagging.models import Tag
 from cals.models import Language, Feature, FeatureValue, Category, Profile
 from cals.models import LanguageFamily
 
+LANG_RE = r'^(?P<lang>[-\w]+)/'
+LANG_FEAT_RE = LANG_RE + r'feature/(?P<object_id>[0-9]+)/'
+LANG_FEAT_HIST_RE = LANG_FEAT_RE + r'history/'
+MULTISLUGS_RE = r'^(?P<slugs>[-+\w]+)/'
 SLUG_RE = r'(?P<slug>[-\w]+)/'
 
 ## tagging
@@ -63,15 +67,15 @@ urlpatterns += patterns('cals.views',
         (r'^jrklist/$',                             'language_jrklist'),
         (r'^p(?P<page>[0-9]+)/$',          'language_list'),
         (r'^new$',                         'create_language'),
-        url(r'^(?P<lang>[-\w]+)/$',           'show_language', {}, 'show_language'), 
-        (r'^(?P<lang>[-\w]+)/feature/(?P<object_id>[0-9]+)/$', 'show_languagefeature'), 
-        (r'^(?P<lang>[-\w]+)/feature/(?P<object_id>[0-9]+)/change$', 'describe_languagefeature'), 
-        (r'^(?P<lang>[-\w]+)/feature/(?P<object_id>[0-9]+)/use$', 'revert_languagefeature_description'), 
-        (r'^(?P<lang>[-\w]+)/feature/(?P<object_id>[0-9]+)/history/delete$', 'remove_languagefeature_description_version'), 
-        (r'^(?P<lang>[-\w]+)/feature/(?P<object_id>[0-9]+)/history/$', 'show_languagefeature_history'), 
-        (r'^(?P<lang>[-\w]+)/feature/(?P<object_id>[0-9]+)/history/compare$', 'compare_languagefeature_history'), 
-        (r'^(?P<lang>[-\w]+)/change$',     'change_language'),
-        (r'^(?P<slugs>[-+\w]+)/clone$',      'clone_language'), 
-        (r'^(?P<slugs>[-+\w]+)/(?P<opt>[^/]*?)/?$',      'compare_language'), 
+        (LANG_RE+r'$',                        'show_language'), 
+        (LANG_RE+r'change$',                  'change_language'),
+        (LANG_FEAT_RE+r'$',                   'show_languagefeature'), 
+        (LANG_FEAT_RE+r'change$',             'describe_languagefeature'), 
+        (LANG_FEAT_RE+r'use$',                'revert_languagefeature_description'), 
+        (LANG_FEAT_HIST_RE+r'delete$',        'remove_languagefeature_description_version'), 
+        (LANG_FEAT_HIST_RE+r'$',              'show_languagefeature_history'), 
+        (LANG_FEAT_HIST_RE+r'compare$',       'compare_languagefeature_history'), 
+        (MULTISLUGS_RE+r'clone$',             'clone_language'), 
+        (MULTISLUGS_RE+r'(?P<opt>[^/]*?)/?$', 'compare_language'), 
 )
 
