@@ -620,7 +620,7 @@ class LanguageName(models.Model):
     def is_current(self):
         return (self.name == self.language.name) or (self.name == self.language.internal_name)
 
-class WALSCodes(models.Model):
+class WALSCode(models.Model):
     language = models.OneToOneField(Language, primary_key=True, related_name="wals_code")
     walscode = models.CharField(max_length=3)
 
