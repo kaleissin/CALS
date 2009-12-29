@@ -262,6 +262,16 @@ def list_feature(request, *args, **kwargs):
     return object_list(queryset=queryset, template_name=template,
             extra_context=extra_context)
 
+def list_people(request, template_name='cals/profile_list.html', *args, **kwargs):
+    extra_context = {'me': 'people'}
+    if 'prolificness' in request.GET:
+        extra_context['prolificness'] = True
+        queryset = User.objects.annotate(m=Count('manages'), e=Count('edits')).order_by('-m', '-e')
+    else:
+        queryset = Profile.objects.filter(is_visible=True).order_by('display_name')
+    return object_list(request, queryset=queryset, template_name=template_name,
+            extra_context=extra_context, **kwargs)
+
 def show_feature(request, features=None, object_id=None, template_name='feature_detail.html', *args, **kwargs):
     me = 'feature'
     if not features:
