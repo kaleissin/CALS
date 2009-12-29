@@ -4,6 +4,9 @@ body { border: 1px solid #25331a;
     color: #1f2e1b;
 }
 
+.searchitem { margin-bottom: 1em; }
+.searchitem > div { margin-bottom: 1ex; }
+
 table.diff { border-style: none; border-collapse: collapse; }
 table.diff table { width: 100%; }
 .diff colgroup + .diff colgroup { margin-left: 0.5ex }
@@ -222,8 +225,12 @@ a {
     border-bottom: none;
 }
 
-a:visited, #header a:visited {
+a:visited {
     color: #421;
+}
+
+#header .nav a:visited {
+    color: #ffde28;
 }
 
 a:hover {
