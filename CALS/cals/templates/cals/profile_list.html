@@ -9,9 +9,15 @@
 {% block content %}
     <table class="list">
         {% for row in object_list|partition %}
-        <tr>
-        {% for cell in row %}<td>{% if cell %}{% showuser cell %}{% endif %}</td>{% endfor %}
-        </tr>
+        <tr>{% spaceless %}
+        {% for cell in row %}
+            <td>
+                {% if cell %}
+                    {% showuser cell %}
+                {% endif %}
+            </td>
+        {% endfor %}
+        {% endspaceless %}</tr>
         {% endfor %}
     </table>
 {% endblock content %}
