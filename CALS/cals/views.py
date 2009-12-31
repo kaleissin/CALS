@@ -259,7 +259,7 @@ def list_feature(request, *args, **kwargs):
     extra_context = {'me': 'feature'}
     queryset = Category.objects.all().order_by('id')
     template = 'cals/feature_list.html'
-    return object_list(queryset=queryset, template_name=template,
+    return object_list(request, queryset=queryset, template_name=template,
             extra_context=extra_context)
 
 def list_people(request, template_name='cals/profile_list.html', *args, **kwargs):
@@ -996,8 +996,6 @@ def show_profile(request, *args, **kwargs):
     except Profile.DoesNotExist:
         return HttpResponseNotFound()
     seen = profile.seen_profile
-    if seen:
-        Profile.objects.filter(user=profile.user).update(seen_profile=True)
     pms, pms_archived, pms_sent = (), (), ()
     if request.user == user:
         pms = PM.objects.received(user)
