@@ -85,7 +85,19 @@ have to do so at WALS, not here.</p>
     {% else %}
     <tr><th>Natlang:</th><td>yes</td>
     {% if object.family %}
-    <tr><th>Family:</th><td>{{ object.family.get_path|join:" > " }}</td></tr>
+    <tr><th>Family:</th>{% spaceless %}
+    {% with object.family.get_path as path %}
+    <td>
+    {%if path|length_is:"1" %}<a href="../family/{{ path.0.slug }}/">{{ path.0}}</a>
+    {% else %}
+    {% for family in path|slice:":-1" %}
+    <a href="../family/{{ family.slug }}/">{{ family }}</a> &gt;
+    {% endfor %}
+    {% with path|last as family %}
+    <a href="../family/{{ family.slug }}/">{{ family }}</a>
+    {% endwith %}
+    {% endif %}
+    </td></tr>{% endwith %}{% endspaceless %}
     {% endif %}
     {% endif %}
     <tr><th>Permalink:</th><td><a href=".">{{ request.path }}</td></tr>
