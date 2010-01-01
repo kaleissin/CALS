@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load paginator %}
+{% block submenu %}
+<ul>
+    <li><b>Overview</b></li>
+    <li><a href="/language/search">Search</a></li>
+    <li><a href="/language/?conlang">Alphabetic</a></li>
+    <li><a href="/language/?jrk">Kennaway-list</a></li>
+    <li><a href="/language/?cloud">Cloud</a></li>
+    <li><a href="/language/?natlang">Natlangs</a></li>
+    <li><a href="/language/family/">Language Families</a></li>
+    {% if user.is_authenticated %}
+    <li><a href="/language/new">Add</a></li>
+    {% endif %}
+</ul>
+{% endblock submenu %}
+{% block content %}
+    <h1><b>Languages</b></h1>
+    <h2>Search</h2>
+    <form class="search" action="./search" method="get">
+    {{ searchform.q }}
+    <input type="submit" value="Search" /><br />
+    {{ searchform.anywhere }} Search within words
+    {{ searchform.limit }} per page
+    </form>
+    <h2>Browse</h2>
+    <h3>Conlangs</h3>
+    <h4><a href="/language/?conlang">Alphabetic</a></h4>
+    <p>An alphabetic list of conlangs.</p>
+    <h4><a href="/language/?jrk">Kennaway-list</a></h4>
+    <p>All conlangs on a single page, alphabetically, with a bit of
+    extra info per language. As pioneered by
+    <a class="ext" href="http://www2.cmp.uea.ac.uk/~jrk/conlang.html#Languages">R. Kennaway</a>
+    during the early days of the Web.</p>
+    <h4><a href="/language/?cloud">Cloud</a></h4>
+    <p>A cloud of conlangs, where the size of the link depends on the
+    amount of data about the conlang that is stored here.</p>
+    {% if user.is_authenticated %}
+    <h3><a href="/language/?natlang">Natlangs</a></h3>
+    <p>All natlangs described at WALS that have 50 or more features have been
+    cloned here, as an alphabetic list.</p>
+    <h3><a href="/language/family/">Language Families</a></h3>
+    <p>While all natlangs belong to a language family, even if it only
+    has a single member, conlangs need not belong to a family. Some
+    conlangs also belong to natlang families.</p>
+    <h2><a href="/language/new">Add</a></h2>
+    <p>You may add a missing or new conlang.</p>
+    {% endif %}
+{% endblock content %}
