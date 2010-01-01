@@ -783,7 +783,7 @@ def language_cloud(request, *args, **kwargs):
             data)
 
 def language_jrklist(request, *args, **kwargs):
-    queryset = Language.objects.conlangs().exclude(background='').order_by('name')
+    queryset = LanguageName.objects.filter(language__natlang=False).exclude(language__background='').order_by('name')
     return object_list(request, queryset, 
             template_name='jrklist.html',
             extra_context={'me': 'language'})

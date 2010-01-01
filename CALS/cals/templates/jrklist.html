@@ -14,8 +14,19 @@
 </ul>
 {% endblock submenu %}
 {% block content %}
-    {% for object in object_list %}
+    {% for langname in object_list %}
+    {% with langname.language as object %}
+    {% ifequal langname.name object.name %}
     <p><b><a href="/language/{{ object.slug }}/">{{ object }}</a></b>: 
     {{ object.background }}</p>
+    {% if object.alternates %}
+    {% ifnotequal object.internal_name object.name %}<p>Its users know it as <b>{{ object.internal_name }}</b>.</p>{% endifnotequal %}
+    {% if object.previous_names %}It has been known as {{ object.previous_names|join:", " }}.</p>{% endif %}
+    {% endif %}
+    {% else %}
+    <p><b><a href="/language/{{ object.slug }}/">{{ langname }}</a></b>: 
+    See <a href="/language/{{ object.slug }}/">{{ object }}</a></p>
+    {% endifequal %}
+    {% endwith %}
     {% endfor %}
 {% endblock content %}
