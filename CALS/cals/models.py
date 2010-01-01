@@ -609,8 +609,10 @@ class Language(models.Model):
         return density
 
     def alternates(self):
-        return [l for l in LanguageName.objects.filter(language=self) 
-                if l.name != l.language.name] 
+        return self.alternate_names.exclude(name=self.name)
+
+    def previous_names(self):
+        return self.alternates().exclude(name=self.internal_name)
 
 class SearchManager(models.Manager):
 
