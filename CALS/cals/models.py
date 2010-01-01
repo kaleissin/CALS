@@ -419,7 +419,7 @@ class UnorderedTreeMixin(models.Model):
         return self._default_manager.filter(part_of__isnull=True)
 
     def get_path(self):
-        return [self._default_manager.get(id=p) for p in unicode(self.path).split(self._sep)]
+        return [self._default_manager.get(id=p) for p in unicode(self.path).split(self._sep) if p]
 
     def descendants(self):
         return self._default_manager.filter(path__startswith=self.path).exclude(id=self.id)
@@ -473,7 +473,7 @@ class Language(models.Model):
             blank=True,
             help_text=u'What the speakers call their language. All of unicode OK')
     slug = models.SlugField(max_length=64, editable=False, blank=True, null=True)
-    author = models.CharField(max_length=128)
+    author = models.CharField('Author(s)', max_length=128)
     homepage = models.URLField(null=True, blank=True)
     background = models.CharField(max_length=256, blank=True,
             help_text="""A short summary of the history/background of
