@@ -74,7 +74,7 @@ have to do so at WALS, not here.</p>
     <tr><th>Internal name:</th><td>{{ object.internal_name }}</td></tr>
     {% endifnotequal %}
     {% if not object.natlang %}
-    <tr><th>Author:</th><td>{{ object.author }}</td></tr>
+    <tr><th>Author(s):</th><td>{{ object.author }}</td></tr>
     {% endif %}
     <tr><th>Homepage:</th><td>{% if object.homepage %}<a class="ext" href="{{ object.homepage }}">{{ object.homepage }}</a>{% else %}–{% endif %}</td></tr>
     {% if not object.natlang %}

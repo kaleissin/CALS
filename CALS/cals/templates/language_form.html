@@ -108,7 +108,7 @@ $("#id_background").keyup(function() {
         {% if form.internal_name.errors %}<div class="error">{{ form.internal_name.errors }}</div>{% endif %}</td>
     </tr>
     <tr>
-        <th>Author
+        <th>{{ form.author.label }}
             {% if form.author.field.required %}<span class="required">*</span>{% endif %}</th>
         <td>{{ form.author }}</td>
         <td class="help">{{ form.author.help_text }}
