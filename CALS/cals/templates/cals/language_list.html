@@ -2,12 +2,14 @@
 {% load paginator %}
 {% block submenu %}
 <ul>
+    <li><a href="/language/">Overview</a></li>
+    <li><a href="/language/search">Search</a></li>
     {% if not natlang %}
-    <li><b>All</b></li>
+    <li><b>Alphabetic</b></li>
     {% else %}
-    <li><a href="/language/">All</a></li>
+    <li><a href="/language/?conlang">Alphabetic</a></li>
     {% endif %}
-    <li><a href="/language/?jrk">Kennaway-style</a></li>
+    <li><a href="/language/?jrk">Kennaway-list</a></li>
     <li><a href="/language/?cloud">Cloud</a></li>
     {% if natlang %}
     <li><b>Natlangs</b></li>
@@ -31,6 +33,7 @@
             {% endif %}
         {% endfor %}
     </ul>
+    {# if page_obj.page_range > 20... #}
     {% paginator %}
 
 {% endblock content %}

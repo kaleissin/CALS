@@ -2,8 +2,10 @@
 {% block title %}A cloud of conlangs{% endblock title %}
 {% block submenu %}
 <ul>
-    <li><a href="/language/">All</a></li>
-    <li><a href="?jrk">Kennaway-style</a></li>
+    <li><a href="/language/">Overview</a></li>
+    <li><a href="/language/search">Search</a></li>
+    <li><a href="/language/?conlang">Alphabetic</a></li>
+    <li><a href="?jrk">Kennaway-list</a></li>
     <li><b>Cloud</b></li>
     <li><a href="/language/?natlang">Natlangs</a></li>
     {% if user.is_authenticated %}
