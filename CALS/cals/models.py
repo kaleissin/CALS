@@ -49,6 +49,36 @@ FREETEXT_TYPES = (
         ('plaintext', 'plaintext'),
         )
 
+def strip_diacritics(string, slugify=False):
+    """Strip any diacritic."""
+
+    string = unicodedata.normalize('NFKD', string)
+    out = []
+    for c in string:
+        cat = unicodedata.category(c)
+        if slugify and cat[0] in ('P', 'Z', 'C'):
+            c = u'-'
+        if unicodedata.combining(c):
+            continue
+        if cat in ('Lm', 'Sk'):
+            continue
+        out.append(c)
+    string = u''.join(out)
+    if slugify:
+        string = u'-'.join(filter(None, string.split(u'-'))).lower()
+    if string:
+        return unicodedata.normalize('NFKC', string)
+    else:
+        raise ValueError, 'String has only combining charcters'
+
+def uni_slugify(string):
+    """Slugify without stripping non-ascii-characters."""
+    assert string
+    try:
+        return strip_diacritics(string, slugify=True)
+    except ValueError:
+        return string
+
 def asciify(string):
     string = unicodedata.normalize('NFKD', string).encode('ascii', 'ignore')
     if not string:
@@ -583,12 +613,13 @@ class Language(models.Model):
                 if l.name != l.language.name] 
 
 class SearchManager(models.Manager):
+
     def find_prefix(self, q):
-        assert q
+        q = uni_slugify(q)
         return self.get_query_set().filter(slug__istartswith=q)
 
     def find_anywhere(self, q):
-        assert q
+        q = uni_slugify(q)
         return self.get_query_set().filter(slug__icontains=q)
 
     def find(self, q, anywhere=False):
@@ -611,7 +642,7 @@ class LanguageName(models.Model):
         verbose_name_plural = 'language names'
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.name)
+        self.slug = uni_slugify(self.name)
         super(LanguageName, self).save(*args, **kwargs)
 
     def __unicode__(self):
