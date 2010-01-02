@@ -18,6 +18,7 @@ from django.db.models import Q
 from django.db.models.query import QuerySet
 from django.template.defaultfilters import slugify
 from django.utils.html import strip_tags
+from django.utils.encoding import smart_unicode
 from django.utils.translation import ugettext_lazy as _
 
 import tagging
@@ -73,7 +74,8 @@ def strip_diacritics(string, slugify=False):
 
 def uni_slugify(string):
     """Slugify without stripping non-ascii-characters."""
-    assert string
+    assert string, "String must not be empty"
+    assert isinstance(string, unicode), "String must be unicode"
     try:
         return strip_diacritics(string, slugify=True)
     except ValueError:
@@ -187,7 +189,7 @@ class DescriptionMixin(object):
         self_type = ContentType.objects.get_for_model(self)
         description_type = ContentType.objects.get(app_label="cals", model="description")
         try:
-            return Description.objects.get(object_id=self.id, current=True, content_type=self_type)
+            return Description.archive.get(object_id=self.id, current=True, content_type=self_type)
         except Description.DoesNotExist:
             return None
 
@@ -453,6 +455,8 @@ class LanguageFamily(UnorderedTreeMixin):
     name = models.CharField(max_length=64)
     slug = models.SlugField(editable=False, blank=True, null=True)
 
+    objects = models.Manager()
+
     class Meta:
         db_table = 'cals_languagefamily'
         verbose_name_plural = 'language families'
@@ -546,15 +550,24 @@ class Language(models.Model):
             self.name = asciify(self.name)
         self.slug = slugify(self.name)
 
-        # Save name-changes in separate table
-        LanguageName.objects.get_or_create(language=self, name=self.name, added=now)
-        LanguageName.objects.get_or_create(language=self, name=self.internal_name, added=now)
-
         if not self.manager:
             self.manager = self.added_by or user
         # XXX Cannot set average score here as there would be an
         # import-loop
         super(Language, self).save(*args, **kwargs)
+
+        # Save name-changes in separate table, now that Language has an
+        # id. For some reason, get_or_create leads to duplicates.
+        try:
+            LanguageName.objects.get(language=self, name=self.name)
+        except LanguageName.DoesNotExist:
+            l = LanguageName(language=self, name=self.name, added=now)
+            l.save()
+        try:
+            LanguageName.objects.get(language=self, name=self.internal_name)
+        except LanguageName.DoesNotExist:
+            l = LanguageName(language=self, name=self.internal_name, added=now)
+            l.save()
     
     #@permalink
     def get_absolute_url(self):
@@ -644,7 +657,7 @@ class LanguageName(models.Model):
         verbose_name_plural = 'language names'
 
     def save(self, *args, **kwargs):
-        self.slug = uni_slugify(self.name)
+        self.slug = uni_slugify(smart_unicode(self.name))
         super(LanguageName, self).save(*args, **kwargs)
 
     def __unicode__(self):
