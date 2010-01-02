@@ -1,12 +1,16 @@
 from django.conf.urls.defaults import *
 
+EXERCISE_RE = r'^(?P<exercise>[-_\w]+)/'
+LANG_RE = r'language/(?P<lang>[-\w]+)/'
+EXERCISE_LANG_RE = EXERCISE_RE + LANG_RE
+
 urlpatterns = patterns('translations.views',
-        (r'^(?P<exercise>[-_\w]+)/language/(?P<lang>[-\w]+)/$', 'list_translation_for_language'), 
-        (r'^(?P<exercise>[-_\w]+)/language/(?P<lang>[-\w]+)/new$', 'add_languagetranslations'), 
-        (r'^(?P<exercise>[-_\w]+)/language/(?P<lang>[-\w]+)/change$', 'change_languagetranslations'), 
-        (r'^(?P<exercise>[-_\w]+)/language/(?P<lang>[-\w]+)/delete$', 'delete_languagetranslations'), 
-        (r'^(?P<exercise>[-_\w]+)/language/(?P<lang>[-\w]+)/(?P<user>[-\w]+)/$', 'show_translation_for_language'), 
-        (r'^language/(?P<lang>[-\w]+)/$', 'show_languagetranslations'), 
-        (r'^(?P<exercise>[-_\w]+)/$', 'show_translationexercise'),
+        (LANG_RE+r'$', 'show_languagetranslations'), 
+        (EXERCISE_LANG_RE+r'$', 'list_translation_for_language'), 
+        (EXERCISE_LANG_RE+r'new$', 'add_languagetranslations'), 
+        (EXERCISE_LANG_RE+r'change$', 'change_languagetranslations'), 
+        (EXERCISE_LANG_RE+r'delete$', 'delete_languagetranslations'), 
+        (EXERCISE_LANG_RE+r'(?P<user>[-\w]+)/$', 'show_translation_for_language'), 
+        (EXERCISE_RE+r'$', 'show_translationexercise'),
         (r'^$', 'list_all_translations'),
 )
