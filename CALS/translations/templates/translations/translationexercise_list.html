@@ -40,8 +40,10 @@
 
 {% if user.is_authenticated %}
 <p>You may translate this exercise into</p>
+
+<h2>Conlangs you may edit</h2>
 <table>
-{% for langrow in langs|partition:6 %}
+{% for langrow in own_conlangs|partition:6 %}
 <tr>
 {% for lang in langrow %}
 {% if lang %}
@@ -54,5 +56,39 @@
 {% endfor %}
 </tr>
 </table>
+
+<h2>Other conlangs</h2>
+<table>
+{% for langrow in other_conlangs|partition:6 %}
+<tr>
+{% for lang in langrow %}
+{% if lang %}
+<td><a href="/translation/{{ exercise.slug }}/language/{{ lang.slug }}/new">{{ lang }}</a></td>
+{% else %}
+<td></td>
+{% endif %}
+{% endfor %}
+</tr>
+{% endfor %}
+</tr>
+</table>
+
+<h2>Natlangs</h2>
+<table>
+{% for langrow in natlangs|partition:6 %}
+<tr>
+{% for lang in langrow %}
+{% if lang %}
+<td><a href="/translation/{{ exercise.slug }}/language/{{ lang.slug }}/new">{{ lang }}</a></td>
+{% else %}
+<td></td>
+{% endif %}
+{% endfor %}
+</tr>
+{% endfor %}
+</tr>
+</table>
+
+
 {% endif %}
 {% endblock content %}
