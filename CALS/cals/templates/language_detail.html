@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load cals_tags %}
 {% load nano_mark_tags %}
+{% load comments_tags %}
 {% block title %}Language: {{ object.name }}{% endblock title %}
 {% block submenu %}
 <ul>  
@@ -18,6 +19,7 @@
         {% endif %}
     {% endif %}
     {% endif %}
+    <li><a href="#comments">Comments</a></li>
 </ul>
 <hr />
 <form action="" method="post">
@@ -148,5 +150,10 @@ have to do so at WALS, not here.</p>
 </table>
 {% endfor %}
 </form>
+<h2 id="comments">Comments:</h2>
+<div class="comments">
+{% show_comments_tree object %}
+{% include 'nano/comments/comment_form_frag.html' %}
+</div>
 {% load_shareicon_library %}
 {% endblock content %}
