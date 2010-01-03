@@ -92,8 +92,18 @@ class Translation(Interlinear):
     exercise = models.ForeignKey(TranslationExercise, related_name='translations')
     language = models.ForeignKey(Language, related_name='translations')
     translator = models.ForeignKey(User, related_name='translations')
+    slug = models.SlugField(max_length=255, editable=False, blank=True)
     added = models.DateTimeField(default=datetime.now, editable=False)
     last_modified = models.DateTimeField(default=datetime.now, editable=False)
+
+    RE = r'[-_\w]+/language/[-\w]+/[-\w]+/'
+
+    def _set_slug(self):
+        pattern = '%(exercise)s/language/%(language)s/%(translator)s/'
+        self.slug = pattern % {
+                'exercise': self.exercise.slug, 
+                'language': self.language.slug,
+                'translator': self.translator.username }
 
     class Meta:
         db_table = 'cals_translation'
@@ -104,10 +114,12 @@ class Translation(Interlinear):
     def __unicode__(self):
         return self.translation
 
-    def save(self, user=None, *args, **kwargs):
+    def save(self, user=None, batch=False, *args, **kwargs):
         if not self.id and user:
             self.translator = user
-        self.last_modified = datetime.now()
+        if not batch:
+            self.last_modified = datetime.now()
+        self._set_slug()
         super(Translation, self).save(*args, **kwargs)
 
 # -- signals
