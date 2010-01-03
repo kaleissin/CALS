@@ -8,6 +8,8 @@ from cals.models import Feature, FeatureValue, Category
 
 FEATURE_RE = r'(?P<object_id>[0-9]+)/'
 FEATURE_HISTORY_RE = r'^' + FEATURE_RE + r'history/'
+SUGGESTED_RE = r'^suggested/'
+SUGGESTED_FEATURE_RE = SUGGESTED_RE + FEATURE_RE
 
 feature_list_dict = {
         'queryset': Category.active_objects.filter(feature__active=True).distinct().order_by('id'),
@@ -34,9 +36,9 @@ urlpatterns += patterns('cals.views',
         (r'^'+FEATURE_RE+r'use$',          'revert_feature_description'),
         (FEATURE_HISTORY_RE+r'$',          'show_feature_history'),
         (FEATURE_HISTORY_RE+r'compare$',   'compare_feature_history'),
-#         (r'^suggested/new$',                  'add_feature'),
-#         (r'^suggested/(?P<object_id>[0-9]+)/$', 'show_suggested_feature'),
-#         (r'^suggested/(?P<object_id>[0-9]+)/change$', 'change_feature'),
+#         (SUGGESTED_RE+r'new$',             'add_feature'),
+#         (SUGGESTED_FEATURE_RE+r'$',        'show_suggested_feature'),
+#         (SUGGESTED_FEATURE_RE+r'change$',  'change_feature'),
 )
 
 # ## voting
@@ -48,5 +50,9 @@ urlpatterns += patterns('cals.views',
 # }
 # 
 # urlpatterns += patterns('',
-#         (r'^suggested/(?P<object_id>[0-9]+)/(?P<direction>up|down|clear)vote/?$', vote_on_object, vote_on_feature_dict),
+#         (SUGGESTED_FEATURE_RE+'(?P<direction>up|down|clear)vote/?$', vote_on_object, vote_on_feature_dict),
+#         (SUGGESTED_FEATURE_RE+r'comment/', include('nano.comments.urls', app_name='feature'), 
+#                 {'model': Feature, 
+#                 'object_arg': 'object_id',
+#                 'extra_context': {'me': 'feature'}}),
 # )
