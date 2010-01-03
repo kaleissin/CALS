@@ -43,6 +43,13 @@ urlpatterns += patterns('django.views.generic',
         #(r'^(?P<year>\d{4})/w(?P<week>[a-z]{3})/$', 'date_based.archive_week', language_by_week),
 )
 
+urlpatterns += patterns('',
+        (LANG_RE+r'comment/', include('nano.comments.urls', app_name='language'),
+                {'model': Language, 
+                'object_arg': 'lang',
+                'object_field': 'slug',
+                'extra_context': {'me': 'language'}}),
+)
 # language
 # language_detail_dict = {
 #         'queryset': Language.objects.all().select_related(),
