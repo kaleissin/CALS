@@ -6,7 +6,7 @@ sys.path.append('/home/python/django-sites/CALS/')
 
 from django.db.models import Q
 from django.core.management import setup_environ
-from django.core.management.base import NoArgsCommand
+from django.core.management.base import NoArgsCommand, BaseCommand
 
 import settings
 setup_environ(settings)
@@ -83,7 +83,7 @@ def testbunnies():
 def bughunters():
     # Cannot use signal
     badge = Badge.objects.get(name='Bughunter')
-    bughunter_ids = (2, 3, 30, 32, 195, 87, 52, 90, 82, 86)
+    bughunter_ids = (2, 3, 30, 32, 195, 87, 52, 90, 82, 86, 280)
     bughunters = User.objects.filter(id__in=bughunter_ids)
     batchbadge(badge, bughunters)
 
@@ -153,15 +153,19 @@ _batch_jobs = {
         'yearlings': yearlings,
 }
 
-def run_batch():
+def run_batch(verbose=True):
     for batch_name, batch_job in _batch_jobs.items():
-        print batch_name,
+        if verbose: print batch_name,
         batch_job()
-        print 'done'
+        if verbose: print 'done'
 
-class Command(NoArgsCommand):
-    def handle_noargs(self, **kwargs):
-        run_batch()
+class Command(BaseCommand):
+    help = "Recalculate and set badges for users"
+
+
+    def handle(self, *args, **options):
+        verbosity = bool(int(options.get('verbosity', 1)))
+        run_batch(verbosity)
 
 if __name__ == '__main__':
     run_batch()
