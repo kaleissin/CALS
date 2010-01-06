@@ -5,7 +5,6 @@ body { border: 1px solid #25331a;
 }
 
 .searchitem { margin-bottom: 1em; }
-.searchitem > div { margin-bottom: 1ex; }
 
 table.diff { border-style: none; border-collapse: collapse; }
 table.diff table { width: 100%; }
@@ -170,12 +169,13 @@ h3 { font-size: 1.25em; }
     float: right;
     background: #bcd7ae;
     color: #25331a;
-    margin: 0 0 1ex 1ex;
+    margin: 0 0 0 0;
 }
 
 #submenu * {
     text-align: right;
     padding-right: 0.5ex;
+    padding-left: 0.5ex;
     list-style-type: none;
 }
 
@@ -184,16 +184,13 @@ h3 { font-size: 1.25em; }
     left: 2em;
 }
 
-#submenu table * {
+#submenu table *, #submenu dl * {
     text-align: left;
 }
 
 #submenu option, #submenu select {
     width: 13em;
     text-align: left;
-}
-#submenu form {
-    margin-left: 1ex;
 }
 
 .nav {
@@ -218,7 +215,7 @@ a {
     color: #004d00;
     font-weight: bold; 
     text-decoration: none; 
-    border-bottom: 1px dotted;
+    border-bottom: 1px dotted #829e82;
 }
 
 #footer a {
