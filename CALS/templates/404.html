@@ -1,5 +1,12 @@
-<h1>404</h1>
+{% extends 'base.html' %}
+{% block content %}
+<h1>404: <b>{{ request_path }}</b> Not Found</h1>
 
-<pre>
-{{ request }}
-</pre>
+<p>There's nothing to see on <b>{{ request_path }}</b>, here's some
+other things you might want to try:</p>
+
+<ul>
+    <li><a href="/">Go Home</a></li>
+</ul>
+
+{% endblock content %}
