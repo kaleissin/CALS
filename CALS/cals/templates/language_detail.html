@@ -75,6 +75,9 @@ have to do so at WALS, not here.</p>
     {% ifnotequal object.internal_name object.name %}
     <tr><th>Internal name:</th><td>{{ object.internal_name }}</td></tr>
     {% endifnotequal %}
+    {% if object.previous_names %}
+    <tr><th>Former names:</th><td>{{ object.previous_names|join:", " }}</td>
+    {% endif %}
     {% if not object.natlang %}
     <tr><th>Author(s):</th><td>{{ object.author }}</td></tr>
     {% endif %}
