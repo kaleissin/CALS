@@ -222,6 +222,10 @@ def latest_modified_languages(num_lang):
         raise template.TemplateSyntaxError, 'must be integer'
     return ''
 
+@register.inclusion_tag('cals/language/family_path.html')
+def show_family_path(language):
+    return {'language': language}
+
 @register.filter()
 def restructuredtext(value):
     try:

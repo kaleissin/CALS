@@ -89,21 +89,9 @@ have to do so at WALS, not here.</p>
     <tr><th>From earth:</th><td>{{ object.from_earth|yesno:"yes,no,unknown" }}</td></tr>
     {% else %}
     <tr><th>Natlang:</th><td>yes</td>
+    {% endif %}
     {% if object.family %}
-    <tr><th>Family:</th>{% spaceless %}
-    {% with object.family.get_path as path %}
-    <td>
-    {%if path|length_is:"1" %}<a href="../family/{{ path.0.slug }}/">{{ path.0}}</a>
-    {% else %}
-    {% for family in path|slice:":-1" %}
-    <a href="../family/{{ family.slug }}/">{{ family }}</a> &gt;
-    {% endfor %}
-    {% with path|last as family %}
-    <a href="../family/{{ family.slug }}/">{{ family }}</a>
-    {% endwith %}
-    {% endif %}
-    </td></tr>{% endwith %}{% endspaceless %}
-    {% endif %}
+    <tr><th>Family:</th><td>{% show_family_path object %}</td></tr>
     {% endif %}
     <tr><th>Permalink:</th><td><a href=".">{{ request.path }}</td></tr>
     <tr><th>Averageness:</th><td>{{ object.average_score }}/100, 

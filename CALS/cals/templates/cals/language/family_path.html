@@ -1,0 +1,13 @@
+{% spaceless %}
+{% with language.family.get_path as path %}
+{%if path|length_is:"1" %}<a href="../family/{{ path.0.slug }}/">{{ path.0}}</a>
+{% else %}
+{% for family in path|slice:":-1" %}
+<a href="../family/{{ family.slug }}/">{{ family }}</a> &gt;
+{% endfor %}
+{% with path|last as family %}
+<a href="../family/{{ family.slug }}/">{{ family }}</a>
+{% endwith %}
+{% endif %}
+{% endwith %}
+{% endspaceless %}
