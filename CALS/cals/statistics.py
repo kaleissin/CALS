@@ -60,19 +60,11 @@ def timeline():
 def vocab_size():
     """Generate statistics on the vocabulary_size-field."""
 
-    mode = """SELECT vocabulary_size, count(*) AS c 
-    FROM cals_language
-    WHERE vocabulary_size IS NOT NULL AND id != 80 
-    GROUP BY vocabulary_size 
-    ORDER BY c DESC LIMIT 1"""
+    ls = Language.objects.exclude(id=80).filter(vocabulary_size__isnull=False).conlangs()
 
-    cursor = connection.cursor()
-    cursor.execute(mode)
-    for row in cursor.fetchall():
-        mode = row[0]
-        break
+    # Assumes unimodal distribution
+    mode = ls.values('vocabulary_size').annotate(count=Count('vocabulary_size')).order_by('-count')[0]['vocabulary_size']
 
-    ls = Language.objects.only('vocabulary_size').conlangs().filter(vocabulary_size__isnull=False).exclude(id=80)
     avg_max_min = ls.aggregate(avg=Avg('vocabulary_size'), max=Max('vocabulary_size'), min=Min('vocabulary_size'))
     avg = avg_max_min['avg']
     max = avg_max_min['max']
