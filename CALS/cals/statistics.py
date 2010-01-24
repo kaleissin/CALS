@@ -126,8 +126,10 @@ def generate_global_stats():
 
     user100 = User.objects.get(id=139)
     user150 = User.objects.get(id=200)
+    user200 = User.objects.get(id=284)
     lang100 = conlangs.get(id=154)
     lang150 = conlangs.get(id=271)
+    lang200 = conlangs.get(id=466)
 
     num_features = features.count()
     num_conlangs = conlangs.count()
@@ -157,9 +159,12 @@ def generate_global_stats():
     data = {}
     data['milestones'] = { 
             'user100': user100, 
-            'lang100': lang100,
             'user150': user150,
-            'lang150': lang150}
+            'user200': user200,
+            'lang100': lang100,
+            'lang150': lang150,
+            'lang200': lang200,
+            }
     data['features'] = { 
             'number': num_features,
             'percentage_wals': str(142/float(num_features)*100),
