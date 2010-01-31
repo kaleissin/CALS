@@ -385,10 +385,6 @@ class NaturalLanguageManager(models.Manager):
     def get_query_set(self):
         return super(NaturalLanguageManager, self).get_query_set().filter(natlang=True)
 
-class DescriptionManager(models.Manager):
-    def get_query_set(self):
-        return super(DescriptionManager, self).get_query_set().filter(current=True)
-
 class UnorderedTreeMixin(models.Model):
     part_of = models.ForeignKey('self', blank=True, null=True, default=None)
     path = models.CharField(max_length=255, blank=True, default='')
