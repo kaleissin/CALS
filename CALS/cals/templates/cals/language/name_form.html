@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% load cals_tags %}
+{% block title %}Language: change alternate names{% endblock title %}
+{% block head %}
+{% endblock head %}
+{% block submenu %}
+<ul>  
+    <li><a href="/language/">All</a></li>
+    {% if user.is_authenticated %}
+    {% if request.META.REQUEST_URI|startswith:"/language/new" %}
+    <li><b>Add</b></li>
+    {% else %}
+    {% if request.META.REQUEST_URI|endswith:"/clone" %}
+    <li><b>Clone</b></li>
+    <li><a href="/language/new">Add</a></li>
+    {% else %}
+    <li><b>Change</b></li>
+    <li><a href="/language/new">Add</a></li>
+    {% endif %}
+    {% endif %}
+    {% endif %}
+    <hr />
+    {% for category in categories %}
+    <li><a href="#{{ category.name|slugify }}">{{ category.name }}</a></li>
+    {% endfor %}
+</ul>
+{% endblock submenu %}
+{% block content %}
+<form action="" method="post">
+<h2>Change/delete existing names</h2>
+<table>
+    {{ formset.management_form }}
+    {% comment %}
+    {{ formset }}
+    {% endcomment %}
+    <tr>
+        <th>Name<span class="required">*</span></th>
+        <th>Internal?</th>
+        <th>Additional?</th>
+        <th>Outdated?</th>
+        <th>Added</th>
+        <th>Delete</th>
+    </tr>
+    <tr class="help">
+        <td colspan="4"></td>
+        <td>Will be set to the current date and time if empty.<br
+        />YYYY-MM-DD [HH:MM[:SS]], time is optional<br /> and will be set to
+        00:00:00 if left out.</td>
+        <td></td>
+    </tr>
+    {% for form in formset.initial_forms %}
+    <tr>
+        <td>{{ form.name }}{{ form.id }}{% if form.name.errors %}<br />
+            <ul class="error">{{ form.name.errors }}</ul>{% endif %}</td>
+        <td>{{ form.internal }}</td>
+        <td>{{ form.alternate }}</td>
+        <td>{{ form.previous }}</td>
+        <td>{{ form.added }}{% if form.added.errors %}<br />
+            <ul class="error">{{ form.added.errors }}</ul>{% endif %}</td>
+        <td>{{ form.DELETE }}</td>
+    </tr>
+    {% endfor %}
+    <tr><td></td><td colspan="5"><input type="submit" value="Change/Delete" /></td></tr>
+</table>
+<h2>Add additional names</h2>
+<table>
+    {{ formset.management_form }}
+    <tr>
+        <th>Name<span class="required">*</span></th>
+        <th>Internal?</th>
+        <th>Additional?</th>
+        <th>Outdated?</th>
+        <th>Added</th>
+    </tr>
+    <tr class="help">
+        <td colspan="4"></td>
+        <td>Will be set to the current date and time if empty.<br
+        />YYYY-MM-DD [HH:MM[:SS]], time is optional<br /> and will be set to
+        00:00:00 if left out.</td>
+    </tr>
+    {% for form in formset.extra_forms %}
+    <tr>
+        <td>{{ form.name }}{{ form.id }}{% if form.name.errors %}<br />
+            <ul class="error">{{ form.name.errors }}</ul>{% endif %}</td>
+        <td>{{ form.internal }}</td>
+        <td>{{ form.alternate }}</td>
+        <td>{{ form.previous }}</td>
+        <td>{{ form.added }}{% if form.added.errors %}<br />
+            <ul class="error">{{ form.added.errors }}</ul>{% endif %}</td>
+    </tr>
+    {% endfor %}
+    <tr><td></td><td colspan="4"><input type="submit" value="Add" /></td></tr>
+</table>
+</form>
+{% endblock content %}

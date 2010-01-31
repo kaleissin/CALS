@@ -75,10 +75,18 @@ have to do so at WALS, not here.</p>
     {% ifnotequal object.internal_name object.name %}
     <tr><th>Internal name:</th><td>{{ object.internal_name }}</td></tr>
     {% endifnotequal %}
+    {% if not object.natlang %}
+    {% if may_edit %}
+    <tr>
+        <th>Former names:</th>
+        <td>{{ object.previous_names|join:", " }}
+        <a href="./names/change">{% if object.previous_names %}Change{% else %}Add{% endif %} alternate names</a></td>
+    </tr>
+    {% else %}
     {% if object.previous_names %}
     <tr><th>Former names:</th><td>{{ object.previous_names|join:", " }}</td>
     {% endif %}
-    {% if not object.natlang %}
+    {% endif %}
     <tr><th>Author(s):</th><td>{{ object.author }}</td></tr>
     {% endif %}
     <tr><th>Homepage:</th><td>{% if object.homepage %}<a class="ext" href="{{ object.homepage }}">{{ object.homepage }}</a>{% else %}–{% endif %}</td></tr>

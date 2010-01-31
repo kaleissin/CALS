@@ -7,6 +7,7 @@ from cals.models import Language, Feature, FeatureValue, Category, Profile
 from cals.models import LanguageFamily
 
 LANG_RE = r'^(?P<lang>[-\w]+)/'
+LANG_NAMES_RE = LANG_RE + r'names/'
 LANG_FEAT_RE = LANG_RE + r'feature/(?P<object_id>[0-9]+)/'
 LANG_FEAT_HIST_RE = LANG_FEAT_RE + r'history/'
 MULTISLUGS_RE = r'^(?P<slugs>[-+\w]+)/'
@@ -87,3 +88,6 @@ urlpatterns += patterns('cals.views',
         (MULTISLUGS_RE+r'(?P<opt>[^/]*?)/?$', 'compare_language'), 
 )
 
+urlpatterns += patterns('cals.language.views',
+        (LANG_NAMES_RE+r'change$',            'change_languagenames'),
+)

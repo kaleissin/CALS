@@ -553,24 +553,33 @@ class Language(models.Model):
         # import-loop
         super(Language, self).save(*args, **kwargs)
 
-        # Save name-changes in separate table, now that Language has an
-        # id. For some reason, get_or_create leads to duplicates.
-        try:
-            LanguageName.objects.get(language=self, name=self.name)
-        except LanguageName.DoesNotExist:
-            l = LanguageName(language=self, name=self.name, added=now)
-            l.save()
-        try:
-            LanguageName.objects.get(language=self, name=self.internal_name)
-        except LanguageName.DoesNotExist:
-            l = LanguageName(language=self, name=self.internal_name, added=now)
-            l.save()
+        self.save_langnames(now=now)
     
     #@permalink
     def get_absolute_url(self):
         return "/language/%s/" % self.slug 
     #    return ('cals.views.show_language', [str(self.id)]) 
 
+    def save_langnames(self, now=None):
+        """Save name-changes in separate table, if Language has an
+        id. For some reason, get_or_create leads to duplicates.
+        """
+        assert self.id, 'Language not saved'
+        if not now:
+            now = datetime.utcnow()
+        names = LanguageName.objects.filter(language=self)
+        if not names.filter(name=self.name):
+            l = LanguageName(language=self, name=self.name, added=now)
+            l.save()
+        # Save internal name only if different from external
+        if not names.filter(name=self.internal_name) and self.name != self.internal_name:
+            l = LanguageName(language=self, name=self.internal_name, added=now, internal=True)
+            l.save()
+        # If Language renamed, preserve old names
+        prev_names = names.exclude(name=self.internal_name).exclude(name=self.name).exclude(alternate=True).exclude(previous=True)
+        if prev_names:
+            prev_names.update(previous=True)
+                
     def set_average_score(self):
         if not self.num_features:
             self.average_score = 0
@@ -642,9 +651,12 @@ class SearchManager(models.Manager):
 
 class LanguageName(models.Model):
     language = models.ForeignKey(Language, related_name="alternate_names")
-    added = models.DateTimeField(default=datetime.utcnow, editable=False)
+    added = models.DateTimeField(blank=True, null=True)
     name = models.CharField(max_length=64)
     slug = models.SlugField(max_length=64, editable=False, blank=True)
+    internal = models.BooleanField('Internal name?', default=False)
+    alternate = models.BooleanField('Additional?', default=False)
+    previous = models.BooleanField('No longer in use?', default=False)
 
     objects = SearchManager()
 
@@ -655,6 +667,8 @@ class LanguageName(models.Model):
 
     def save(self, *args, **kwargs):
         self.slug = uni_slugify(smart_unicode(self.name))
+        if not self.added:
+            self.added = datetime.utcnow()
         super(LanguageName, self).save(*args, **kwargs)
 
     def __unicode__(self):
