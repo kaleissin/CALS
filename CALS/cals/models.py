@@ -137,7 +137,8 @@ class Description(Freetext):
     object_id = models.PositiveIntegerField()
     content_object = generic.GenericForeignKey()
 
-    objects = DescriptionManager()
+    #objects = DescriptionManager()
+    objects = models.Manager()
     archive = models.Manager()
 
     class Meta:
