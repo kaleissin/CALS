@@ -226,6 +226,10 @@ def latest_modified_languages(num_lang):
 def show_family_path(language):
     return {'language': language}
 
+@register.inclusion_tag('statistics/firstletter_stats.html')
+def firstletter_stats(letters):
+    return {'letters': letters}
+
 @register.filter()
 def restructuredtext(value):
     try:

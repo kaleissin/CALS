@@ -172,8 +172,14 @@ def generate_global_stats():
             'percentage_greetings': str(num_greetings/float(num_langs)*100),
             'percentage_backgrounds': str(num_backgrounds/float(num_langs)*100),
             'num_translations': num_translations,
-            'first_letters': language_first_letters(),
-            'alpha_letters': language_alphabetic_letters(),
+            'first_letters': {
+                    'conlangs': language_first_letters(), 
+                    'natlangs': language_first_letters(langtype=LANGTYPES.NATLANG), 
+            },
+            'alpha_letters': {
+                    'conlangs': language_alphabetic_letters(), 
+                    'natlangs': language_alphabetic_letters(langtype=LANGTYPES.NATLANG), 
+            },
             'most_average': most_average,
             'most_average_natlangs': most_average_natlangs,
             'least_average': least_average,

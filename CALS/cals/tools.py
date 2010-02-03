@@ -61,15 +61,19 @@ def string_statistics(strings):
         outdict[string] = outdict.get(string, 0) + 1 
     return [(string, count, count/num_strings*100) for (string, count) in outdict.items()]
 
-def language_alphabetic_letters(num = 10):
-    letters = firstletter_langnames(langtype=LANGTYPES.CONLANG)
-    letters = string_statistics(letters)
+def make_lang_firstletter_stats(langtype=LANGTYPES.CONLANG):
+    assert langtype in LANGTYPES.types
+    letters = firstletter_langnames(langtype=langtype)
+    return string_statistics(letters)
 
+def language_alphabetic_letters(num=10, langtype=LANGTYPES.CONLANG):
+    letters = make_lang_firstletter_stats(langtype)
+
+    letters = sorted((l, c, p) for l, c, p in letters)
     return {'letters': [{'char': l, 'count': c, 'percentage': p} for l, c, p in letters]}
 
-def language_first_letters(num = 10):
-    letters = firstletter_langnames(langtype=LANGTYPES.CONLANG)
-    letters = string_statistics(letters)
+def language_first_letters(num=10, langtype=LANGTYPES.CONLANG):
+    letters = make_lang_firstletter_stats(langtype)
 
     #dsd
     letters = reversed(sorted([(c, l, p) for l, c, p in letters]))

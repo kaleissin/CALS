@@ -1,0 +1,11 @@
+{% load cals_tags %}
+<table class="statistics">
+{% for letter in letters %}
+    <tr>
+        <td>{{ letter.char }}</td>
+        <td>{{ letter.count }}</td>
+        <td>{{ letter.percentage|floatformat:1 }}%</td>
+        <td>{% graphline letter.count %}</td>
+    </tr>
+{% endfor %}
+</table>
