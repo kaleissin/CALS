@@ -49,7 +49,7 @@ def _get_display_name(user):
     try:
         dispay_name = user.get_profile().display_name.strip()
         return dispay_name, user
-    except AttributError:
+    except AttributeError:
         if type(user) == type(Profile()):
             user = user.user
         elif type(user) == type(5):
