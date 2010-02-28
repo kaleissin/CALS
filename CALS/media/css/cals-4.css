@@ -485,3 +485,7 @@ dd table { border: 1px solid #dec; width: 100% }
 /* Interlinears */
 .interlinear .word { display: inline-block; margin-right: 1ex;}
 .interlinear p { clear: left; font-style: italic }
+
+/* Other */
+form#signup table:last-child { display: none }
+form#signup tr#row_turing_test1 { display: none }
