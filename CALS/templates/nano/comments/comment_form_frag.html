@@ -1,0 +1,13 @@
+{% if preview %}
+<div class="preview">
+<p>On {{ preview.added }}, {{ preview.user }} wrote:</p>
+<div>{{ preview.comment_xhtml }}</div>
+</div>
+{% endif %}
+<form action="./comment/post" method="post">
+<textarea id="id_comment" rows="10" cols="40" name="comment"></textarea>
+<input type="hidden" name="honeypot" id="id_honeypot" />
+<p>
+{% if part_of %}<input type="hidden" name="part_of" value="{{ part_of }}" d="id_part_of"/>{% endif %}
+<input type="submit" name="preview" value="Preview" /> <input type="submit" name="submit" value="Post" /></p>
+</form>

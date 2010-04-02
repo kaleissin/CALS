@@ -1,0 +1,22 @@
+{% if comments %}
+{% load comments_tags %}
+<ol>
+{% for comment in comments %}
+<li>
+<div class="comment" id="c{{ comment.id }}" name="c{{ comment.id }}">
+    <div>On {{ comment.added }}, {{ comment.user }} replied:</div>
+    <div class="plaintext">{{ comment.comment_xhtml }}</div>
+    <form action="./comment/post" method="get">
+    <input type="hidden" name="part_of" value="{{ comment.id }}" />
+    <input type="submit" name="submit" value="Reply" />
+    </form>
+</div>
+{% if comment.children %}
+{% show_comments_subtree comment %}
+{% endif %}
+</li>
+{% endfor %}
+</ol>
+{% else %}
+<p>No comments yet</p>
+{% endif %}

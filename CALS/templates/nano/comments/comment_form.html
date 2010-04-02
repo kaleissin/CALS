@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+{% if preview %}
+<div class="preview">
+<p>On {{ preview.added }}, {{ preview.user }} wrote:</p>
+<div>{{ preview.comment_xhtml }}</div>
+</div>
+{% endif %}
+<form action="./post" method="post">
+{{ commentform.comment }}
+{#{ commentform.honeypot }#}
+{{ commentform.part_of }}
+<p>
+<input type="submit" name="preview" value="Preview" /> <input type="submit" name="submit" value="Post" /></p>
+</form>
+
+{% endblock content %}
