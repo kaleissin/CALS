@@ -10,5 +10,5 @@ class Command(NoArgsCommand):
                 p = u.get_profile()
             except Profile.DoesNotExist:
                 Profile.objects.create(user=u)
-                print u
+                print 'Created profile for:', u
 
