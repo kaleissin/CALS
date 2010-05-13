@@ -12,7 +12,7 @@ admin.site.register(Translation, TranslationAdmin)
 class TranslationExerciseAdmin(admin.ModelAdmin):
     model = TranslationExercise
     ordering = ('category', 'name')
-    list_display = ('name', 'category')
+    list_display = ('name', 'category', 'added_by', 'added')
     list_filter = ('category',)
 admin.site.register(TranslationExercise, TranslationExerciseAdmin)
 admin.site.register(TranslationExerciseCategory)
