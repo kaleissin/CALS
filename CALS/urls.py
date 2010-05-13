@@ -23,6 +23,10 @@ all_feeds = {
         'all': AllFeed,
 }
 
+comment_feeds = {
+        'comments': RecentCommentsFeed,
+}
+
 thankyou_params = {
         'template': 'cals/thankyou.html', 
         'extra_context': { 
@@ -90,6 +94,7 @@ urlpatterns = patterns('',
     (r'^feeds/translations/(.*)/$', 'django.contrib.syndication.views.feed', {'feed_dict': translation_feeds}),
     (r'^feeds/languages/(.*)/$', 'django.contrib.syndication.views.feed', {'feed_dict': language_feeds}),
     (r'^feeds/people/(.*)/$', 'django.contrib.syndication.views.feed', {'feed_dict': people_feeds}),
+    (r'^feeds/(\w*)/$', 'django.contrib.syndication.views.feed', {'feed_dict': comment_feeds}),
     (r'^feeds/(.*)/$', 'django.contrib.syndication.views.feed', {'feed_dict': all_feeds}),
 #    (r'^feeds/all/$', 'django.contrib.syndication.views.feed', {'feed_dict': {'all': AllFeed,},}),
 
