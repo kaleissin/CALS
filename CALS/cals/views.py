@@ -45,7 +45,7 @@ from cals.tools import *
 from cals.tools import description_diff
 from cals.tools import *
 from cals.tools import compare_features, compare_languages, \
-        get_averageness_for_lang
+        get_averageness_for_lang, LANGTYPES
 
 from translations.models import TranslationExercise, Translation
 
@@ -569,7 +569,7 @@ def set_featurevalues_for_lang(lang, valuelist):
         if not value_id:
             continue
         set_language_feature_value(lang, feature_id, value_id)
-    freq = get_averageness_for_lang(lang, scale=100)
+    freq = get_averageness_for_lang(lang, scale=100, langtype=LANGTYPES.CONLANG)
     _LOG.info('Freq now: %s' % repr(freq))
     lang.num_features = LanguageFeature.objects.filter(language=lang).count()
     lang.num_avg_features = freq
