@@ -6,8 +6,10 @@ from CALS.feeds.feeds import *
 from django.contrib import admin
 admin.autodiscover()
 
-translation_feeds = { 'exercises': NewTranslationExerciseFeed,
-        }
+translation_feeds = { 
+        'exercises': NewTranslationExerciseFeed,
+        'new': NewTranslationFeed,
+}
 
 language_feeds = {
         'last_modified': UpdatedLanguagesFeed,
