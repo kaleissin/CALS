@@ -1121,7 +1121,7 @@ def auth_login(request, *args, **kwargs):
     data = {'me': 'home', 
             'next': next,
             'news': Entry.objects.order_by('-pub_date')[:2],
-            'devel_news': Entry.tagged.with_any(('devel',)).order_by('-pub_date')[:1],
+            'devel_news': Entry.tagged.with_any(('devel','milestone',)).order_by('-pub_date')[:2],
             'language_cloud': l_cloud,
             'langs_newest': langs_newest,
             'langs_modified': langs_modified,
