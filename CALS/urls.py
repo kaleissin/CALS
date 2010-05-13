@@ -99,7 +99,6 @@ urlpatterns = patterns('',
     (r'^password/reset/$',      'nano.user.views.password_reset', {'project_name': 'CALS'}),
     (r'^password/change/$',     'nano.user.views.password_change'),
     (r'^news/',                 include('nano.blog.urls')),
-    (r'^comments/',             include('django.contrib.comments.urls')),
 
     (r'^translation/',          include('translations.urls')),
     (r'^badge/',                include('nano.badge.urls')),
