@@ -122,6 +122,7 @@ def generate_global_stats():
     lang100 = conlangs.get(id=154)
     lang150 = conlangs.get(id=271)
     lang200 = conlangs.get(id=466)
+    lang250 = conlangs.get(id=526)
 
     num_features = features.count()
     num_conlangs = conlangs.count()
@@ -156,6 +157,7 @@ def generate_global_stats():
             'lang100': lang100,
             'lang150': lang150,
             'lang200': lang200,
+            'lang250': lang250,
             }
     data['features'] = { 
             'number': num_features,
