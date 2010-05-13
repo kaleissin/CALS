@@ -41,6 +41,24 @@
 {% if user.is_authenticated %}
 <p>You may translate this exercise into</p>
 
+{% if favorite_langs %}
+<h2>Your favorite languages</h2>
+<table>
+{% for langrow in favorite_langs|partition:6 %}
+<tr>
+{% for lang in langrow %}
+{% if lang %}
+<td><a href="/translation/{{ exercise.slug }}/language/{{ lang.slug }}/new">{{ lang }}</a></td>
+{% else %}
+<td></td>
+{% endif %}
+{% endfor %}
+</tr>
+{% endfor %}
+</tr>
+</table>
+{% endif %}
+
 <h2>Conlangs you may edit</h2>
 <table>
 {% for langrow in own_conlangs|partition:6 %}

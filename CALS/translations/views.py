@@ -3,6 +3,7 @@ from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404
 from django.views.generic.list_detail import object_list
 from django.views.generic.create_update import delete_object
+from django.contrib.contenttypes.models import ContentType
 
 from nano.tools import render_page, get_user_model
 
@@ -165,19 +166,23 @@ def show_translationexercise(request, template_name='translations/translationexe
     """
 
     me = 'translation'
+    user = request.user
     exercise = get_translationexercise(**kwargs)
     trans = exercise.translations.exclude(translation__isnull=True).exclude(translation='').order_by('language')
     natlangs, other_conlangs, own_conlangs = None, None, None
-    if request.user.is_authenticated():
+    if user.is_authenticated():
+        ctl = ContentType.objects.get_for_model(Language)
+        favelangs = [m.content_object for m in user.marks.filter(marktype__slug='fave', content_type=ctl)]
         natlangs = Language.objects.natlangs()
         conlangs = Language.objects.conlangs()
         own_conlangs = langs_for_user(request.user)
-        other_conlangs = conlangs.exclude(id__in=[l.id for l in own_conlangs])
+        other_conlangs = conlangs.exclude(id__in=[l.id for l in list(own_conlangs)+favelangs])
     extra_context = {
             'me': me, 
             'exercise': exercise,
             'natlangs': natlangs,
             'own_conlangs': own_conlangs,
+            'favorite_langs': favelangs,
             'other_conlangs': other_conlangs,
             }
     return object_list(request, queryset=trans, template_name=template_name,
