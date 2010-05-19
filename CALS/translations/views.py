@@ -169,7 +169,7 @@ def show_translationexercise(request, template_name='translations/translationexe
     user = request.user
     exercise = get_translationexercise(**kwargs)
     trans = exercise.translations.exclude(translation__isnull=True).exclude(translation='').order_by('language')
-    natlangs, other_conlangs, own_conlangs = None, None, None
+    natlangs, other_conlangs, own_conlangs, favelangs = None, None, None, None
     if user.is_authenticated():
         ctl = ContentType.objects.get_for_model(Language)
         favelangs = [m.content_object for m in user.marks.filter(marktype__slug='fave', content_type=ctl)]
