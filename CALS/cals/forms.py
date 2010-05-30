@@ -69,10 +69,14 @@ class LanguageForm(forms.ModelForm):
         model = Language
         exclude = ('created', 'editors', 'last_modified_by', 'visible', 'natlang')
 
+    def clean_manager(self):
+        manager = self.cleaned_data['manager']
+        return manager.user
+
     def save(self, commit=True, user=None):
         new_manager = self.cleaned_data.get('manager', None)
         if new_manager:
-            manager = User.objects.get(id=new_manager.user.id)
+            manager = User.objects.get(id=new_manager.pk)
             self.cleaned_data['manager'] = manager
 #         if user:
 #             _LOG.info('CALS new language #1: %s', self.cleaned_data)
