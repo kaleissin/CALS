@@ -49,7 +49,6 @@ from cals.tools import compare_features, compare_languages, \
 
 from translations.models import TranslationExercise, Translation
 
-from nano.tools import *
 from nano.tools import render_page
 from nano.blog.models import Entry
 from nano.privmsg.models import PM
