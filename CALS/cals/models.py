@@ -680,7 +680,7 @@ class LanguageName(models.Model):
 
 class WALSCode(models.Model):
     language = models.OneToOneField(Language, primary_key=True, related_name="wals_code")
-    walscode = models.CharField(max_length=3)
+    walscode = models.CharField(max_length=3, unique=True)
 
     class Meta:
         db_table = 'cals_walscodes'
