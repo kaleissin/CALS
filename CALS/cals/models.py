@@ -333,6 +333,7 @@ class Profile(models.Model):
     date_format = models.CharField(max_length=16, default="Y-m-d H:i O")
     is_visible = models.BooleanField(default=True)
     seen_profile = models.BooleanField(default=False, editable=False)
+    seen_ipv6 = models.DateTimeField(null=True, editable=False)
 
     objects = ProfileManager()
 
