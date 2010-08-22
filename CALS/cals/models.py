@@ -8,8 +8,6 @@ from datetime import datetime
 import logging
 _LOG = logging.getLogger(__name__)
 
-from textile import textile
-
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
