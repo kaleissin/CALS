@@ -44,9 +44,11 @@
     CALS.</p>
     {% endif %}
 
-    <p> This your own profile-page. If you want to add or change info about
+    <p>This is your own profile-page. If you want to add or change info about
     yourself, click <a href="./change">Change</a> in the menu to the
-    right. On every page you will find your username, {{ user.username }}, 
+    right.</p>
+
+    <p>On every page you will find your username, {{ user.username }}, 
     (or display name{% if profile.display_name %}, {{ profile.display_name }}, {% endif %} 
     if you have set this) in the upper right corner of every page, like
     this: {% showuser profile.user %}. Clicking on that will take you
