@@ -5,7 +5,7 @@
 <li>
 <div class="comment" id="c{{ comment.id }}" name="c{{ comment.id }}">
     <div>On {{ comment.added }}, {{ comment.user }} wrote:</div>
-    <div class="plaintext">{{ comment.comment_xhtml }}</div>
+    <div class="plaintext">{% if comment.comment_xhtml %}{{ comment.comment_xhtml }}{% else %}{{ comment.comment }}{% endif %}</div>
     {#<form action="{% url me:comments-post-comment object_id=object.id %}" method="get">#}
     <form action="./comment/post" method="get">
     <input type="hidden" name="part_of" value="{{ comment.id }}" />
