@@ -27,6 +27,7 @@
 {% endblock submenu %}
 {% block content %}
 <form action="" method="post">
+{% csrf_token %}
 <h2>Change/delete existing names</h2>
 <table>
     {{ formset.management_form }}

@@ -7,6 +7,7 @@
 </div>
 {% endif %}
 <form action="./post" method="post">
+{% csrf_token %}
 {{ commentform.comment }}
 {#{ commentform.honeypot }#}
 {{ commentform.part_of }}

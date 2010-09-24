@@ -28,6 +28,7 @@ Comparing: {{ langs|join:", " }}
 <hr />
 <ul>
     <form action="" method="post">
+    {% csrf_token %}
     {% for lang in langs %}
     <li><a href="/language/{{ lang.slug }}/">{{ lang }}</a><input class="remove" type="checkbox" name="removelang" value="{{ lang.slug }}" /></li>
     {% endfor %}
@@ -36,6 +37,7 @@ Comparing: {{ langs|join:", " }}
 </ul>
 <hr />
 <form action="" method="post">
+    {% csrf_token %}
     <div>{{ cform.lang2 }}</div>
     <div><button type="submit">Compare</button></div>
     <table>

@@ -37,6 +37,7 @@ if (document.signup)
 {% endblock head %}{% block no_submenu %}{% endblock no_submenu %}
 {% block loginbox %}
     <form method="post" action=".">
+        {% csrf_token %}
         <fieldset class="loginbox">
             <legend>Log in/sign up</legend>
             <table>

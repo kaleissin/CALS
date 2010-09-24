@@ -24,6 +24,7 @@
         <td></td>
         <td>
             <form action="" method="post"><input type="submit" value="Yes, I'm sure" />
+            {% csrf_token %}
             <a href="../">No, oops, changed my mind</a>
             </form>
         </td>

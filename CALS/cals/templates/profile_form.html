@@ -9,6 +9,7 @@
 {% endblock submenu %}
 {% block content %}
 <form action="" method="post">
+{% csrf_token %}
 <table>
     {% for field in uform %}
     <tr>
@@ -32,10 +33,12 @@
 </form>
 {% comment %}
 <form action="" method="post">
+    {% csrf_token %}
     <fieldset><legend>Other places on the web</legend>
 <table>
     {% for w20 in w20forms %}
 <form action="" method="post">
+    {% csrf_token %}
     <tr>
         <th>{{ w20.instance.place }} username{% if w20.place.field.required %}<span class="required">*</span>{% endif %}:</th>
         <td>{{ w20.username }}</td>

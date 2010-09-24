@@ -13,6 +13,7 @@
 {% endblock submenu %}
 {% block content %}
 <form action="" method="post">
+    {% csrf_token %}
     <h1>{{ lang.name }}: {{ feature.feature.category.name }}: {{ feature.feature.name }}: {{ feature.value }} </h1>
     {% if preview %}
     <fieldset>

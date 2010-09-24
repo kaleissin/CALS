@@ -11,6 +11,7 @@
 </ul>
     <hr />
     <form action="" method="post">
+        {% csrf_token %}
         <div>{{ cform.feature2 }}</div>
         <div><button type="submit">Compare</button></div>
     </form>

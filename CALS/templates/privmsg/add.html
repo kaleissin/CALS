@@ -9,6 +9,7 @@
 {% block content %}
 <label for="id_text"><h2>Private message to {{ recipient.get_profile.display_name }}</h2></label>
 <form method="post" action="">
+{% csrf_token %}
 <p>{{ form.text }}</p>
 <input type="submit" value="Send" />
 </form>

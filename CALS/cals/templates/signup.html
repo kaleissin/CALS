@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <form id="signup" action="" method="post">
+    {% csrf_token %}
     <table>
         {% for field in form %}
         <tr id="row_{{ field.html_name }}">

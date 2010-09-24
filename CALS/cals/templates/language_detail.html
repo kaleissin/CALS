@@ -23,6 +23,7 @@
 </ul>
 <hr />
 <form action="" method="post">
+    {% csrf_token %}
     <div>{{ cform.lang2 }}</div>
     <div><button type="submit">Compare</button></div>
     <table>
@@ -71,6 +72,7 @@ have to do so at WALS, not here.</p>
 </table>
 
 <form action="" method="post">
+{% csrf_token %}
 <table>
     {% ifnotequal object.internal_name object.name %}
     <tr><th>Internal name:</th><td>{{ object.internal_name }}</td></tr>
