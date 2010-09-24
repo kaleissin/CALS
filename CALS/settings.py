@@ -9,9 +9,6 @@ sys.path.append(os.path.join(SITE_ROOT, 'env'))
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
-SITES_PREFIX = '/home/django-sites'
-PATH_PREFIX = SITES_PREFIX + '/CALS'
-
 ADMINS = (
     ('Kaleissin', 'kaleissin@gmail.com'), # ('Your Name', 'your_email@domain.com'),
 )
@@ -22,6 +19,8 @@ MANAGERS = ADMINS
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
+# On Unix systems, a value of None will cause Django to use the same
+# timezone as the operating system.
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
 TIME_ZONE = 'GMT'
@@ -37,9 +36,13 @@ SITE_ID = 1
 # to load the internationalization machinery.
 USE_I18N = True
 
+# If you set this to False, Django will not format dates, numbers and
+# calendars according to the current locale
+USE_L10N = True
+
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = PATH_PREFIX + '/media/'
+MEDIA_ROOT = SITE_ROOT + '/media/'
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
@@ -55,16 +58,19 @@ ADMIN_MEDIA_PREFIX = '/admin/media/'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.load_template_source',
-    'django.template.loaders.app_directories.load_template_source',
-#     'django.template.loaders.eggs.load_template_source',
+    'django.template.loaders.filesystem.Loader',
+    'django.template.loaders.app_directories.Loader',
+#     'django.template.loaders.eggs.Loader',
+#    'django.template.loaders.filesystem.load_template_source',
+#    'django.template.loaders.app_directories.load_template_source',
+##     'django.template.loaders.eggs.load_template_source',
 )
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django_notify.middleware.NotificationsMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.doc.XViewMiddleware',
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
 )
@@ -75,7 +81,7 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    PATH_PREFIX + '/templates',
+    SITE_ROOT + '/templates',
 )
 
 INSTALLED_APPS = (
@@ -85,7 +91,6 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'django.contrib.flatpages',
-    'django.contrib.comments',
     'translations',
     'cals',
     'tagging',
@@ -99,6 +104,7 @@ INSTALLED_APPS = (
     'nano.badge',
     'nano.faq',
     'nano.privmsg',
+    'nano.comments',
 
     'relay',
 )
@@ -119,7 +125,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.i18n',
     'django.core.context_processors.media',
     'django.core.context_processors.request',
-    'django_notify.context_processors.notifications',
 )
 
 INTERNAL_IPS = ('127.0.0.1', '158.38.62.153',)
@@ -127,6 +132,8 @@ INTERNAL_IPS = ('127.0.0.1', '158.38.62.153',)
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 CACHE_BACKEND = 'memcached://127.0.0.1:11211/'
+
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
 FORCE_LOWERCASE_TAGS = True
 
@@ -142,7 +149,7 @@ RESTRUCTUREDTEXT_FILTER_SETTINGS = {
 
 import logging, logging.handlers
 LOG_FORMAT = '%(asctime)s %(name)s %(pathname)s:%(lineno)d %(levelname)s %(message)s'
-LOG_FILE = '/tmp/cals.log'
+LOG_FILE = '/var/log/cals.log'
 LOG_LEVEL = logging.DEBUG
 
 _logger = logging.getLogger('')
