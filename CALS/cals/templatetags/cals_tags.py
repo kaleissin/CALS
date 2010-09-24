@@ -165,12 +165,13 @@ def showuser(user):
         badges = u' ' + badges
     return _make_userlink(user) + badges
 
-def make_greet_link(lang, ahref_to_object, greeting_trans=None):
-    if not greeting_trans:
+def make_greet_link(lang, ahref_to_object):
+    greeting_trans = Translation.objects.filter(language=lang, exercise__id=1)
+    greeting = lang.greeting.strip()
+    if not (greeting_trans or greeting):
         return 'Hello, %s!' % ahref_to_object
-    else:
-        if not lang.greeting.strip():
-            return 'Hello, %s!' % ahref_to_object
+    if not greeting:
+        greeting = greeting_trans.order_by('?')[0]
     _link = u'<a href="/language/%%(slug)s/">%%(%s)s</a>'
     _link1 = _link % u'greeting'
     _link_front = _link % u'front'
@@ -178,9 +179,9 @@ def make_greet_link(lang, ahref_to_object, greeting_trans=None):
     _langlink1 = u'%s&nbsp;%%(objectlink)s!' % _link1
     _langlink2 = u'%s%%(objectlink)s%s' % (_link_front, _link_back)
     langd = {'slug': lang.slug, 
-            'greeting': lang.greeting,
+            'greeting': greeting,
             'objectlink': ahref_to_object}
-    if '$' in langd['greeting']:
+    if u'$' in langd['greeting']:
         front, back = langd['greeting'].split('$', 1)
         langd['front'] = front
         langd['back'] = back
@@ -190,8 +191,7 @@ def make_greet_link(lang, ahref_to_object, greeting_trans=None):
     return greeting
 
 def greet_link(lang, ahref_to_object):
-    greeting_trans = Translation.objects.filter(language=lang, exercise__id=1)
-    return make_greet_link(lang, ahref_to_object, greeting_trans)
+    return make_greet_link(lang, ahref_to_object)
 
 def greet(user, lang):
     return greet_link(lang, _make_userlink(user))
@@ -212,6 +212,9 @@ def greet_user_in_lang(user, lang):
 
 @register.simple_tag
 def greet_lang_in_lang(lang):
+    greeting_trans = Translation.objects.filter(language=lang, exercise__id=1).count()
+    if not greeting_trans or not lang.greeting:
+        return u''
     return greet_link(lang, _make_langlink(lang, internal=True))
 
 def latest_modified_languages(num_lang):
