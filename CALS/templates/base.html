@@ -45,10 +45,10 @@
         {% endcomment %}
     </div>
     {% block messages %}
-    {% if notifications %}
+    {% if messages %}
     <div class="messages">
-        {% for message in notifications %}
-        <p{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</p>
+        {% for message in messages %}
+        <div{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|safe }}</div>
         {% endfor %}
     </div>
     {% endif %}
