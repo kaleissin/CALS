@@ -152,6 +152,7 @@ def generate_global_stats():
     user100 = User.objects.get(id=139)
     user150 = User.objects.get(id=200)
     user200 = User.objects.get(id=284)
+    user250 = User.objects.get(id=336)
     lang100 = conlangs.get(id=154)
     lang150 = conlangs.get(id=271)
     lang200 = conlangs.get(id=466)
@@ -187,6 +188,7 @@ def generate_global_stats():
             'user100': user100, 
             'user150': user150,
             'user200': user200,
+            'user250': user250,
             'lang100': lang100,
             'lang150': lang150,
             'lang200': lang200,
