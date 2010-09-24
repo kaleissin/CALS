@@ -9,6 +9,7 @@ sys.stderr = sys.stdout
 
 import logging
 _LOG = logging.getLogger(__name__)
+_LOG.info(__name__)
 
 from django.contrib.contenttypes.models import ContentType
 from django.contrib import auth, messages #.authenticate, auth.login
