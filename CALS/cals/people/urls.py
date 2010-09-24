@@ -1,7 +1,7 @@
 from django.conf.urls.defaults import *
 from django.contrib.auth.models import User
 
-from cals.models import Profile
+from cals.people.models import Profile
 
 # people
 people_list_dict = {

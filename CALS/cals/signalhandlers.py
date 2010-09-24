@@ -9,7 +9,7 @@ from nano.blog.models import Entry
 from nano.badge import add_badge, batchbadge
 from nano.badge.models import Badge
 
-from cals.models import Profile
+from cals.people.models import Profile
 
 def new_user_anywhere(sender, **kwargs):
     new = kwargs.get(u'created', False)
