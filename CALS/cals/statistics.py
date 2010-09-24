@@ -18,12 +18,13 @@ from cals.models import *
 from cals.models import Country, FeatureValue, Language, User, \
         Feature, Profile, LanguageFeature
 from cals.forms import *
-from cals.tools import LANGTYPES, language_alphabetic_letters, \
+from cals.tools import compare_features
+from cals.modeltools import LANGTYPES, language_alphabetic_letters, \
         language_first_letters
-from cals.tools import languages_ranked_by_averageness, get_langs, \
+from cals.modeltools import languages_ranked_by_averageness, get_langs, \
         compare_value_sets, compare_languages, feature_usage, \
         language_most_average_internal, set_averageness_for_langs, \
-        get_averageness_for_lang, compare_features
+        get_averageness_for_lang
 
 from translations.models import Translation
 
