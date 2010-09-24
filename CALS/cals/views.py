@@ -954,14 +954,14 @@ def describe_languagefeature(request, *args, **kwargs):
                 messages.info(request, msg)
             elif request.POST.get('submit'):
                 # value
-                value_change = ''
+                value_change = u''
                 if new_v and new_f == feature.id and new_v != lf.value.id:
                     lf.value = new_fv
                     lf.save()
                     value_change = u'Value now "%s." ' % lf.value
             
                 # description
-                desc_change = ''
+                desc_change = u''
                 if not lf.description or lfd.freetext != lf.description.freetext \
                         or new_xhtml != lf.description.freetext_xhtml \
                         or lfd.freetext_type != lf.description.freetext_type:
