@@ -195,7 +195,7 @@ class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
         exclude = ('user', 'is_visible', 'date_format', 'secret',
-                'altitude', 'show_username')
+                'altitude', 'show_username', 'seen_ipv6')
 
 class CategoryForm(forms.ModelForm):
 
