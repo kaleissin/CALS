@@ -1113,6 +1113,15 @@ def auth_login(request, *args, **kwargs):
                     _LOG.info("User: %s", pformat(user))
                     if user is not None:
                         auth.login(request, user)
+
+                        # IPv6
+                        if ':' in request.META.get('REMOTE_ADDR'):
+                            profile.seen_ipv6 = datetime.now()
+                            messages.success(request, "Welcome, oh fellow user of IPv6! A badge is on the way.")
+                            profile.save()
+                        else:
+                            messages.success(request, 'Welcome!')
+
                     else:
                         _LOG.warn("Invalid user for some reason")
                         error = "Couldn't log you in: Your username and/or password does not match with what is stored here."
