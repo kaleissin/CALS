@@ -117,6 +117,9 @@
 </table>
 
 <h2><a name="vocab"></a>Size of conlang vocabulary</h2>
+
+<p>Limited to vocabularies with {{ langs.vocabulary.upper_bound }} entries or less.</p>
+
 <table class="statistics">
     <tr>
         <td>Smallest vocab</td>
@@ -143,8 +146,25 @@
         <td class="integer">{{ langs.vocabulary.mode }}</td>
         <td></td>
     </tr>
+    <tr>
+        <td>Std. Dev.</td>
+        <td class="integer">{{ langs.vocabulary.stddev|integer }}</td>
+        <td class="fraction">.{{ langs.vocabulary.stddev|fraction }}</td>
+    </tr>
 </table>
 <p><img src="{{ langs.vocabulary.chart }}" /></p>
+
+<p>Most common sizes:</p>
+<ul>{% for mode in langs.vocabulary.common %}
+<li>{{ mode.1 }}</li>
+{% endfor %}</ul>
+
+<p>Outliers:</p>
+<ul>
+{% for outlier in langs.vocabulary.outliers %}
+<li>{{ outlier.name }}: {{ outlier.vocabulary_size }}</li>
+{% endfor %}
+</ul>
 
 <h2><a name="letterfreq"></a>Most popular first letters of a language name</h2>
 <h3>By frequency</h3>
