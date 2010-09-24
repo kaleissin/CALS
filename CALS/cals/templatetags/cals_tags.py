@@ -4,6 +4,7 @@
 from datetime import datetime
 from random import choice
 from math import modf, floor, ceil
+import os.path
 
 from django import template
 from django.contrib.auth.models import User
@@ -36,7 +37,7 @@ if settings.MEDIA_URL:
 
 register = template.Library()
 
-_img_src = 'http://media.aldebaaran.uninett.no/CALS/img/'
+_img_src = os.path.join(MEDIA_URL, 'img') + '/'
 _wals_img_src = _img_src + 'WALS.png'
 _wals_img = '<img src="%s" alt="WALS" />' % _wals_img_src
 _wals_path = 'http://wals.info/feature'
