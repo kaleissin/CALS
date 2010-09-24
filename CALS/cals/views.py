@@ -1120,12 +1120,15 @@ def auth_login(request, *args, **kwargs):
                 _LOG.info('Redirecting back to %s', request.POST[u'next'])
                 return HttpResponseRedirect(request.POST[u'next'])
     l_cloud = Tag.objects.cloud_for_model(Language, steps=7, min_count=2)
-    #l_cloud = Tag.objects.cloud_for_model(Language, steps=7)
+    ##l_cloud = Tag.objects.cloud_for_model(Language, steps=7)
+
+    devel_news = Entry.tagged.with_any(('devel','milestone',)).order_by('-pub_date')[:2]
+    news = Entry.objects.exclude(id__in=[e.id for e in devel_news]).order_by('-pub_date')[:2]
 
     data = {'me': 'home', 
             'next': next,
-            'news': Entry.objects.order_by('-pub_date')[:2],
-            'devel_news': Entry.tagged.with_any(('devel','milestone',)).order_by('-pub_date')[:2],
+            'news': news,
+            'devel_news': devel_news,
             'language_cloud': l_cloud,
             'langs_newest': langs_newest,
             'langs_modified': langs_modified,
