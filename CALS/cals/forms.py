@@ -72,8 +72,12 @@ class LanguageForm(forms.ModelForm):
         exclude = ('created', 'editors', 'last_modified_by', 'visible', 'natlang')
 
     def clean_manager(self):
-        manager = self.cleaned_data['manager']
-        return manager.user
+        manager = self.cleaned_data.get('manager', None)
+        try:
+            manager = manager.user
+        except AttributeError:
+            pass
+        return manager
 
     def save(self, commit=True, user=None):
         new_manager = self.cleaned_data.get('manager', None)
