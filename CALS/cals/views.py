@@ -11,7 +11,7 @@ import logging
 _LOG = logging.getLogger(__name__)
 
 from django.contrib.contenttypes.models import ContentType
-from django.contrib import auth #.authenticate, auth.login
+from django.contrib import auth, messages #.authenticate, auth.login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
@@ -301,7 +301,7 @@ def change_feature_description(request, *args, **kwargs):
     link = '/feature/%i/' % feature.id
     if not request.user.is_staff:
         error = "You do not have permission to change this feature's description"
-        request.notifications.add(error, 'error')
+        messages.error(request, error)
         return HttpResponseRedirect(link)
     if request.method == 'POST':
         if feature.description:
@@ -314,7 +314,7 @@ def change_feature_description(request, *args, **kwargs):
             if request.POST.get('preview'):
                 preview = featured.make_xhtml()
                 msg = "You are previewing the description of this feature"
-                request.notifications.add(msg)
+                messages.info(request, msg)
             elif request.POST.get('submit'):
                 featured.content_type = ContentType.objects.get_for_model(feature)
                 featured.object_id = feature.id
@@ -384,7 +384,7 @@ def revert_feature_description(request, lang=None, object_id=None, *args, **kwar
     revert_to = request.GET.get('id', 0)
     error = revert_description(request.user, descriptions, revert_to)
     if error:
-        request.notification.add(error, 'error')
+        messages.error(request, error)
     return HttpResponseRedirect(link_format)
 
 # language
@@ -627,15 +627,15 @@ def create_language(request, lang=None, fvlist=None, clone=False, *args, **kwarg
 
             # Final save
             lang.save(user=user)
-            request.notifications.add(u'You successfully added the language %s to CALS' % lang.name, 'info')
+            messages.info(request, u'You successfully added the language %s to CALS' % lang.name)
             return HttpResponseRedirect('/language/%s/' % lang.slug)
         else:
             if not clone:
                 error = "Couldn't store language-description: " + str(langform.errors) 
-                request.notifications.add(error, 'error')
+                messages.error(request, error)
             else:
                 help = "Remember to fill out the name and author of the language"
-                request.notifications.add(help, 'help')
+                messages.warn(request, help)
     data = {'form': langform, 
             'categories': cats, 
             'me': me, 
@@ -740,7 +740,7 @@ def change_language(request, *args, **kwargs):
             return HttpResponseRedirect('.')
         else:
             error = "Couldn't change language-description: " + str(langform.errors)
-            request.notifications.add(error, 'error')
+            messages.error(request, error)
     data = {'form': langform, 
             'categories': cats, 
             'editorform': editorform, 
@@ -887,7 +887,7 @@ def revert_languagefeature_description(request, lang=None, object_id=None, *args
     revert_to = request.GET.get('id', 0)
     error = revert_description(request.user, descriptions, revert_to)
     if error:
-        request.notification.add(error, 'error')
+        messages.error(request, error)
     return HttpResponseRedirect(link_format)
 
 @login_required
@@ -915,7 +915,7 @@ def remove_languagefeature_description_version(request, lang=None, object_id=Non
         new_current_description = descriptions.latest()
         new_current_description.current = True
         new_current_description.save(batch=True)
-    request.notification.add('Version as of %s is deleted')
+    messages.info(request, 'Version as of %s is deleted')
     return HttpResponseRedirect(link_format)
 
 @login_required
@@ -953,7 +953,7 @@ def describe_languagefeature(request, *args, **kwargs):
             if request.POST.get('preview'):
                 preview = new_xhtml
                 msg = "You are previewing the description of '%s: %s' for %s" % (feature, new_fv, lang)
-                request.notifications.add(msg)
+                messages.info(request, msg)
             elif request.POST.get('submit'):
                 # value
                 value_change = ''
@@ -970,8 +970,8 @@ def describe_languagefeature(request, *args, **kwargs):
                     lfd.content_type = ContentType.objects.get_for_model(lf)
                     lfd.object_id = lf.id
                     lfd.save(user=request.user)
-                    desc_change = 'Description changed.'
-                request.notifications.add('%s%s' % (value_change, desc_change))
+                    desc_change = u'Description changed.'
+                messages.info(request, u'%s%s' % (value_change, desc_change))
                 return HttpResponseRedirect(link)
     else:
         valueform = FeatureValueForm(feature=feature, initial={'value': value_str})
@@ -1065,7 +1065,6 @@ def show_stats(request, *args, **kwargs):
 
 def auth_login(request, *args, **kwargs):
     _LOG.info('Starting auth_login')
-    messages = None
     greeting = None
     next = ''
     langs = Language.objects.exclude(slug__startswith='testarossa')
@@ -1088,6 +1087,7 @@ def auth_login(request, *args, **kwargs):
                     _LOG.debug('Form valid')
                     try:
                         user = User.objects.get(username=username)
+                        profile = user.get_profile()
                     except User.DoesNotExist:
                         try:
                             userslug = slugify(username)
@@ -1095,11 +1095,18 @@ def auth_login(request, *args, **kwargs):
                             user = profile.user
                         except Profile.DoesNotExist:
                             error = "User '%s' does not exist! Typo?" % username
-                            request.notifications.add(error, 'error')
+                            messages.error(request, error)
                             _LOG.warn("User '%s' does not exist" % username)
                             if u'next' in request.REQUEST:
                                 _LOG.warn("Redirecting back to '%s' after failed login" % request.POST[u'next'] or '[redierct missing]')
                                 return HttpResponseRedirect(request.POST[u'next'])
+                    except Profile.DoesNotExist:
+                        error = "User %s is incomplete, lacks profile" % username
+                        messages.error(request, error)
+                        _LOG.warn(error)
+                        if u'next' in request.REQUEST:
+                            _LOG.warn("Redirecting back to '%s' after failed login" % request.POST[u'next'] or '[redierct missing]')
+                            return HttpResponseRedirect(request.POST[u'next'])
                     user = auth.authenticate(username=user.username, password=password)
                     _LOG.info("User: %s", pformat(user))
                     if user is not None:
@@ -1107,10 +1114,10 @@ def auth_login(request, *args, **kwargs):
                     else:
                         _LOG.warn("Invalid user for some reason")
                         error = "Couldn't log you in: Your username and/or password does not match with what is stored here."
-                        request.notifications.add(error, 'error')
+                        messages.error(request, error)
                 except CALSUserExistsError, e:
                     error = "Couldn't sign you up: " + e
-                    request.notifications.add(error, 'error')
+                    messages.error(request, error)
             if u'next' in request.REQUEST:
                 _LOG.info('Redirecting back to %s', request.POST[u'next'])
                 return HttpResponseRedirect(request.POST[u'next'])
