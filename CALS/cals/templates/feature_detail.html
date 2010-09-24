@@ -20,13 +20,13 @@
     <h1>{{ object.name }} {% walsfeature object.id %}</h1>
     {{ object.description.freetext_xhtml|safe }}
     <table>
+        <tr>
+            <th>In-depth description:</th>
         {% if object.wals %}
-        <tr><th>In-depth description:</th><td>Only at {% wals object.id %}</td></tr>
-        {% else %}
-        {% if object.description.freetext_link %}
-        <tr><th>In-depth description:</th><td><a href="{{ object.description.freetext_link }}">{{ object.description.freetext_link }}</a></td></tr>
+            {% if not object.description.freetext %}<td>Only at {% wals object.id %}</td>{% else %}<td>At {% wals object.id %}</td>{% endif %}
+            {% else %}{% if object.description.freetext_link %}<td><a href="{{ object.description.freetext_link }}">{{ object.description.freetext_link }}</a></td>{% endif %}
         {% endif %}
-        {% endif %}
+        </tr>
         <tr>
             <th>Values:</th>
             <td></td>
