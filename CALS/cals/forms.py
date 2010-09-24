@@ -133,45 +133,6 @@ class LanguageFeatureForm(forms.ModelForm):
     class Meta:
         model = LanguageFeature
 
-class SignupForm(forms.Form):
-    help_text = {
-            'last_name': """If you set "Personal name" or """
-                    """"Family name", these will """
-                    """be shown instead of the username""",
-            'email': """Only used to mail you your password, """
-                    """should you forget it""",
-    }
-    username = forms.CharField(label='Username', max_length=30,
-            min_length=2, 
-            help_text="Will be stored as ASCII")
-    password1 = forms.CharField(label='Password', max_length=30, widget=forms.PasswordInput)
-    password2 = forms.CharField(label='Repeat password', max_length=30, widget=forms.PasswordInput)
-    email = forms.EmailField(label='Email', required=False, help_text=help_text['email'])
-
-    def clean_password2(self):
-        password1 = self.cleaned_data.get('password1')
-        password2 = self.cleaned_data.get('password2')
-        if password1 and password2:
-            if password1 != password2:
-                raise forms.ValidationError("The two password fields didn't match.")
-        return password2
-
-class PasswordChangeForm(forms.Form):
-    password1 = forms.CharField(label='New password', max_length=30, widget=forms.PasswordInput)
-    password2 = forms.CharField(label='Repeat new password', max_length=30, widget=forms.PasswordInput)
-
-    def clean_password2(self):
-        password1 = self.cleaned_data.get('password1')
-        password2 = self.cleaned_data.get('password2')
-        if password1 and password2:
-            if password1 != password2:
-                raise forms.ValidationError(_("The two password fields didn't match."))
-        return password2
-
-class PasswordResetForm(forms.Form):
-    username = forms.CharField(label='Username', max_length=30, min_length=2)
-    secret = forms.CharField(label='Secret', max_length=64, required=False)
-
 class UserForm(forms.ModelForm):
     username = forms.CharField(max_length=16, min_length=3)
     first_name = forms.CharField(label='Real name', max_length=30, required=False)
