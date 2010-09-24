@@ -686,60 +686,63 @@ def change_language(request, *args, **kwargs):
 
     if request.method == 'POST':
         langform = LanguageForm(data=request.POST, instance=lang, initial=request.POST)
-        if langform.is_valid():
+        try:
+            if langform.is_valid():
 
-            # editors and managers
-            old_manager = lang.manager
-            lang = langform.save(commit=False)
-            if is_manager:
-                editorform = EditorForm(data=request.POST, instance=lang)
-                editors = lang.editors
-                if editorform.is_valid():
-                    editors = editorform.save()
-                    _LOG.debug('editors after save: %s' % editors)
-                if not 'manager' in langform.cleaned_data:
-                    lang.manager = old_manager
-            else:
-                # Just in case: must be manager also in view in order to
-                # change who can be manager
-                lang.manager = old_manager
-
-            lang.last_modified_by = user
-
-            # greeting
-            greetingexercise = TranslationExercise.objects.get(id=1)
-            new_greeting = lang.greeting
-            try:
-                greetingtrans = Translation.objects.get(language=lang, exercise=greetingexercise,
-                        translator=user)
-            except Translation.DoesNotExist:
-                greetingtrans = None
-            if new_greeting:
-                if greetingtrans:
-                    if new_greeting != greetingtrans.translation:
-                        greetingtrans.translation = new_greeting
+                # editors and managers
+                old_manager = lang.manager
+                lang = langform.save(commit=False)
+                if is_manager:
+                    editorform = EditorForm(data=request.POST, instance=lang)
+                    editors = lang.editors
+                    if editorform.is_valid():
+                        editors = editorform.save()
+                        _LOG.debug('editors after save: %s' % editors)
+                    if not 'manager' in langform.cleaned_data:
+                        lang.manager = old_manager
                 else:
-                    Translation.objects.create(language=lang,
-                            exercise=greetingexercise, translator=user,
-                            translation=new_greeting)
-            else:
-                if greetingtrans:
-                    greetingtrans.delete()
-#             # more info
-#             moreinfoformset = ExternalInfoFormSet(request.POST)
-#             if moreinfoformset.is_valid():
-#                 moreinfo = moreinfoformset.save()
-#                 assert False, moreinfo
-# 
-            # values
-            lang = set_featurevalues_for_lang(lang, request.POST.getlist(u'value'))
+                    # Just in case: must be manager also in view in order to
+                    # change who can be manager
+                    lang.manager = old_manager
 
-            # Final save
-            lang.save(user=user)
-            return HttpResponseRedirect('.')
-        else:
-            error = "Couldn't change language-description: " + str(langform.errors)
-            messages.error(request, error)
+                lang.last_modified_by = user
+
+                # greeting
+                greetingexercise = TranslationExercise.objects.get(id=1)
+                new_greeting = lang.greeting
+                try:
+                    greetingtrans = Translation.objects.get(language=lang, exercise=greetingexercise,
+                            translator=user)
+                except Translation.DoesNotExist:
+                    greetingtrans = None
+                if new_greeting:
+                    if greetingtrans:
+                        if new_greeting != greetingtrans.translation:
+                            greetingtrans.translation = new_greeting
+                    else:
+                        Translation.objects.create(language=lang,
+                                exercise=greetingexercise, translator=user,
+                                translation=new_greeting)
+                else:
+                    if greetingtrans:
+                        greetingtrans.delete()
+    #             # more info
+    #             moreinfoformset = ExternalInfoFormSet(request.POST)
+    #             if moreinfoformset.is_valid():
+    #                 moreinfo = moreinfoformset.save()
+    #                 assert False, moreinfo
+    # 
+                # values
+                lang = set_featurevalues_for_lang(lang, request.POST.getlist(u'value'))
+
+                # Final save
+                lang.save(user=user)
+                return HttpResponseRedirect('.')
+            else:
+                error = "Couldn't change language-description: " + str(langform.errors)
+                messages.error(request, error)
+        except ValueError:
+            assert False, langform
     data = {'form': langform, 
             'categories': cats, 
             'editorform': editorform, 
