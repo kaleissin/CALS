@@ -14,8 +14,10 @@ from countries.models import Country
 
 from nano.link.models import Link
 
-from cals.models import Language, Profile, Feature, FeatureValue, \
-        LanguageFeature, Category, Description, ExternalInfo
+from cals.models import Language, LanguageFeature, ExternalInfo
+from cals.feature.models import Feature, FeatureValue, Category
+from cals.people.models import Profile
+from cals.tools.models import Description
 
 def asciify(string):
     return unicodedata.normalize(string, 'NFKD').encode('ascii', 'ignore')
