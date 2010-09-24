@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from tagging.models import Tag
 from voting.views import vote_on_object
 
-from cals.models import Feature, FeatureValue, Category
+from cals.feature.models import Feature, FeatureValue, Category
 
 FEATURE_RE = r'(?P<object_id>[0-9]+)/'
 FEATURE_HISTORY_RE = r'^' + FEATURE_RE + r'history/'

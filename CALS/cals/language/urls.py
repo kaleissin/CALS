@@ -3,8 +3,7 @@ from django.contrib.auth.models import User
 
 from tagging.models import Tag
 
-from cals.models import Language, Feature, FeatureValue, Category, Profile
-from cals.models import LanguageFamily
+from cals.models import Language, LanguageFamily
 
 LANG_RE = r'^(?P<lang>[-\w]+)/'
 LANG_NAMES_RE = LANG_RE + r'names/'

@@ -31,9 +31,12 @@ from paginators import Paginator
 
 from tagging.models import Tag
 
-from cals.models import Language, Feature, FeatureValue, \
-        LanguageFeature, Profile, User, Category, Description, \
+from cals.models import Language, LanguageFeature, User, \
         LanguageName
+from cals.feature.models import Feature, FeatureValue, Category
+from cals.people.models import Profile
+from cals.tools.models import Description
+
 from cals.models import asciify, slugify
 from cals.forms import FeatureValueForm, CategoryForm, FeatureForm, \
         NewFeatureValueFormSet, CompareTwoFeaturesForm, DescriptionForm, \

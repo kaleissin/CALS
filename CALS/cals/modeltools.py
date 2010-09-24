@@ -15,8 +15,9 @@ from django.http import HttpResponseNotFound, HttpResponseForbidden
 from django.shortcuts import get_object_or_404
 from django.template import Template, Context, loader
 
-from cals.models import Language, LanguageFeature, Description, \
-        Feature, FeatureValue
+from cals.models import Language, LanguageFeature
+from cals.feature.models import Feature, FeatureValue
+from cals.tools.models import Description
 
 class LANGTYPES(object):
     CONLANG = 1
