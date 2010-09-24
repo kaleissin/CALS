@@ -57,44 +57,77 @@ def timeline():
     last_modified = Language.objects.dates('last_modified', 'day')
     _LOG.info('Joined: %s' % joined[:5])
 
+def median(datapoints, n=0):
+    n = n or len(datapoints)
+    datapoints = sorted(datapoints)
+    middle = n / 2
+    if n % 2:
+        # odd
+        return datapoints[middle]
+    else:
+        # even
+        return (datapoints[middle-1] + datapoints[middle]) / 2
+
+def stddev(datapoints):
+    from math import sqrt
+    n = float(len(datapoints))
+    mean = sum(datapoints)/n
+    std = sqrt(sum((float(dp) - mean)**2 for dp in datapoints)/n)
+    return std
+
 def vocab_size():
     """Generate statistics on the vocabulary_size-field."""
 
-    ls = Language.objects.exclude(id=80).filter(vocabulary_size__isnull=False).conlangs()
+    MAXSIZE = 10000
+
+    ls = Language.objects.exclude(id=80).filter(vocabulary_size__gt=0, vocabulary_size__lte=MAXSIZE).conlangs()
+
+    outliers = Language.objects.filter(vocabulary_size__gt=MAXSIZE).order_by('vocabulary_size')
 
     # Assumes unimodal distribution
-    mode = ls.values('vocabulary_size').annotate(count=Count('vocabulary_size')).order_by('-count')[0]['vocabulary_size']
+    modes = [(mode['count'], mode['vocabulary_size'])
+            for mode in ls.values('vocabulary_size').annotate(count=Count('vocabulary_size')).order_by('-count', '-vocabulary_size') 
+            if mode['count'] > 5]
+    mode = modes[0][1]
 
-    avg_max_min = ls.aggregate(avg=Avg('vocabulary_size'), max=Max('vocabulary_size'), min=Min('vocabulary_size'))
-    avg = avg_max_min['avg']
-    max = avg_max_min['max']
-    min = avg_max_min['min']
+    avg_maximum_minimum = ls.aggregate(avg=Avg('vocabulary_size'), maximum=Max('vocabulary_size'), minimum=Min('vocabulary_size'))
+    avg = avg_maximum_minimum['avg']
+    maximum = avg_maximum_minimum['maximum']
+    minimum = avg_maximum_minimum['minimum']
 
     curve = ls.order_by('-vocabulary_size')
     rows = [v.vocabulary_size for v in curve]
 
-    chart = SimpleLineChart(400, 200, y_range=(0, max))
+    chart = SimpleLineChart(400, 200, y_range=(0, maximum))
     chart.add_data(rows)
-    chart.set_axis_labels(Axis.LEFT, 
-            ['0', '2000', '4000',
-            '6000', '8000', '10000', 
-            '12000', '14000', str(int(max))])
+    eightmax = maximum / 8.0
+    quartmax = maximum / 4.0
+    halfmax = maximum / 2.0
+    axis = [0, 
+            str(int(eightmax)), 
+            str(int(quartmax)), 
+            str(int(quartmax+eightmax)), 
+            str(int(halfmax)), 
+            str(int(halfmax+eightmax)), 
+            str(int(halfmax+quartmax)), 
+            str(int(halfmax+quartmax+eightmax)), 
+            maximum]
+    chart.set_axis_labels(Axis.LEFT, axis)
     chart_url = chart.get_url()
 
     # median
-    num_rows = len(rows)
-    middle = num_rows / 2
-    if num_rows % 2:
-        median = rows[middle-1]
-    else:
-        median = (rows[middle] + rows[middle+1]) / 2
+    med = median(rows)
     
     return {'average': avg, 
-            'min': min, 
-            'max': max, 
-            'median': median, 
+            'min': minimum, 
+            'max': maximum, 
+            'median': med, 
             'chart': chart_url,
-            'mode': mode }
+            'mode': mode,
+            'common': modes,
+            'stddev': stddev(rows),
+            'outliers': outliers,
+            'upper_bound': MAXSIZE}
 
 def get_all_lurkers():
     users = User.objects.filter(is_active=True, profile__is_visible=True)
