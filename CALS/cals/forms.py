@@ -187,10 +187,12 @@ class UserForm(forms.ModelForm):
 class ProfileForm(forms.ModelForm):
     country = forms.ModelChoiceField(Country.objects.all(), required=False)
 
-#     def __init__(self, *args, **kwargs):
-#         super(ProfileForm, self).__init__(*args, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super(ProfileForm, self).__init__(*args, **kwargs)
+        self.fields['native_tongue'].queryset = Language.natlangs.all()
 #         self.fields.keyOrder = ['username', 'first_name', 'last_name',
 #                 'email', 'homepage', 'homepage_title', 'country']
+
 
     class Meta:
         model = Profile
