@@ -262,9 +262,11 @@ def list_people(request, template_name='cals/profile_list.html', *args, **kwargs
     extra_context = {'me': 'people'}
     if 'prolificness' in request.GET:
         extra_context['prolificness'] = True
-        queryset = User.objects.annotate(m=Count('manages'), e=Count('edits')).order_by('-m', '-e')
+        queryset = User.objects.filter(profile__is_lurker=False).annotate(m=Count('manages'), e=Count('edits')).order_by('-m', '-e')
     else:
-        queryset = Profile.objects.filter(is_visible=True).order_by('display_name')
+        queryset = Profile.objects.filter(is_lurker=False, is_visible=True).order_by('display_name')
+    lurk_count = Profile.objects.filter(is_lurker=True, is_visible=True).count()
+    extra_context['lurk_count'] = lurk_count
     return object_list(request, queryset=queryset, template_name=template_name,
             extra_context=extra_context, **kwargs)
 
