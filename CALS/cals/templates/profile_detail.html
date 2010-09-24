@@ -92,6 +92,13 @@
             </td>
         </tr>
         {% endif %}
+        {% if profile.native_tongue %}
+        <tr>
+            <th>L1/First language:</th>
+            <td>{{ profile.native_tongue }}
+            </td>
+        </tr>
+        {% endif %}
         {% comment %}
         {% for web20acc in user.web20.all %}
         <tr>
