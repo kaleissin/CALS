@@ -23,28 +23,24 @@ from django.views.generic.list_detail import object_list
 from django.views.generic.create_update import delete_object
 from django.views.generic.simple import direct_to_template
 from django.utils.encoding import smart_unicode
-from django.db.models import Q
+from django.db.models import Q, Count
 
 from paginators.stringpaginator import SingleLetterPaginator, InvalidPage
 from paginators import Paginator
 
 from tagging.models import Tag
 
-from cals.models import *
 from cals.models import Language, Feature, FeatureValue, \
         LanguageFeature, Profile, User, Category, Description, \
         LanguageName
-from cals.forms import *
+from cals.models import asciify, slugify
 from cals.forms import FeatureValueForm, CategoryForm, FeatureForm, \
         NewFeatureValueFormSet, CompareTwoFeaturesForm, DescriptionForm, \
         CompareTwoForm, LanguageForm, EditorForm, UserForm, ProfileForm, \
         SearchForm
-from cals.statistics import *
 from cals.statistics import generate_global_stats
-from cals.tools import *
-from cals.tools import description_diff
-from cals.tools import *
-from cals.tools import compare_features, compare_languages, \
+from cals.tools import description_diff, compare_features
+from cals.modeltools import compare_languages, \
         get_averageness_for_lang, LANGTYPES
 
 from translations.models import TranslationExercise, Translation
