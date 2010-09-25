@@ -135,6 +135,13 @@ def ring_masters():
             if ring.ring_master.cals_user] 
     batchbadge(badge, ring_masters)
 
+# -- tech
+def timetravellers():
+    badge = Badge.objects.get(name='Timetraveller')
+    timetravellers = [profile.user for profile in Profile.objects.all()
+            if profile.seen_ipv6] 
+    batchbadge(badge, timetravellers)
+
 _batch_jobs = {
         'connoiseurs': connoiseurs,
         'developers': developers,
@@ -151,6 +158,7 @@ _batch_jobs = {
         'dreamers': dreamers,
         'nudgers': nudgers,
         'yearlings': yearlings,
+        'timetravellers': timetravellers,
 }
 
 def run_batch(verbose=True):
