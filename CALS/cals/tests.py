@@ -2,7 +2,6 @@ from django.test import TestCase
 from django.test.client import Client
 
 import models, views, admin, urls
-from cals.models import *
 
 test_user = {
             'username': 'foo',
