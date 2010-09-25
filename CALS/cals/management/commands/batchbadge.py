@@ -15,7 +15,7 @@ from cals.models import *
 from translations.models import *
 from relay.models import *
 from phonemes.models import Sound
-from nano.badge.models import *
+from nano.badge.models import Badge
 from nano.tools import get_user_model, get_profile_model
 from nano.privmsg.models import PM
 from nano.mark.models import *
@@ -28,6 +28,11 @@ def batchbadge(badge, models):
     for model in models:
         if badge not in model.badges.all():
             model.badges.add(badge)
+
+def unlurk():
+    brs = Badge.objects.get_all_recipients().filter(profile__is_lurker=True)
+    unlurked = Profile.objects.filter(user__in=brs).update(is_lurker=True)
+    return unlurked
 
 def developers():
     # Cannot use signal
@@ -184,6 +189,9 @@ def run_batch(verbose=True):
         if verbose: print batch_name,
         batch_job()
         if verbose: print 'done'
+    unlurked = unlurk()
+    if verbose:
+        print '\n%i users have become active' % unlurked
 
 class Command(BaseCommand):
     help = "Recalculate and set badges for users"
