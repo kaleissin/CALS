@@ -1,6 +1,18 @@
 from django.contrib import admin
 
 from cals.models import *
+from cals.people.admin import ProfileAdmin
+from cals.feature.admin import CategoryAdmin, \
+        FeatureAdmin, FeatureValueAdmin
+from cals.tools.admin import DescriptionAdmin
+
+#from cals.sound.admin import SoundDataPointAdmin
+admin.site.register(Profile, ProfileAdmin)
+admin.site.register(Category, CategoryAdmin)
+admin.site.register(FeatureValue, FeatureValueAdmin)
+admin.site.register(Feature, FeatureAdmin)
+admin.site.register(Description, DescriptionAdmin)
+#admin.site.register(SoundDataPoint, SoundDataPointAdmin)
 
 class LanguageAdmin(admin.ModelAdmin): 
     model = Language
@@ -11,46 +23,11 @@ class LanguageAdmin(admin.ModelAdmin):
     #radio_fields = {'from_earth': admin.VERTICAL }
 admin.site.register(Language, LanguageAdmin)
 
-class FeatureValueAdmin(admin.ModelAdmin):
-    model = FeatureValue 
-    list_display = ('name', 'position', 'feature')
-admin.site.register(FeatureValue, FeatureValueAdmin)
-
-class FeatureValueInline(admin.TabularInline): 
-    model = FeatureValue 
-    extra = 5 
-
-class FeatureAdmin(admin.ModelAdmin): 
-    model = Feature
-    inlines = [FeatureValueInline] 
-    ordering = ('id',)
-    list_display = ('name', 'category')
-    list_filter = ('category',)
-admin.site.register(Feature, FeatureAdmin)
-
 class LanguageFeatureAdmin(admin.ModelAdmin): 
     model = LanguageFeature
-    inlines = [FeatureValueInline] 
     list_display = ('language', 'feature', 'value')
     list_filter = ('language',)
 admin.site.register(LanguageFeature, LanguageFeatureAdmin)
-
-class CategoryAdmin(admin.ModelAdmin): 
-    model = Category
-    ordering = ('id',)
-admin.site.register(Category, CategoryAdmin)
- 
-class ProfileAdmin(admin.ModelAdmin): 
-    model = Profile
-    ordering = ('display_name',)
-    list_display = ('display_name', 'username')
-admin.site.register(Profile, ProfileAdmin)
-
-class DescriptionAdmin(admin.ModelAdmin): 
-    model = Description
-    list_display = ('object_id', 'content_type', 'current', 'last_modified', 'last_modified_by')
-    list_filter = ('current', 'content_type',)
-admin.site.register(Description, DescriptionAdmin)
 
 class LanguageFamilyAdmin(admin.ModelAdmin): 
     model = LanguageFamily
@@ -65,3 +42,4 @@ class LanguageNameAdmin(admin.ModelAdmin):
 admin.site.register(LanguageName, LanguageNameAdmin)
 
 #admin.site.register(ExternalInfo)
+
