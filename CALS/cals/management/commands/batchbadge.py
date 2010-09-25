@@ -67,6 +67,9 @@ def yearlings():
     a_year_ago = now - timedelta(days=365, seconds=6*60*60)
     # averaged month
     a_month_ago = now - timedelta(days=30, seconds=10.56*60*60)
+    # Keep forgetting this, in datetimes:
+    # < is before, earlier than
+    # > is after, later than
     yearlings = [u for u in User.objects.all() 
             if u.date_joined <= a_year_ago and u.last_login > a_month_ago]
     batchbadge(badge, yearlings)
