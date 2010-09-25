@@ -86,7 +86,7 @@ def testbunnies():
 def bughunters():
     # Cannot use signal
     badge = Badge.objects.get(name='Bughunter')
-    bughunter_ids = (2, 3, 30, 32, 195, 87, 52, 90, 82, 86, 280)
+    bughunter_ids = (2, 3, 30, 32, 195, 87, 52, 90, 82, 86, 280, 326)
     bughunters = User.objects.filter(id__in=bughunter_ids)
     batchbadge(badge, bughunters)
 
