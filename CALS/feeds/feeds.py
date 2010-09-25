@@ -4,7 +4,8 @@ from django.template.defaultfilters import slugify
 
 import djatom as atom
 from nano.blog.models import Entry
-from cals.models import Language, Profile
+from cals.language.models import Language
+from cals.people.models import Profile
 from translations.models import TranslationExercise, Translation
 from nano.comments.models import Comment
 from django.template.loader import render_to_string

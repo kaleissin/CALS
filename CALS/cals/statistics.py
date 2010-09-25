@@ -11,12 +11,11 @@ from django.db import connection
 from django.http import HttpResponseNotFound, HttpResponseForbidden
 from django.shortcuts import render_to_response, get_object_or_404
 from django.db.models import Q, Count, Avg, Max, Min
+from django.contrib.auth.models import User
 
 from pygooglechart import Axis, SimpleLineChart
+from countries.models import Country
 
-from cals.models import *
-from cals.models import Country, FeatureValue, Language, User, \
-        Feature, Profile, LanguageFeature
 from cals.forms import *
 from cals.tools import compare_features
 from cals.modeltools import LANGTYPES, language_alphabetic_letters, \
@@ -25,6 +24,10 @@ from cals.modeltools import languages_ranked_by_averageness, get_langs, \
         compare_value_sets, compare_languages, feature_usage, \
         language_most_average_internal, set_averageness_for_langs, \
         get_averageness_for_lang
+from cals.feature.models import FeatureValue, Feature
+from cals.language.models import Language
+from cals.people.models import Profile
+from cals.models import LanguageFeature
 
 from translations.models import Translation
 

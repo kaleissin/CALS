@@ -1,6 +1,6 @@
 from django.conf.urls.defaults import *
 
-from cals.models import FeatureValue
+from cals.feature.models import FeatureValue
 
 # feature
 urlpatterns = patterns('',

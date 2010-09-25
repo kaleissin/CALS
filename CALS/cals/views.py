@@ -11,6 +11,9 @@ import logging
 _LOG = logging.getLogger(__name__)
 _LOG.info(__name__)
 
+from countries.models import Country
+from tagging.models import Tag
+
 from django.contrib.contenttypes.models import ContentType
 from django.contrib import auth, messages #.authenticate, auth.login
 from django.contrib.auth.decorators import login_required
@@ -29,13 +32,11 @@ from django.db.models import Q, Count
 from paginators.stringpaginator import SingleLetterPaginator, InvalidPage
 from paginators import Paginator
 
-from tagging.models import Tag
-
-from cals.models import Language, LanguageFeature, User, \
-        LanguageName
 from cals.feature.models import Feature, FeatureValue, Category
 from cals.people.models import Profile
 from cals.tools.models import Description
+from cals.language.models import Language, LanguageName
+from cals.models import LanguageFeature
 
 from cals.models import asciify, slugify
 from cals.forms import FeatureValueForm, CategoryForm, FeatureForm, \

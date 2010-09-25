@@ -10,7 +10,7 @@ from django.db import models
 from django.template.defaultfilters import slugify
 from django.utils.html import escape
 
-from cals.models import Language
+from cals.language.models import Language
 
 def get_interlinear(model):
     if not model.interlinear.strip():
