@@ -18,6 +18,7 @@ from nano.badge.models import *
 from nano.tools import get_user_model, get_profile_model
 from nano.privmsg.models import PM
 from nano.mark.models import *
+from nano.comments.models import Comment
 
 Profile = get_profile_model()
 User = get_user_model()
@@ -137,6 +138,12 @@ def ring_masters():
     ring_masters = [ring.ring_master.cals_user for ring in Ring.objects.all()
             if ring.ring_master.cals_user] 
     batchbadge(badge, ring_masters)
+
+# -- comments
+def critics():
+    badge = Badge.objects.get(name='Critic')
+    critics = [comment.user for comment in Comment.objects.all()]
+    batchbadge(badge, critics)
 
 # -- tech
 def timetravellers():
