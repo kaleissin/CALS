@@ -10,8 +10,7 @@ from cals.tools.admin import DescriptionAdmin
 from cals.language.models import Language, LanguageFamily, LanguageName
 from cals.language.admin import LanguageAdmin, \
         LanguageFamilyAdmin, LanguageNameAdmin
-from cals.models import LanguageFeature
-#from cals.sound.admin import SoundDataPointAdmin
+from cals.models import LanguageFeature, SoundDataPoint
 
 admin.site.register(Profile, ProfileAdmin)
 admin.site.register(Category, CategoryAdmin)
@@ -27,7 +26,11 @@ class LanguageFeatureAdmin(admin.ModelAdmin):
     list_display = ('language', 'feature', 'value')
     list_filter = ('language',)
 admin.site.register(LanguageFeature, LanguageFeatureAdmin)
-#admin.site.register(SoundDataPoint, SoundDataPointAdmin)
 
+class SoundDataPointAdmin(admin.ModelAdmin):
+    model = SoundDataPoint 
+    list_display = ('sound', 'language')
+    search_fields = ('language',)
+admin.site.register(SoundDataPoint, SoundDataPointAdmin)
 #admin.site.register(ExternalInfo)
 
