@@ -94,6 +94,12 @@ def dreamers():
     dreamers = User.objects.filter(id__in=dreamer_ids)
     batchbadge(badge, dreamers)
 
+def autobiographers():
+    badge = Badge.objects.get(name='Autobiographer')
+    autobiographer_profiles = Profile.objects.autobiographers()
+    autobiographers = User.objects.filter(id__in=[p.user_id for p in autobiographer_profiles])
+    batchbadge(badge, autobiographers)
+
 # -- translating
 def translators():
     """Mark translators as just that.
@@ -109,12 +115,6 @@ def civ4fans():
     translators = [u for u in User.objects.filter(translations__exercise__category=4).distinct() 
             if u.translations.filter(exercise__category=4).count() == num_civ_exercises]
     batchbadge(badge, translators)
-
-def autobiographers():
-    badge = Badge.objects.get(name='Autobiographer')
-    autobiographer_profiles = Profile.objects.autobiographers()
-    autobiographers = User.objects.filter(id__in=[p.user_id for p in autobiographer_profiles])
-    batchbadge(badge, autobiographers)
 
 # -- relay
 def torchbearers():
