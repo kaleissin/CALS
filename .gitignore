@@ -1,0 +1,8 @@
+bin
+include
+lib
+CALS/env
+src
+*.pyc
+*.pyo
+*~
