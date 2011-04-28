@@ -180,7 +180,8 @@ def generate_global_stats():
     least_average = tuple(most_average)[-10:]
     most_average = most_average[:20]
 
-    features_mu = feature_usage(limit=20)
+    features_mu = feature_usage(langtype=LANGTYPES.CONLANG, limit=20)
+    natlang_features_mu = feature_usage(langtype=LANGTYPES.NATLANG, limit=20)
     not_used = unused_featurevalues()
 
     countries = country_most_common()
@@ -202,6 +203,7 @@ def generate_global_stats():
             'number': num_features,
             'percentage_wals': str(142/float(num_features)*100),
             'most_used': features_mu,
+            'natlang_most_used': natlang_features_mu,
             #'least_used': tuple(reversed(features_mu))[:20],
             'not_used': not_used,
             'num_not_used': len(not_used),

@@ -246,6 +246,17 @@
 {% endfor %}
 </table>
 
+<h2><a name="common_natlang_features"></a>Most common natlang features</h2>
+<table class="statistics">
+{% for feature in features.natlang_most_used %}
+<tr>
+    <td><a href="/value/{{ feature.value.id }}/">{{ feature.feature }}: {{ feature.value }}</a></td>
+    <td>{{ feature.languages }} language{{ feature.languages|pluralize }}</td>
+    <td>{{ feature.percentage|floatformat:1 }}%</td>
+</tr>
+{% endfor %}
+</table>
+
 
 <h2><a name="unused_features"></a>Unused values for features ({{ features.num_not_used }})</h2>
 <ul class="statistics">
