@@ -42,9 +42,9 @@ register = template.Library()
 _img_src = os.path.join(MEDIA_URL, 'img') + '/'
 _wals_img_src = _img_src + 'WALS.png'
 _wals_img = '<img src="%s" alt="WALS" />' % _wals_img_src
-_wals_path = 'http://wals.info/feature'
-_wals_description = '<sup class="wals"><a href="%s/description/%%i" target="_blank">WALS</a></sup>' % _wals_path
-_wals_feature = '<sup class="wals"><a href="%s/%%i" target="_blank">WALS</a><sup>' % _wals_path
+_wals_path = 'http://wals.info'
+_wals_description = '<sup class="wals"><a href="%s/chapter/%%i" target="_blank">WALS</a></sup>' % _wals_path
+_wals_feature = '<sup class="wals"><a href="%s/feature/%%i" target="_blank">WALS</a><sup>' % _wals_path
 
 def _get_display_name(user):
     """Given an id (int), a user-object or a user-name, returns

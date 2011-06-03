@@ -88,8 +88,8 @@ class FeatureManager(ActivePassiveManager):
         return self.get(category__name=category, name=name)
 
 class Feature(models.Model, DescriptionMixin):
-    MAX_WALS_FEATURE = 142
-    name = models.CharField(max_length=96, unique=True) # Longest faeture-name... 93 chars!!
+    MAX_WALS_FEATURE = 144
+    name = models.CharField(max_length=96, unique=True) # Longest feature-name... 93 chars!!
     category = models.ForeignKey(Category)
     tags = TagField()
     wals = models.BooleanField(default=False, editable=False)
