@@ -71,7 +71,16 @@ todo_params = {
         },
 }
 
-urlpatterns = patterns('',
+urlpatterns = patterns('django.contrib.syndication.views',
+    (r'^feeds/translations/(.*)/$', 'feed', {'feed_dict': translation_feeds}),
+    (r'^feeds/languages/(.*)/$', 'feed', {'feed_dict': language_feeds}),
+    (r'^feeds/people/(.*)/$', 'feed', {'feed_dict': people_feeds}),
+    (r'^feeds/(\w*)/$', 'feed', {'feed_dict': comment_feeds}),
+    (r'^feeds/(.*)/$', 'feed', {'feed_dict': all_feeds}),
+#    (r'^feeds/all/$', 'feed', {'feed_dict': {'all': AllFeed,},}),
+)
+
+urlpatterns += patterns('',
     (r'^admin/doc/',            include('django.contrib.admindocs.urls')),
     (r'^admin/',                include(admin.site.urls)),
 
@@ -92,13 +101,6 @@ urlpatterns = patterns('',
 
     (r'^logged_in$',            direct_to_template, login_params),
     (r'^logout$',               'django.contrib.auth.views.logout_then_login'),
-
-    (r'^feeds/translations/(.*)/$', 'django.contrib.syndication.views.feed', {'feed_dict': translation_feeds}),
-    (r'^feeds/languages/(.*)/$', 'django.contrib.syndication.views.feed', {'feed_dict': language_feeds}),
-    (r'^feeds/people/(.*)/$', 'django.contrib.syndication.views.feed', {'feed_dict': people_feeds}),
-    (r'^feeds/(\w*)/$', 'django.contrib.syndication.views.feed', {'feed_dict': comment_feeds}),
-    (r'^feeds/(.*)/$', 'django.contrib.syndication.views.feed', {'feed_dict': all_feeds}),
-#    (r'^feeds/all/$', 'django.contrib.syndication.views.feed', {'feed_dict': {'all': AllFeed,},}),
 
     (r'^account/',              include('nano.user.urls')),
     # redirect the three links below into account/...
