@@ -4,7 +4,7 @@ sys.path.append('/home/python/django-trunk/')
 sys.path.append('/home/python/django-sites/')
 sys.path.append('/home/python/django-sites/CALS/')
 
-from django.db.models import Q
+from django.db.models import Q, F
 from django.core.management import setup_environ
 from django.core.management.base import NoArgsCommand, BaseCommand
 
@@ -107,6 +107,13 @@ def regulars():
     old_hands = _active_year_ago(3)
     batchbadge(badge, old_hands)
 
+def boomerangs():
+    badge = Badge.objects.get(name='Boomerang')
+    week = timedelta(days=7)
+    boomerangs = User.objects.filter(last_login__gt=F('date_joined')+week,
+            badges__isnull=False).distinct()
+    batchbadge(badge, boomerangs)
+
 # -- helpers
 
 def testbunnies():
@@ -207,6 +214,7 @@ _batch_jobs = {
         'nudgers': nudgers,
         'yearlings': yearlings,
         'old_hands': old_hands,
+        'boomerangs': boomerangs,
         'timetravellers': timetravellers,
         'phoneticians': phoneticians,
         'regulars': regulars,
