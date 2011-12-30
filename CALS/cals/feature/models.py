@@ -3,8 +3,6 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.query import QuerySet
 
-from tagging.fields import TagField
-
 from cals.tools.models import DescriptionMixin
 
 FEATURE_GROUPS_CHOICES = (
@@ -91,7 +89,6 @@ class Feature(models.Model, DescriptionMixin):
     MAX_WALS_FEATURE = 144
     name = models.CharField(max_length=96, unique=True) # Longest feature-name... 93 chars!!
     category = models.ForeignKey(Category)
-    tags = TagField()
     wals = models.BooleanField(default=False, editable=False)
     overrides = models.ForeignKey('self', blank=True, null=True)
     active = models.BooleanField(default=False, editable=False)
