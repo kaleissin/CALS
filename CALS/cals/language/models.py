@@ -12,7 +12,7 @@ from django.db.models.query import QuerySet
 from django.template.defaultfilters import slugify
 from django.utils.encoding import smart_unicode
 
-from tagging.fields import TagField
+from taggit.managers import TaggableManager
 
 from cals import markup_as_restructuredtext
 from cals.tools import uni_slugify, asciify, next_id
@@ -162,7 +162,7 @@ class Language(models.Model):
 
     # Permissions and metadata
     visible = models.BooleanField(default=True)
-    tags = TagField(help_text="Separate tags with commas or spaces")
+    tags = TaggableManager(blank=True)
     public = models.BooleanField('Editable by all', default=True,
             help_text="""If yes/on, all logged in may edit. If no/off, only the
             manager and editors may edit.""")

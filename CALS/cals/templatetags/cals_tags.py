@@ -90,6 +90,16 @@ def fetch_lf_description(language, feature, value):
     return lf.description
 
 @register.simple_tag
+def show_language_tags(language):
+    # django-tagging among others
+    if type(language.tags) == type(u''):
+        return language.tags
+    # django-taggit among others
+    if getattr(language.tags, '__module__', False):
+        return u', '.join(unicode(tag) for tag in language.tags.all())
+    return u''
+
+@register.simple_tag
 def currently_logged_in():
     now = datetime.now()
     sessions = Session.objects.filter(expire_date__gt=now)

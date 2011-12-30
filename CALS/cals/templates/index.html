@@ -74,7 +74,7 @@ if (document.signup)
     <div class="cloud box">
         {% for tag in language_cloud %}
         <span class="tagsize{{ tag.font_size }}"><a
-                href="/language/tag/{{ tag.name }}/" 
+                href="/language/tag/{{ tag.slug }}/" 
                 rel="tag">{{ tag.name|nbr }}</a>
             {% ifnotequal tag.count 1 %} ({{ tag.count }}){% endifnotequal %}
         </span>

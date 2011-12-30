@@ -12,7 +12,6 @@ _LOG = logging.getLogger(__name__)
 _LOG.info(__name__)
 
 from countries.models import Country
-from tagging.models import Tag
 
 from django.contrib.contenttypes.models import ContentType
 from django.contrib import auth, messages #.authenticate, auth.login
@@ -52,7 +51,10 @@ from translations.models import TranslationExercise, Translation
 
 from nano.tools import render_page
 from nano.blog.models import Entry
+from nano.blog.tools import get_nano_blog_entries
 from nano.privmsg.models import PM
+
+from tagtools import get_tagcloud_for_model, set_tags_for_model
 
 _error_forbidden_msg = "You don't have the necessary permissions to edit here."
 error_forbidden = render_to_string('error.html', 
@@ -196,6 +198,9 @@ def revert_description(user, descriptions, revert_to):
             description.current = True
             description_last_modified_by = user
             description.save()
+
+def language_tag_cloud(steps=6, min_count=1):
+    return get_tagcloud_for_model(Language, steps, min_count)
 
 # Feature
 def compare_feature(request, *args, **kwargs):
@@ -578,6 +583,9 @@ def set_featurevalues_for_lang(lang, valuelist):
     lang.set_average_score()
     return lang
 
+def set_tags_for_lang(tags, lang):
+    return set_tags_for_model(tags, lang)
+
 @login_required
 def create_language(request, lang=None, fvlist=None, clone=False, *args, **kwargs):
     me = 'language'
@@ -614,6 +622,9 @@ def create_language(request, lang=None, fvlist=None, clone=False, *args, **kwarg
                 lang.manager = user
             # Must save early since is foreign-key in many other tables
             lang.save(user=user, solo=False)
+            # Save tags if any
+            lang, tags_changed = set_tags_for_lang(langform.cleaned_data['tags'], lang)
+            # Set editors
             editorform = EditorForm(data=request.POST, instance=lang)
             if editorform.is_valid():
                 editorform.save()
@@ -741,6 +752,7 @@ def change_language(request, *args, **kwargs):
 
                 # Final save
                 lang.save(user=user)
+                lang, tags_changed = set_tags_for_lang(langform.cleaned_data['tags'], lang)
                 return HttpResponseRedirect('.')
             else:
                 error = "Couldn't change language-description: " + str(langform.errors)
@@ -1136,11 +1148,10 @@ def auth_login(request, *args, **kwargs):
             if u'next' in request.REQUEST:
                 _LOG.info('Redirecting back to %s', request.POST[u'next'])
                 return HttpResponseRedirect(request.POST[u'next'])
-    l_cloud = Tag.objects.cloud_for_model(Language, steps=7, min_count=2)
-    ##l_cloud = Tag.objects.cloud_for_model(Language, steps=7)
 
-    devel_news = Entry.tagged.with_any(('devel','milestone',)).order_by('-pub_date')[:2]
-    news = Entry.objects.exclude(id__in=[e.id for e in devel_news]).order_by('-pub_date')[:2]
+    l_cloud = language_tag_cloud(steps=7, min_count=2)
+
+    news, devel_news = get_nano_blog_entries()
 
     data = {'me': 'home', 
             'next': next,

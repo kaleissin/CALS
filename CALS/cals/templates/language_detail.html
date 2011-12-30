@@ -107,7 +107,7 @@ have to do so at WALS, not here.</p>
     <tr><th>Averageness:</th><td>{{ object.average_score }}/100, 
             {{ object.num_avg_features }} of {{ object.num_features }}</td></tr>
     <tr><th>Number of features:</th><td>{{ object.num_features }}</td></tr>
-    <tr><th>Tags:</th><td>{{ object.tags|wordwrap:16 }}</td></tr>
+    <tr><th>Tags:</th><td>{% show_language_tags object %}</td></tr>
     <tr><th>Editable by all:</th><td>{{ object.public|yesno:"yes,no" }}</td></tr>
     {% if object.added_by %}
     <tr><th>Added by:</th><td>{% showuser object.added_by %}</td></tr>

@@ -3,7 +3,7 @@ from datetime import timedelta, datetime
 
 from django.conf import settings
 
-from nano.blog import add_entry_to_blog
+from nano.blog.tools import add_entry_to_blog
 from nano.blog.models import Entry
 
 from nano.badge import add_badge, batchbadge

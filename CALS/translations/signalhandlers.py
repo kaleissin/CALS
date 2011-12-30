@@ -1,4 +1,4 @@
-from nano.blog import add_entry_to_blog
+from nano.blog.tools import add_entry_to_blog
 from nano.badge import add_badge
 #from nano.badge.models import Badge
 

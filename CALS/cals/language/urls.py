@@ -1,7 +1,7 @@
 from django.conf.urls.defaults import *
 from django.contrib.auth.models import User
 
-from tagging.models import Tag
+from taggit.models import Tag
 
 from cals.models import Language, LanguageFamily
 
@@ -20,8 +20,8 @@ tags_language_dict = {
 }
 
 taglist_language_dict = {
-        'queryset': Tag.objects.all(), #usage_for_model(Language, counts=True),
-#        'template_name': 'tagging/tag_list.html',
+        'queryset': Tag.objects.all(),
+        'template_name': 'tagging/tag_list.html',
         'extra_context': { 'me': 'language' },
 }
 
@@ -30,8 +30,8 @@ langfam_dict = {
     'extra_context': { 'me': 'language' },
 }
 
-urlpatterns = patterns('tagging.views',
-        (r'^tag/(?P<tag>[- \w\d]+)/$', 'tagged_object_list', tags_language_dict),
+urlpatterns = patterns('tagtools.views',
+        (r'^tag/(?P<tag>[-\w\d]+)/$', 'tagged_object_list', tags_language_dict),
 )
 
 urlpatterns += patterns('django.views.generic',
