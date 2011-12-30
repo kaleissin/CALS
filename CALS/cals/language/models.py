@@ -6,6 +6,7 @@ from datetime import datetime
 import logging
 _LOG = logging.getLogger(__name__)
 
+import django.dispatch
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.query import QuerySet
@@ -20,6 +21,8 @@ from cals.tools import uni_slugify, asciify, next_id
 from cals.tools.models import FREETEXT_TYPES, DescriptionMixin
 
 from cals.feature.models import Feature, FeatureValue
+
+language_hidden = django.dispatch.Signal(providing_args=["languages"])
 
 class LangtypeQuerySet(QuerySet):
     def conlangs(self):

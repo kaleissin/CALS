@@ -7,8 +7,17 @@ class LanguageAdmin(admin.ModelAdmin):
     ordering = ('name',)
     list_display = ('name', 'added_by', 'from_earth', 'family', 'last_modified')
     list_filter = ('from_earth', 'natlang', 'added_by',)
-    search_fields = ('name', 'internal_name', 'added_by__display_name',)
+    search_fields = ('name', 'internal_name', 'added_by',)
+    actions = ['make_invisible']
+
     #radio_fields = {'from_earth': admin.VERTICAL }
+
+    def make_invisible(self, request, queryset):
+        qs = queryset.update(visible=False)
+        msg = u'%i language%s hidden' % (qs, u'' if qs == 1 else u's')
+        self.message_user(request, msg)
+        language_hidden.send(sender=self, languages=queryset)
+    make_invisible.short_description = "Hide languages"
 
 class LanguageFamilyAdmin(admin.ModelAdmin): 
     model = LanguageFamily
