@@ -214,6 +214,10 @@ class Language(models.Model):
             self.manager = user
         if solo:
             self.last_modified = now
+            if user:
+                self.last_modified_by = user
+            else:
+                self.last_modified_by = self.manager
         if not self.internal_name:
             self.internal_name = self.name
             self.name = asciify(self.name)
