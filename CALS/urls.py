@@ -85,7 +85,11 @@ urlpatterns += patterns('',
     (r'^admin/',                include(admin.site.urls)),
 
     # red tape
-    (r'^favicon\.ico$', 'django.views.generic.simple.redirect_to', {'url': '/media/img/favicon.ico'}),
+    (r'^favicon\.ico$',         'django.views.generic.simple.redirect_to', {
+                                'url': '/media/img/favicon.ico'}),
+    (r'^robots\.txt$',          direct_to_template, {
+                                'template': 'robots.txt', 
+                                'mimetype': 'text/plain'}),
 
     (r'^thankyou$',             direct_to_template, thankyou_params),
     (r'^help/rst_quickref$',    direct_to_template, {

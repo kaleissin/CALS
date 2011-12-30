@@ -1,8 +1,10 @@
 bin
 include
 lib
-CALS/env
+share
 src
 *.pyc
 *.pyo
 *~
+CALS/env
+CALS/templates/robots.txt
