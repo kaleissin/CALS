@@ -21,6 +21,8 @@ from nano.privmsg.models import PM
 from nano.mark.models import *
 from nano.comments.models import Comment
 
+from cals.people.models import user_unlurked
+
 Profile = get_profile_model()
 User = get_user_model()
 
@@ -31,8 +33,13 @@ def batchbadge(badge, models):
 
 def unlurk():
     brs = Badge.objects.get_all_recipients().filter(profile__is_lurker=True)
-    unlurked = Profile.objects.filter(user__in=brs).update(is_lurker=True)
-    return unlurked
+    unlurked = Profile.objects.filter(user__in=brs)
+    exlurker_count = unlurked.count()
+    unlurked.update(is_lurker=False)
+    # Right way: method on Profile.objects that sends this signal
+    for ul in unlurked:
+        user_unlurked.send(sender=ul, user=ul.user)
+    return exlurker_count
 
 def developers():
     # Cannot use signal

@@ -172,7 +172,9 @@ class ExternalInfo(models.Model):
 from django.db.models.signals import post_save
 from nano.user import new_user_created
 
-from signalhandlers import new_or_changed_language, new_user_anywhere
+from cals.people.models import user_unlurked
+from signalhandlers import new_or_changed_language, new_user_anywhere, user_now_active
 
+user_unlurked.connect(user_now_active, sender=Profile)
 post_save.connect(new_user_anywhere, sender=User)
 #post_save.connect(new_or_changed_language, sender=Language)

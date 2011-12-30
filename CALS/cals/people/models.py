@@ -5,6 +5,11 @@ from django.db.models import Q
 
 from countries.models import Country
 
+# Signals defined here
+
+import django.dispatch                                                          
+user_unlurked = django.dispatch.Signal(providing_args=["user"])
+
 class ProfileManager(models.Manager):
     def autobiographers(self):
         return self.get_query_set().exclude(

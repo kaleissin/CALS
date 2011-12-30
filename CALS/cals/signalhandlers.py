@@ -1,3 +1,5 @@
+import logging
+_LOG = logging.getLogger(__name__)
 
 from datetime import timedelta, datetime
 
@@ -10,6 +12,17 @@ from nano.badge import add_badge, batchbadge
 from nano.badge.models import Badge
 
 from cals.people.models import Profile
+
+def blog_unlurked_user(unlurked_user):
+    if is_real_user(unlurked_user):
+        blog_template = 'blog/unlurked_user.html'
+        add_entry_to_blog(unlurked_user, '%s just unlurked' %
+                unlurked_user.username, blog_template, date_field='date_joined')
+
+def user_now_active(sender, **kwargs):
+    _LOG.info('blogging unlurking')
+    user = kwargs.get(u'user')
+    blog_unlurked_user(user)
 
 def new_user_anywhere(sender, **kwargs):
     new = kwargs.get(u'created', False)
@@ -61,3 +74,18 @@ def new_or_changed_language(sender, **kwargs):
         else:
             latest.pub_date = datetime.now()
             latest.save()
+
+def hidden_language(sender, **kwargs):
+    languages = kwargs.get('languages', [])
+    if languages:
+        count = languages.count()
+        if count == 1:
+            lang = languages[0]
+            title = u'Dropped language: %s' % lang.name
+            add_entry_to_blog(lang, title,
+                    'feeds/languages_single_dropped_description.html', date_field='last_modified')
+        elif count > 1:
+            title = u'Several languages dropped'
+            add_entry_to_blog(languages, title,
+                    'feeds/languages_multi_dropped_description.html', date_field='last_modified')
+
