@@ -126,14 +126,21 @@ def testbunnies():
 def bughunters():
     # Cannot use signal
     badge = Badge.objects.get(name='Bughunter')
-    bughunter_ids = (2, 3, 30, 32, 195, 87, 52, 90, 82, 86, 280, 326)
+    bughunter_ids = (
+            2, 3, 30, 32, 195, 
+            87, 52, 90, 82, 86, 
+            280, 326, 350, 147, 416,
+            463, 314)
     bughunters = User.objects.filter(id__in=bughunter_ids)
     batchbadge(badge, bughunters)
 
 def dreamers():
     # Cannot use signal
     badge = Badge.objects.get(name='Dreamer')
-    dreamer_ids = (2, 3, 27, 30, 37, 195, 123, 52, 90, 55, 93, 87)
+    dreamer_ids = (
+            2, 3, 27, 30, 37, 
+            195, 123, 52, 90, 
+            55, 93, 87, 425)
     dreamers = User.objects.filter(id__in=dreamer_ids)
     batchbadge(badge, dreamers)
 
