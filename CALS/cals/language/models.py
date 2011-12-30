@@ -184,6 +184,14 @@ class Language(models.Model):
     last_modified = models.DateTimeField(blank=True, null=True, editable=False, default=datetime.now)
     last_modified_by = models.ForeignKey(User, editable=False, blank=True, null=True, related_name='languages_modified')
 
+    try:
+        from nano.blog.models import Entry
+        blogentries = models.ManyToManyField(Entry,
+                blank=True, null=True, related_name='languages')
+    except ImportError:
+        # nano.blog not in use
+        pass
+
     # Managers
     objects = DefaultLanguageManager()
     natlangs = NaturalLanguageManager()
