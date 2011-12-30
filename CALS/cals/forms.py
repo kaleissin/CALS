@@ -137,8 +137,8 @@ class LanguageFeatureForm(forms.ModelForm):
 class UserForm(forms.ModelForm):
     username = forms.CharField(max_length=16, min_length=3)
     first_name = forms.CharField(label='Real name', max_length=30, required=False)
-    email = forms.EmailField(required=False,
-            help_text= """Only used to mail you your password,
+    email = forms.EmailField(required=True,
+            help_text= """Used to mail you your password,
                     should you forget it""",
             )
 
