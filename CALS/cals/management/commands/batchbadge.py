@@ -67,19 +67,38 @@ def connoiseurs():
             if u.marks.filter(marktype__slug__startswith='fav').count()]
     batchbadge(badge, connoiseurs)
 
-def yearlings():
-    badge = Badge.objects.get(name='Yearling')
+# -- by date
+
+def _active_year_ago(years):
+    assert int(years)
     now = datetime.now()
     # averaged year
-    a_year_ago = now - timedelta(days=365, seconds=6*60*60)
+    x_years_ago = now - timedelta(days=years*365, seconds=6*60*60)
     # averaged month
     a_month_ago = now - timedelta(days=30, seconds=10.56*60*60)
     # Keep forgetting this, in datetimes:
     # < is before, earlier than
     # > is after, later than
-    yearlings = [u for u in User.objects.all() 
-            if u.date_joined <= a_year_ago and u.last_login > a_month_ago]
+    return [u for u in User.objects.all() 
+            if u.date_joined <= x_years_ago and u.last_login > a_month_ago]
+
+# 1 year
+def yearlings():
+    badge = Badge.objects.get(name='Yearling')
+    yearlings = _active_year_ago(1)
     batchbadge(badge, yearlings)
+
+# 2 years
+def old_hands():
+    badge = Badge.objects.get(name='Old Hand')
+    old_hands = _active_year_ago(2)
+    batchbadge(badge, old_hands)
+
+# 3 years
+def regulars():
+    badge = Badge.objects.get(name='Regular')
+    old_hands = _active_year_ago(3)
+    batchbadge(badge, old_hands)
 
 # -- helpers
 
@@ -180,8 +199,10 @@ _batch_jobs = {
         'dreamers': dreamers,
         'nudgers': nudgers,
         'yearlings': yearlings,
+        'old_hands': old_hands,
         'timetravellers': timetravellers,
         'phoneticians': phoneticians,
+        'regulars': regulars,
 }
 
 def run_batch(verbose=True):
