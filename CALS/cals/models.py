@@ -13,8 +13,6 @@ from django.db.models.query import QuerySet
 from django.template.defaultfilters import slugify
 from django.utils.encoding import smart_unicode
 
-from tagging.fields import TagField
-
 from cals import markup_as_restructuredtext
 from cals.tools import uni_slugify, asciify, next_id
 

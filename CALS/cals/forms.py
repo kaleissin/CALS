@@ -12,8 +12,6 @@ from django.db import models
 
 from countries.models import Country
 
-from nano.link.models import Link
-
 from cals.feature.models import Feature, FeatureValue, Category
 from cals.people.models import Profile
 from cals.tools.models import Description
