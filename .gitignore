@@ -2,9 +2,10 @@ bin
 include
 lib
 share
-src
+local
 *.pyc
 *.pyo
 *~
-CALS/env
-CALS/templates/robots.txt
+src/env
+src/CALS/templates/robots.txt
+src/static
