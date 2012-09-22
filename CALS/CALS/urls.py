@@ -6,29 +6,6 @@ from CALS.feeds.feeds import *
 from django.contrib import admin
 admin.autodiscover()
 
-translation_feeds = { 
-        'exercises': NewTranslationExerciseFeed,
-        'new': NewTranslationFeed,
-}
-
-language_feeds = {
-        'last_modified': UpdatedLanguagesFeed,
-        'newest': NewestLanguagesFeed,
-}
-
-people_feeds = {
-        'recent': RecentlyJoinedFeed,
-        'all': AllPeopleFeed,
-}
-
-all_feeds = {
-        'all': AllFeed,
-}
-
-comment_feeds = {
-        'comments': RecentCommentsFeed,
-}
-
 thankyou_params = {
         'template': 'cals/thankyou.html', 
         'extra_context': { 
@@ -72,12 +49,14 @@ todo_params = {
 }
 
 urlpatterns = patterns('django.contrib.syndication.views',
-    (r'^feeds/translations/(.*)/$', 'feed', {'feed_dict': translation_feeds}),
-    (r'^feeds/languages/(.*)/$', 'feed', {'feed_dict': language_feeds}),
-    (r'^feeds/people/(.*)/$', 'feed', {'feed_dict': people_feeds}),
-    (r'^feeds/(\w*)/$', 'feed', {'feed_dict': comment_feeds}),
-    (r'^feeds/(.*)/$', 'feed', {'feed_dict': all_feeds}),
-#    (r'^feeds/all/$', 'feed', {'feed_dict': {'all': AllFeed,},}),
+    (r'^feeds/translations/exercises/$',    NewTranslationExerciseFeed()),
+    (r'^feeds/translations/new/$',          NewTranslationFeed()),
+    (r'^feeds/languages/last_modified/$',   UpdatedLanguagesFeed()),
+    (r'^feeds/languages/newest/$',          NewestLanguagesFeed()),
+    (r'^feeds/people/recent/$',             RecentlyJoinedFeed()),
+    (r'^feeds/people/all/$',                AllPeopleFeed()),
+    (r'^feeds/comments/$',                  RecentCommentsFeed()),
+    (r'^feeds/all/$',                       AllFeed()),
 )
 
 urlpatterns += patterns('',
