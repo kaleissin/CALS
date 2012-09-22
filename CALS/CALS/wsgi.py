@@ -15,9 +15,6 @@ framework.
 """
 import os, sys
 
-from . import SITE_ROOT
-sys.path.append(SITE_ROOT)
-
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "CALS.settings")
 
 def application(environ, start_response):
