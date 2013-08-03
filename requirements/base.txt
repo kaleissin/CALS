@@ -1,0 +1,12 @@
+Django==1.5.1
+Interlinears
+psycopg2
+django-taggit
+django-voting
+nano==0.5
+pygooglechart
+python-memcached
+ipython
+django-tag-tools
+
+# Has no setup.py # -e svn+http://django-countries.googlecode.com/svn/trunk/#egg=django-countries
