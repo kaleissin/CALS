@@ -1,5 +1,5 @@
 from django.conf.urls.defaults import *
-from django.views.generic.simple import direct_to_template
+from django.views.generic import RedirectView
 
 from CALS.feeds.feeds import *
 
@@ -7,45 +7,28 @@ from django.contrib import admin
 admin.autodiscover()
 
 thankyou_params = {
-        'template': 'cals/thankyou.html', 
-        'extra_context': { 
-                'me': 'thankyou',
-        },
+    'template_name': 'cals/thankyou.html', 
+    'dictionary': {'me': 'thankyou'},
 }
 
-index_params = {
-        'template': 'cals/index.html', 
-        'extra_context': { 
-                'me': 'home',
-        },
+help_params = {
+    'template_name': 'static/help.html',
+    'dictionary': { 'me': 'help', },
+}
+
+help_rst_quickref_params = {
+    'template_name': 'static/rst_quickref.html',
+    'dictionary': { 'me': 'help', },
+}
+
+robots_txt_params = {
+    'template_name': 'robots.txt',
+    'content_type': 'text/plain',
 }
 
 login_params = {
-        'template': 'loggedin.html', 
-        'extra_context': { 
-                'me': 'home',
-        },
-}
-
-privacy_params = {
-        'template': 'cals/privacy.html', 
-        'extra_context': { 
-                'me': 'privacy',
-        },
-}
-
-copyright_params = {
-        'template': 'cals/copyright.html', 
-        'extra_context': { 
-                'me': 'copyright',
-        },
-}
-
-todo_params = {
-        'template': 'cals/TODO.html', 
-        'extra_context': { 
-                'me': 'todo',
-        },
+    'template_name': 'loggedin.html', 
+    'dictionary': { 'me': 'home', },
 }
 
 urlpatterns = patterns('django.contrib.syndication.views',
@@ -60,29 +43,21 @@ urlpatterns = patterns('django.contrib.syndication.views',
 )
 
 urlpatterns += patterns('',
+    # red tape
+    (r'^favicon\.ico$',         RedirectView.as_view(
+                                        **{'url': '/static/img/favicon.ico'})),
+    (r'^robots\.txt$',          'django.shortcuts.render', robots_txt_params),
+ 
+    (r'^thankyou$',             'django.shortcuts.render', thankyou_params),
+    (r'^help/rst_quickref$',    'django.shortcuts.render', help_rst_quickref_params),
+    (r'^help/',                 'django.shortcuts.render', help_params),
+)
+
+urlpatterns += patterns('',
     (r'^admin/doc/',            include('django.contrib.admindocs.urls')),
     (r'^admin/',                include(admin.site.urls)),
 
-    # red tape
-    (r'^favicon\.ico$',         'django.views.generic.simple.redirect_to', {
-                                'url': '/media/img/favicon.ico'}),
-    (r'^robots\.txt$',          direct_to_template, {
-                                'template': 'robots.txt', 
-                                'mimetype': 'text/plain'}),
-
-    (r'^thankyou$',             direct_to_template, thankyou_params),
-    (r'^help/rst_quickref$',    direct_to_template, {
-                                'template': 'static/rst_quickref.html', 
-                                'extra_context': 
-                                        { 'me': 'help'}
-                                }),
-    (r'^help/',                 direct_to_template, {
-                                'template': 'static/help.html',
-                                'extra_context': 
-                                        { 'me': 'help'}
-                                }),
-
-    (r'^logged_in$',            direct_to_template, login_params),
+    (r'^logged_in$',            'django.shortcuts.render', login_params),
     (r'^logout$',               'django.contrib.auth.views.logout_then_login'),
 
     (r'^account/',              include('nano.user.urls')),
@@ -95,7 +70,7 @@ urlpatterns += patterns('',
     (r'^translation/',          include('translations.urls')),
     (r'^badge/',                include('nano.badge.urls')),
     (r'^faq/',                  include('nano.faq.urls')),
-    (r'^mark/',                  include('nano.mark.urls')),
+    (r'^mark/',                 include('nano.mark.urls')),
     (r'^',                      include('cals.urls')),
 
 )

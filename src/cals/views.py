@@ -24,7 +24,6 @@ from django.template import loader, Context
 from django.template.loader import render_to_string
 from django.views.generic.list_detail import object_list
 from django.views.generic.create_update import delete_object
-from django.views.generic.simple import direct_to_template
 from django.utils.encoding import smart_unicode
 from django.db.models import Q, Count
 
@@ -784,7 +783,7 @@ def list_languages(request, *args, **kwargs):
     #if not kwargs or kwargs.get('action', None) is None:
     form = SearchForm()
     data = {'me': me, 'searchform': form }
-    return direct_to_template(request, 'cals/language_index.html', extra_context=data)
+    return render_page(request, 'cals/language_index.html', data)
 
 def language_cloud(request, *args, **kwargs):
     me = 'language'
