@@ -1,0 +1,6 @@
+*.bash
+*.pyc
+*.swp
+*~
+*.conf
+.git*
