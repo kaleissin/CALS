@@ -1,23 +1,9 @@
 from django.conf.urls.defaults import *
-from django.contrib.auth.models import User
-
-from cals.people.models import Profile
+from django.views.generic.base import RedirectView
 
 # people
-people_list_dict = {
-        'queryset': Profile.objects.filter(user__is_active=True).order_by('display_name'),
-        'extra_context': { 'me': 'people' },
-}
-
-people_detail_dict = {
-        'queryset': User.objects.filter(is_active=True).select_related(),
-        'extra_context': { 'me': 'people' },
-}
-
-# people
-urlpatterns = patterns('django.views.generic',
-        (r'^$',                              'simple.redirect_to', {'url': '/people/p1/'}),
-        #(r'^p(?P<page>[0-9]+)/$',            'list_detail.object_list', dict(people_list_dict)),
+urlpatterns = patterns('',
+        (r'^$',                       RedirectView.as_view(url='/people/p1/')),
 )
 
 urlpatterns += patterns('cals.views',
