@@ -231,7 +231,7 @@ a:hover {
 }
 
 a.ext {
-    background: transparent url(/media/img/external_link.gif) no-repeat right center;
+    background: transparent url(/static/img/external_link.gif) no-repeat right center;
     padding-right: 13px;
 }
 
@@ -334,7 +334,7 @@ li+li { margin-top: 1ex; }
 .even, .tweet { background: #dec }
 #header, #footer { 
     padding: 1ex;
-    background: url(/media/img/background.jpg) no-repeat;
+    background: url(/static/img/background.jpg) no-repeat;
     background-color: #bcd7ae;
 }
 .right { text-align: right; }
@@ -469,7 +469,7 @@ input[type=text] {
     width: 10em;
 }
 input#id_openid_url {
-    background: url(/media/img/login-openid-bg.gif) no-repeat;
+    background: url(/static/img/login-openid-bg.gif) no-repeat;
     background-position: 0 50%;
     padding-left: 16px;
     width: 25em;

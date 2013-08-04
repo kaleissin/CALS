@@ -1,4 +1,4 @@
-{% if user.is_authenticated %}
+{% if user.is_authenticated %}{% load static from staticfiles %}
 <form class="mark {{ type }}" id="{{ unique_id }}" action="{% url toggle_mark %}" method="post">
 {% csrf_token %}
 <input name="type" value="{{ type }}" type="hidden" />
@@ -6,9 +6,9 @@
 <input name="model_pk" value="{{ model_pk }}" type="hidden" />
 <input name="model_type" value="{{ model_type }}" type="hidden" />
 {% if status %}
-<input type="image" src="/media/img/star_on.png" /> Favorite
+<input type="image" src="{% static "img/star_on.png" %}" /> Favorite
 {% else %}
-<input type="image" src="/media/img/star_off.png" /> Favorite 
+<input type="image" src="{% static "img/star_off.png" %}" /> Favorite 
 {% endif %}
 </form>
 {% endif %}

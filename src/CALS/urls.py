@@ -1,4 +1,5 @@
 from django.conf.urls.defaults import *
+from django.conf import settings
 from django.views.generic import RedirectView
 
 from CALS.feeds.feeds import *
@@ -41,6 +42,10 @@ urlpatterns = patterns('django.contrib.syndication.views',
     (r'^feeds/comments/$',                  RecentCommentsFeed()),
     (r'^feeds/all/$',                       AllFeed()),
 )
+
+if settings.DEBUG:
+    from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+    urlpatterns += staticfiles_urlpatterns()
 
 urlpatterns += patterns('',
     # red tape

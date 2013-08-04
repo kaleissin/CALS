@@ -33,13 +33,13 @@ from cals import markup_as_restructuredtext
 
 MWF = Feature.MAX_WALS_FEATURE
 
-MEDIA_URL = ''
-if settings.MEDIA_URL:
-    MEDIA_URL = settings.MEDIA_URL
+STATIC_URL = ''
+if settings.STATIC_URL:
+    STATIC_URL = settings.STATIC_URL
 
 register = template.Library()
 
-_img_src = os.path.join(MEDIA_URL, 'img') + '/'
+_img_src = os.path.join(STATIC_URL, 'img') + '/'
 _wals_img_src = _img_src + 'WALS.png'
 _wals_img = '<img src="%s" alt="WALS" />' % _wals_img_src
 _wals_path = 'http://wals.info'
@@ -118,7 +118,7 @@ def currently_logged_in():
 
 @register.simple_tag
 def graphline(barsize):
-    string = u'<img src="%simg/gradient.png" width="%%i" height="16" />' % MEDIA_URL
+    string = u'<img src="%simg/gradient.png" width="%%i" height="16" />' % STATIC_URL
     return string % (int(barsize) * 10)
 
 @register.simple_tag
@@ -260,12 +260,12 @@ restructuredtext.is_safe = True
 
 @register.inclusion_tag('shareicon.html', takes_context=True)
 def shareicon(context):
-    return { 'MEDIA_URL': context['MEDIA_URL'] }
+    return { 'STATIC_URL': context['STATIC_URL'] }
 shareicon.is_safe = True
 
 @register.inclusion_tag('shareicon_library.html', takes_context=True)
 def load_shareicon_library(context):
-    return { 'MEDIA_URL': context['MEDIA_URL'] }
+    return { 'STATIC_URL': context['STATIC_URL'] }
 load_shareicon_library.is_safe = True
 
 # -------------- nano.pm
