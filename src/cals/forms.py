@@ -35,15 +35,20 @@ class TruncCharField(forms.CharField):
         return super(TruncCharField, self).clean(value)
 
 class EditorForm(forms.ModelForm):
-    editors = forms.ModelMultipleChoiceField(queryset=Profile.objects.filter(is_visible=True))
+    editors = forms.ModelMultipleChoiceField(
+            queryset=Profile.objects.filter(is_visible=True),
+            required=False)
 
     class Meta:
         model = Language
         fields = ('editors',)
 
-    def save(self, commit=True, user=None):
+    def clean_editors(self):
         editors = self.cleaned_data['editors']
         self.cleaned_data['editors'] = User.objects.filter(id__in=[e.user_id for e in editors])
+        return self.cleaned_data['editors']
+
+    def save(self, commit=True, user=None):
         return super(EditorForm, self).save(commit)
 
 class SearchForm(forms.Form):

@@ -170,6 +170,7 @@ DJANGO_APPS = (
 THIRD_PARTY_APPS = (
     'taggit',
     'voting',
+    'actstream',
 )
 
 PROJECT_APPS = (
@@ -295,3 +296,7 @@ FORCE_LOWERCASE_TAGS = True
 
 # Nano-settings
 NANO_USER_EMAIL_SENDER = 'kaleissin@gmail.com'
+ACTSTREAM_SETTINGS = {
+
+    'MODELS': ('auth.user', 'cals.language',),
+}

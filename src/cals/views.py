@@ -12,6 +12,7 @@ _LOG = logging.getLogger(__name__)
 _LOG.info(__name__)
 
 from countries.models import Country
+from actstream import action as streamaction
 
 from django.contrib.contenttypes.models import ContentType
 from django.contrib import auth, messages #.authenticate, auth.login
@@ -596,6 +597,7 @@ def create_language(request, lang=None, fvlist=None, clone=False, *args, **kwarg
 
     editorform = EditorForm()
 
+    cloned_from_lang = None
     if clone:
         author = request.user.get_profile().display_name
         name = 'Clone'
@@ -608,6 +610,7 @@ def create_language(request, lang=None, fvlist=None, clone=False, *args, **kwarg
                 'name': name, 
                 'background': background,
                 'author': author}) 
+        cloned_from_lang = lang
     else:
         langform = LanguageForm()
 
@@ -640,6 +643,10 @@ def create_language(request, lang=None, fvlist=None, clone=False, *args, **kwarg
 
             # Final save
             lang.save(user=user)
+            if cloned_lang:
+                streamaction.send(request.user, verb='added the language', action_object=lang)
+            else:
+                streamaction.send(request.user, verb='cloned the language', action_object=cloned_from_lang, target=lang)
             messages.info(request, u'You successfully added the language %s to CALS' % lang.name)
             return HttpResponseRedirect('/language/%s/' % lang.slug)
         else:
@@ -653,7 +660,9 @@ def create_language(request, lang=None, fvlist=None, clone=False, *args, **kwarg
             'categories': cats, 
             'me': me, 
             'editorform': editorform,
-            'state': state,}
+            'state': state,
+            'clone': clone,
+    }
     return render_page(request, 'language_form.html', data)
 
 @login_required
@@ -674,6 +683,39 @@ def clone_language(request, *args, **kwargs):
 
     return payload
 
+def _change_editors_managers(request, manager_then, lang, langform):
+    # editors and managers
+    if request.user == manager_then:
+        editorform = EditorForm(data=request.POST, instance=lang)
+        if editorform.is_valid():
+            editors_then = set(lang.editors.all())
+            lang = editorform.save()
+            editors_now = set(lang.editors.all())
+            new_editors = editors_now - editors_then
+            _LOG.debug('New editors? %s', new_editors)
+            for new_editor in new_editors:
+                streamaction.send(manager_then, verb='grants edit rights to', action_object=new_editor, target=lang)
+            former_editors = editors_then - editors_now
+            _LOG.debug('Former editors? %s', former_editors)
+            for former_editor in former_editors:
+                streamaction.send(manager_then, verb='revokes edit rights from', action_object=former_editor, target=lang)
+            manager_now = lang.manager
+            _LOG.debug('Manager then: %s', manager_then)
+            _LOG.debug('Manager now: %s', manager_now)
+            if manager_now != manager_then:
+                streamaction.send(manager_then, verb='retires as manager of', target=lang)
+                streamaction.send(manager_now, verb='is the new manager of', target=lang)
+        else:
+            _LOG.debug('Editorform invalid: %s', editorform)
+        if not 'manager' in langform.cleaned_data:
+            lang.manager = manager_then
+    else:
+        _LOG.debug('User %s may not manage %s, manager is %s', request.user, lang, manager_then)
+        # Just in case: must be manager also in view in order to
+        # change who can be manager
+        lang.manager = manager_then
+    return lang
+
 @login_required
 def change_language(request, *args, **kwargs):
     me = 'language'
@@ -690,11 +732,12 @@ def change_language(request, *args, **kwargs):
     langform = LanguageForm(instance=lang)
     #moreinfoformset = ExternalInfoFormSet(queryset=lang.externalinfo.all())
     #profile = user.get_profile()
+    manager = lang.manager
     if is_manager:
         editorform = EditorForm(instance=lang)
     else:
         editorform = None
-    _LOG.info('User is manager: %s' % user == lang.manager)
+    _LOG.info('User is manager: %s', user == lang.manager)
     # sort values into categories
     cats = make_feature_list_for_lang(lang)
 
@@ -702,26 +745,15 @@ def change_language(request, *args, **kwargs):
         langform = LanguageForm(data=request.POST, instance=lang, initial=request.POST)
         try:
             if langform.is_valid():
+                new_lang = langform.save(commit=False)
+                _LOG.info('Actually changing %s!', lang)
 
-                # editors and managers
-                old_manager = lang.manager
-                lang = langform.save(commit=False)
-                if is_manager:
-                    editorform = EditorForm(data=request.POST, instance=lang)
-                    editors = lang.editors
-                    if editorform.is_valid():
-                        editors = editorform.save()
-                        _LOG.debug('editors after save: %s' % editors)
-                    if not 'manager' in langform.cleaned_data:
-                        lang.manager = old_manager
-                else:
-                    # Just in case: must be manager also in view in order to
-                    # change who can be manager
-                    lang.manager = old_manager
+                lang = _change_editors_managers(request, manager, new_lang, langform)
 
                 lang.last_modified_by = user
 
-                # greeting
+                # break out in separate function
+                # greeting 
                 greetingexercise = TranslationExercise.objects.get(id=1)
                 new_greeting = lang.greeting
                 try:
@@ -752,6 +784,7 @@ def change_language(request, *args, **kwargs):
                 # Final save
                 lang.save(user=user)
                 lang, tags_changed = set_tags_for_lang(langform.cleaned_data['tags'], lang)
+                streamaction.send(user, verb='updated', action_object=lang)
                 return HttpResponseRedirect('.')
             else:
                 error = "Couldn't change language-description: " + str(langform.errors)

@@ -7,6 +7,7 @@ pygooglechart
 python-memcached
 ipython
 django-tag-tools
+actstream
 
 -e git://github.com/kaleissin/django-nano.git#egg=django-nano
 
