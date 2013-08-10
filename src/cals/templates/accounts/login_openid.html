@@ -1,6 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
   "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<html>{% load url from future %}
 <head>
 <title>OpenID Sign In</title>
 <style type="text/css">
@@ -20,7 +20,7 @@ input.openid {
     </table>
 </form>
 
-<p><a href="{% url openid_auth.views.login_auth %}">Username/Password Login</a></p>
+<p><a href="{% url 'openid_auth.views.login_auth' %}">Username/Password Login</a></p>
 
 </body>
 </html>
