@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load cals_tags %}
+{% load other_tags %}
 {% block title %}
 Home
 {% endblock title %}
@@ -13,29 +14,6 @@ Home
 <link rel="alternate" type="application/atom+xml" title="Recent comments" href="/feeds/comments/" />
 <meta name="y_key" content="0f4f0fec0e8eceb3" />
 <meta name="verify-v1" content="Ogg2GMii+ZXlMGMqUGIf2PDuCjhxfQCFiTpf9T6159o=" />
-{% comment %}
-<!--
-<script language="javascript" type="text/javascript">
-
-function flipsignup(donew)
-{
-var url = '/inc_entrybox.php?newaccount=' + donew;
-basic_ajax_updater(url, '', 'entrybox');
-}
-
-function focusOnSignup()
-{
-if (document.signup)
-    {
-    document.signup.formusername.focus();
-    document.signup.formusername.selectionStart = 0;
-    document.signup.formusername.selectionEnd = document.signup.formusername.textLength;
-    }   
-}
-
-</script>
--->
-{% endcomment %}
 {% endblock head %}{% block no_submenu %}{% endblock no_submenu %}
 {% block loginbox %}
     <form method="post" action=".">
@@ -85,6 +63,14 @@ if (document.signup)
 </div>
 
 <div id="content">
+
+    {% if "new_years_eve"|special_date or "new_year"|special_date%}
+    {% include 'new-year' %}
+    {% else %}
+    {% if "christmas"|special_date %}
+    {% include 'christmas' %}
+    {% endif %}
+    {% endif %}
 
     <div class="newsbox">
     <h1>Latest news
