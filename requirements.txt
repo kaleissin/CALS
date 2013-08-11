@@ -1,6 +1,0 @@
-django
-pygooglechart
-django-voting
-django-tagging
-
--e svn+http://django-countries.googlecode.com/svn/trunk/#egg=django-countries

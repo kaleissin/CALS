@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+{% load url from future %}
+{# {% load nano_web20_tags %} #}
+{% load cals_tags %}
+{% load badge_tags %}
+{% block title %}{{ object.get_profile.display_name|default:object.username }}'s page{% endblock title %}
+{% block submenu %}
+<ul>
+    <li><a href="../">All people</a></li>
+    <li><b>Details</b></li>
+    {% ifequal user.id object.id %}
+    <li><a href="./change">Change</a></li>
+    {% endifequal %}
+</ul>
+{% if user.is_authenticated %}
+<hr />
+{% ifequal user.id object.id %}
+    <ul>
+        <li><a href="./pm/archive/">Archived messages</a></li>
+        <li><a href="./pm/sent/">Sent messages</a></li>
+    </ul>
+    {% if user.marks.faved.count %}
+    <hr />
+    <h4>Favorites</h4>
+    <ul>
+    {% for mark in user.marks.faved %}
+        <li><a href="{{ mark.content_object.get_absolute_url }}">{{ mark.content_object }}</a></li>
+    {% endfor %}
+    </ul>
+    {% endif %}
+{% else %}
+    <ul>
+        <li><a href="./pm/add{% if whereami %}?next={{ whereami }}{% endif %}">Send {{ object.username }} a message</a></li>
+    </ul>
+{% endifequal %}
+{% endif %}
+{% endblock submenu %}
+{% block content %}
+    {% ifequal profile.user user %}
+    <div class="help">
+    {% if not profile.seen_profile %}
+    <h1>Welcome to CALS</h1>
+
+    <p>You have now been signed up, logged in, and can start using
+    CALS.</p>
+    {% endif %}
+
+    <p>This is your own profile-page. If you want to add or change info about
+    yourself, click <a href="./change">Change</a> in the menu to the
+    right.</p>
+
+    <p>On every page you will find your username, {{ user.username }}, 
+    (or display name{% if profile.display_name %}, {{ profile.display_name }}, {% endif %} 
+    if you have set this) in the upper right corner of every page, like
+    this: {% showuser profile.user %}. Clicking on that will take you
+    back here. You can also add languages and change any of the public
+    ones, add and change your own translations and send private messages
+    to the other people here.</p>
+
+    <p>CALS uses <a href="http://gravatar.com/">Gravatar</a>.
+    If you do not store an e-mail address here, or you haven't
+    <a href="http://en.gravatar.com/site/signup/">set up a gravatar</a>,
+    one will be generated for you.</p>
+    </div>
+    {% endifequal %}
+
+    <h1>{% gravatar object 20 %} {{ profile.display_name|default:object.username }}</h1>
+    <table>
+        <tr><th>Username:</th><td>{{ object.username }}</td></tr>
+        <tr><th>Link:</th><td><a href="{{ profile.get_absolute_url }}">{{ request.SITE }}{{ profile.get_absolute_url }}</a></td></tr>
+        {% ifequal user.username object.username %}
+        <tr class="private"><th>Email:</th>
+            <td>{% if object.email %}{{ object.email }}{% else %}None registered{% endif %} 
+                {# <span class="message">Your email-address is only shown to you</span></td> #}
+        </tr>
+        {% comment %}
+        <tr><th>Secret:</th>
+            <td>{% if object.secret %}{{ object.secret }}{% else %}None registered{% endif %} 
+                <span class="message">Your secret is only shown to you</span></td>
+        </tr>
+        {% endcomment %}
+        {% endifequal %}
+        {% if profile.homepage %}
+        <tr>
+            <th>Homepage:</th>
+            <td><a class="ext" href="{{ profile.homepage }}">{{ profile.homepage_title|default:profile.homepage }}</a></td>
+        </tr>
+        {% endif %}
+        {% if profile.country %}
+        <tr>
+            <th>Country:</th>
+            <td>{{ profile.country }}
+            </td>
+        </tr>
+        {% endif %}
+        {% if profile.native_tongue %}
+        <tr>
+            <th>L1/First language:</th>
+            <td>{{ profile.native_tongue }}
+            </td>
+        </tr>
+        {% endif %}
+        {% comment %}
+        {% for web20acc in user.web20.all %}
+        <tr>
+            <th>{{ web20acc.type }}:</th>
+            <td>{% if web20acc.username %}<a href="http://twitter.com/{{ web20acc.username }}">{{ web20acc.username }}</a>{% else %}None registered{% endif %}</td>
+        </tr>
+        {% endfor %}
+        {% if profile.twittername %} 
+        <tr><th>Latest tweet:</th>
+            <td class="tweet">
+                <ul id="twitter_update_list"></ul>
+            </td>
+        </tr>
+        {% endif %}
+        <tr>
+            <th>Also on:</th>
+            <td>{% web20accounts user %}</td>
+        </tr>
+        {% endcomment %}
+        <tr><th>Joined:</th>
+            <td>{{ object.date_joined|date:"Y-m-d H:i T" }}</td>
+        </tr>
+        {% if object.languages.count %}
+        <tr><th>Languages added:</th>
+            <td>
+                <ul>
+                {% for language in object.languages.all %}
+                    <li><a href="/language/{{ language.slug }}/">{{ language }}</a></li>
+                {% endfor %}
+                </ul>
+            </td>
+        </tr>
+        {% endif %}
+        {% if object.manages.count %}
+        <tr><th>Manager for:</th>
+            <td>
+                <ul>
+                {% for language in object.manages.all %}
+                    <li><a href="/language/{{ language.slug }}/">{{ language }}</a></li>
+                {% endfor %}
+                </ul>
+            </td>
+        </tr>
+        {% endif %}
+        {% if object.edits.all.count %}
+        <tr><th>Editor for:</th>
+            <td>
+                <ul>
+                {% for language in object.edits.all %}
+                    <li><a href="/language/{{ language.slug }}">{{ language }}</a></li>
+                {% endfor %}
+                </ul>
+            </td>
+        </tr>
+        {% endif %}
+        {% if object.translations.count %}
+        <tr>
+            <th>Translations ({{ object.translations.count }}):</th>
+            <td>
+                <table>
+                {% for translation in object.translations.all %}
+                    <tr class="{% cycle odd,even %}">
+                        <th>{{ translation.exercise }}</th>
+                        <td>{{ translation.language }}</td>
+                        <td><a href="/translation/language/{{ translation.language.slug }}/" class="plaintext">{{ translation }}</a></td>
+                    </tr>
+                {% endfor %}
+                </table>
+            </td>
+        </tr>
+        {% endif %}
+        {% if object.badges.count %}
+        <tr>
+            <th>Badges earned ({{ object.badges.count }}):</th>
+            <td>
+            {% for badge_row in object.badges.all|partition %}
+            <div class="badge-list">
+            {% for badge in badge_row %}{% show_badge badge %}{% endfor %}
+            </div>
+            {% endfor %}
+            </td>
+        </tr>
+        {% endif %}
+        {% ifequal user.username object.username %}
+        <tr class="private">
+            <th>Private messages</th>
+            <td>
+            {% if pms %}
+            {% for pm in pms %}
+            <div class="pm">
+            <div class="plaintext">{{ pm.text }}</div>
+            <div class="pm-footer">
+            sent by {% showuser pm.sender %} at {{ pm.sent }} 
+            | <a href="{% url 'add_pm' object_id=pm.sender.id %}{% if whereami %}?next={{ whereami }}{% endif %}">send pm</a></a>
+            | <a href="{% url 'archive_pm' object_id=pm.recipient.id,msgid=pm.id %}{% if whereami %}?next={{ whereami }}{% endif %}">archive</a></a>
+            | <a href="{% url 'delete_pm' object_id=pm.recipient.id,msgid=pm.id %}{% if whereami %}?next={{ whereami }}{% endif %}">delete</a></a>
+            </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            None here, {{ pms_archived.count }} in the archive.
+            {% endif %}
+            </td>
+        </tr>
+        {% endifequal %}
+    </table>
+    {% comment %}
+    {% if user.web20.type %}
+    <script type="text/javascript" src="http://twitter.com/javascripts/blogger.js"></script>
+    <script type="text/javascript" src="http://twitter.com/statuses/user_timeline/{{ profile.twittername }}.json?callback=twitterCallback2&count=1"></script>
+    {% endif %}
+    {% endcomment %}
+{% endblock content %}

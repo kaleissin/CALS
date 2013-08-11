@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load url from future %}
+{% load cals_tags %}
+{% block submenu %}
+<ul>
+<li>Back to {% showuser user %}</li>
+<li>{% ifequal action 'received' %}<b>Received</b>{% else %}<a href="{% url 'show_pms' object_id=user.id %}">Received</a>{% endifequal %}</li>
+<li>{% ifequal action 'archive' %}<b>Archive</b>{% else %}<a href="{% url 'show_archived_pms' object_id=user.id %}">Archive</a>{% endifequal %}</li>
+<li>{% ifequal action 'sent' %}<b>Sent</b>{% else %}<a href="{% url 'show_sent_pms' object_id=user.id %}">Sent</a>{% endifequal %}</li>
+</ul>
+{% endblock submenu %}
+{% block title %}{{ user }} – Private messages: sent{% endblock title %}
+{% block content %}
+    <h1>Messages (sent)</h2>
+    {% for pm in pms %}
+    <div class="pm">
+        <div class="plaintext">{{ pm.text }}</div>
+        <div class="pm-footer">
+        sent to <a href="/people/{{ pm.recipient.id }}/">{{ pm.recipient }}</a> 
+        at {{ pm.sent|date:"Y-m-d H:i:s" }}
+        | <a href="{% url 'add_pm' object_id=pm.recipient.id %}{% come_back %}">send pm</a>
+        | <a href="{% url 'delete_pm' object_id=pm.recipient.id,msgid=pm.id %}{% come_back %}">delete</a>
+        </div>
+    </div>
+    {% endfor %}
+{% endblock content %}
+

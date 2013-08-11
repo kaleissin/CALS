@@ -1,0 +1,15 @@
+{% load url from future %}
+{% if user.is_authenticated %}
+<form class="mark {{ type }}" id="{{ unique_id }}" action="{% url 'toggle_mark' %}" method="post">
+{% csrf_token %}
+<input name="type" value="{{ type }}" type="hidden" />
+<input name="next" value="{{ next }}" type="hidden" />
+<input name="model_pk" value="{{ model_pk }}" type="hidden" />
+<input name="model_type" value="{{ model_type }}" type="hidden" />
+{% if status %}
+<input type="submit" value="Unmark" />
+{% else %}
+<input type="submit" value="Mark" />
+{% endif %}
+</form>
+{% endif %}
