@@ -84,7 +84,7 @@ class TranslationExercise(models.Model):
             self.slug = slugify(self.name)
             if user:
                 self.added_by = user
-        self.added = datetime.now()
+            self.added = datetime.now()
         super(TranslationExercise, self).save(*args, **kwargs)
 
 class Translation(Interlinear):
@@ -103,7 +103,7 @@ class Translation(Interlinear):
         self.slug = pattern % {
                 'exercise': self.exercise.slug, 
                 'language': self.language.slug,
-                'translator': self.translator.username }
+                'translator': self.translator.profile.slug }
 
     class Meta:
         db_table = 'cals_translation'

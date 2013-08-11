@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load cals_tags %}
+{% load nano_mark_tags %}
+{% block title %}Translation of "{{ translation.exercise.name }}" by {{ user }}{% endblock title %}
+{% block submenu %}
+<ul>
+    <li><a href="/translation/">All</a></li>
+    <li><a href="/translation/{{ translation.exercise.slug }}/">All for <b>{{ translation.exercise }}</b></a></li>
+    <li><a href="/translation/{{ translation.exercise.slug }}/language/{{ translation.language.slug }}/">All for <b>{{ translation.exercise }}</b> in <b>{{ translation.language }}</b></a></li>
+    <li><a href="/translation/{{ translation.exercise.slug }}/language/{{ translation.language.slug }}/{{ user.slug }}/">Details</a></li>
+    {% ifequal user translation.translator %}
+    <li><a href="../change">Change</a></li>
+    <li><b>Delete</b></li>
+    {% endifequal %}
+</ul>
+{% endblock submenu %}
+{% block content %}
+<h2>Really delete this translation of "{{ translation.exercise.name }}"
+    ({{ translation.exercise.category }}) into {{ translation.language }}?</h2>
+
+<table>
+    <tr>
+        <th>Original:</th>
+        <th class="plaintext">{{ translation.exercise.exercise }}</th>
+    </tr>
+    <tr>
+        <th>Translation:</th>
+        <td><div class="plaintext">{{ translation }}</div></td>
+    </tr>
+    <tr>
+        <th>Interlinear:</th>
+        <td>{% if translation.il_xhtml %}{{ translation.il_xhtml|safe }} {% else %}{% if translation.interlinear %}<pre>{{ translation.interlinear }}</pre>{% else %}Not added{% endif %}{% endif %}</td>
+    </tr>
+</table>
+
+<form method="post" action="">
+    {% csrf_token %}
+    <input type="submit" value="Yes, delete it" />
+    <a href="/translation/{{ translation.exercise.slug }}/language/{{ translation.language.slug }}/{{ user.username }}/">No, keep it</a>
+</form>
+
+{% endblock content %}

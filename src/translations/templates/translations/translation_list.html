@@ -2,7 +2,7 @@
 {% load cals_tags %}
 {% block submenu %}
 <ul>
-    <li><b>All</b></li>
+    <li><b>All exercises, with newest translation</b></li>
     {% comment %}
     <li><b>All</b></li>
     {% endcomment %}
@@ -17,15 +17,26 @@
     {% if object.translations.count %}
     <dd>
         <table>
+            <tr> <th class="langname">English:</th><td class="plaintext">{{ object.exercise }}</td></tr>
+            <tr>
+            {% with object.translations.latest as translation %}
+                <th class="langname"><a href="{{ object.slug }}/language/{{ translation.language.slug }}/{{ translation.translator.profile.slug }}/">{{ translation.language }}</a>:</th>
+                <td class="plaintext">{% ifequal translation.translator user %}<a href="/translation/{{ translation.exercise.slug }}/language/{{ translation.language.slug }}/change">{{ translation }}</a>{% else %}{{ translation }}{% endifequal %}</td>
+            {% endwith %}
+            </tr>
+        </table>
+    {% comment %}
+        <table>
         {% for translation in object.translations.all %}
             <tr>
-                <td class="langname"><a href="{{ object.slug }}/language/{{ translation.language.slug }}/{{ translation.translator.username }}/">{{ translation.language }}</a>:</td>
+                <td class="langname"><a href="{{ object.slug }}/language/{{ translation.language.slug }}/{{ translation.translator.profile.slug }}/">{{ translation.language }}</a>:</td>
                 <td>
 <div class="plaintext">{% ifequal translation.translator user %}<a href="/translation/{{ translation.exercise.slug }}/language/{{ translation.language.slug }}/change">{{ translation }}</a>{% else %}{{ translation }}{% endifequal %}</div>
                 </td>
             </tr>
         {% endfor %}
         </table>
+    {% endcomment %}
     </dd>
     {% endif %}
 </dl>

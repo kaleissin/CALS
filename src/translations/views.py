@@ -189,7 +189,7 @@ def show_translationexercise(request, template_name='translations/translationexe
             extra_context=extra_context)
 
 @login_required
-def delete_languagetranslations(request, template_name='delete.html', *args, **kwargs):
+def delete_languagetranslations(request, template_name='translations/delete_translation.html', *args, **kwargs):
     """Delete a specific translation for a specific language."""
 
     me = 'translation'
@@ -197,8 +197,18 @@ def delete_languagetranslations(request, template_name='delete.html', *args, **k
     exercise = get_translationexercise(**kwargs)
     trans = Translation.objects.get(language=lang, translator=request.user, exercise=exercise)
     extra_context = {'me': me,}
-    return delete_object(request, model=Translation, object_id=trans.id,
-            template_name=template_name,
-            post_delete_redirect="/translation/language/%s/" % lang.slug, 
-            extra_context=extra_context)
+    final_page = "/translation/language/%s/" % lang.slug
+    _LOG.info('About to delete %s, (%s)', trans, request.method)
+    if request.method == 'POST':
+        _LOG.info('Deleting %s', trans)
+        trans.delete()
+        return HttpResponseRedirect(final_page)
+    elif request.method == 'GET':
+        _LOG.info('Attempting to use generic view')
+        return delete_object(request, model=Translation, object_id=trans.id,
+                template_name=template_name,
+                post_delete_redirect=final_page,
+                template_object_name='translation',
+                login_required=True,
+                extra_context=extra_context)
 
