@@ -179,7 +179,7 @@ PROJECT_APPS = (
     'countries',
 #    'languages',
     'phonemes',
-#    'wordlist',
+    'wordlist',
 
     'nano.blog',
     'nano.badge',

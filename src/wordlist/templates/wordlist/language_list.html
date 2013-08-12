@@ -1,0 +1,16 @@
+{% extends 'wordlist/base.html' %}
+
+{% block submenu %}
+<ul>
+    <li><b>All languages</b></li>
+</ul>
+{% endblock submenu %}
+
+{% block content %}
+<ul>
+{% for language in languages %}
+<li><a href="/word/language/{{ language.slug }}/">{{ language }}</a></li>
+{% endfor %}
+</ul>
+
+{% endblock content %}

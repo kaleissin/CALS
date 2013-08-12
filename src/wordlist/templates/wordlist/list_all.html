@@ -1,0 +1,101 @@
+{% extends 'wordlist/base.html' %}
+
+{% block submenu %}
+<ul>
+    <li><b>All lists</b></li>
+</ul>
+{% endblock submenu %}
+
+{% block content %}
+
+<h1>Swadesh lists</h1>
+<dl>
+    <dt><a href="{% url swadesh100_list %}">Swadesh 100</a></dt>
+    <dd>This is the "Original final Swadesh list" as per <a
+    href="http://en.wikipedia.org/wiki/Swadesh_list#Original_final_Swadesh_list_.281971:283.2C_postmortem.29">Wikipedia</a>.</dd>
+    <dt><a href="{% url swadesh207_list %}">Swadesh 207</a></dt>
+    <dd>The Swadesh list of 207 terms is what you'll usually find if you
+    go searching for Swadesh lists. It is not on Wikipedia however.</dd>
+    <dt><a href="{% url yakhontov_list %}">Yakhontov</a></dt>
+    <dd>Based on the Swadesh 207 list, this list has 35 words.</dd>
+    <dt><a href="{% url holman_list %}">Holman list</a></dt>
+    <dd>Based on the Swadesh 100 list, this list has 40 highly frequent
+    words.</dd>
+</dl>
+
+<h1>The Buck lists</h1>
+
+<p>The Buck lists all started with the book <i>A dictionary of
+    grammatical terms in linguistics</i> by <i>Carl Darling Buck</i>, published 
+by <a href="http://press.uchicago.edu/ucp/books/book/chicago/D/bo3630267.html">The
+    University of Chicago Press</a> in 1949. The words in the book are
+divided into 22 categories, and within each category each word, or
+sense, has its own identifying symbol, the Buck number.</p>
+
+<p>The Buck number consists of two groups of digits, the first group is
+the category and the second is the id within that category. The groups
+are usually separated by a dot ('.').</p>
+
+<dl>
+    <dt><a href="{% url buck_1949_list %}">Buck 1949</a></dt>
+    <dd>These are the words from the book itself. Buck numbers that
+    originates from the book are prefixed with a 'b'. Because b13.31,
+    b13.53, b14.72, b18.14, b19.352 and b19.71 aren't senses per se but
+    overviews of several other senses, they are not included in this
+    list.</dd>
+
+    <dt><a href="{% url buck_ids_list %}">Buck IDS</a></dt>
+    <dd>The Buck categories and words were later used as the basis for
+    <a href="http://lingweb.eva.mpg.de/ids/">The Intercontinental
+        Dictionary Series (IDS)</a>. IDS only used a subset of the words
+    from the book. However, some new words were added and others were
+    given new Buck numbers. Buck numbers from IDS are prefixed with
+    an 'i'.</dd>
+
+    <dt><a href="{% url buck_wold_list %}">Buck WOLD</a></dt>
+    <dd>The IDS-list was then used as the basis for <a
+        href="http://wold.livingsources.org/">the World Loanword
+        Database (WOLD)</a>. WOLD also increased the number of senses
+    and added two additional categories: <strong>23 Modern world</strong>
+    and <strong>24 Miscellaneous function words</strong>. The purpose of 
+    the list was to track the path of loan-words: which languages borrow
+    which words from which other languages. Many of the added words are
+    therefore highly culture-specific, so handle with care. Buck numbers
+    from IDS are prefixed with a 'w'.</dd>
+
+    <dt><a href="{% url buck_common_list %}">Minimum Buck</a></dt>
+    <dd>Only the senses that all three Buck-lists have in common.</dd>
+
+    <dt><a href="{% url buck_list %}">Maximum Buck</a></dt>
+    <dd>Every sense from every Buck-list.</dd>
+
+    <dt><a href="{% url buck_only_1949_list %}">Only words unique to Buck 1949</a></dt>
+    <dd>They had a thing for castrated farm animals in the olden days.
+    Notice also that the numeral three is used as a stand-in for things
+    one can do with numbers.</dd>
+
+    <dt><a href="{% url buck_only_ids_list %}">Only words unique to IDS</a></dt>
+    <dd>Not a lot.</dd>
+
+    <dt><a href="{% url buck_only_wold_list %}">Only words unique to WOLD</a></dt>
+    <dd>This list also includes the extra categories <b>23 Modern world</b> 
+    and <b>24 Miscellaneous function words</b>.</dd>
+
+    <dt><a href="{% url buck_ids_wold_list %}">The words added by IDS and WOLD</a></dt>
+    <dd>Now complete.</dd>
+</dl>
+
+<p>A test for whether a word-list is based on Buck, IDS or WOLD is what
+the Buck number is for "thief". In Buck, "thief" has the number 11.57
+sorted under the category <strong>11 Possession</strong>, in IDS the
+number is 21.520, sorting under <strong>21 Law</strong>, and in WOLD,
+it has the number 21.52. Buck-format prefers a minimum of two digits after the
+dot and never has more than three. WOLD-format can have more than three
+digits after the dot. IDS and especially WOLD are keen on using zero in
+the numbers.</p>
+
+<h1>Weirdities</h1>
+<p><a href="{% url swadesh_minus_buck_list %}">Words that are in Swadesh but not in Buck</a></p>
+<p><a href="{% url common-holman-yakhontov-list %}">Holman combined with Yakhontov</a></p>
+<p><a href="{% url swadesh207-swadesh100-list %}">Swadesh 207 without Swadesh 100</a></p>
+{% endblock content %}

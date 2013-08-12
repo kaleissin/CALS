@@ -1,0 +1,11 @@
+{% extends 'wordlist/list-base.html' %}
+
+{% block content %}
+<h1>Words in the Swadesh lists that are missing from all of the
+    Buck-lists</h1>
+<table>
+{% for word in words %}
+<tr class="{% cycle 'odd' 'odd' 'odd' 'odd' 'odd' 'even' 'even' 'even' 'even' 'even' %}"><th class="right">{{ word.swadesh_207 }}</th><td>{{ word }}</td></tr>
+{% endfor %}
+</table>
+{% endblock content %}

@@ -1,0 +1,82 @@
+23.11	television	noun
+23.12	telephone	noun
+23.13	bicycle	noun
+23.135	motorcycle	noun
+23.14	car	noun
+23.15	bus	noun
+23.155	train	noun
+23.16	airplane	noun
+23.17	electricity	noun
+23.175	battery	noun
+23.18	brake	verb
+23.185	motor	noun
+23.19	machine	noun
+23.195	petroleum	noun
+23.2	hospital	noun
+23.21	nurse	noun
+23.22	pill or tablet	noun
+23.23	injection	noun
+23.24	spectacles/glasses	noun
+23.3	government	noun
+23.31	president	noun
+23.32	minister	noun
+23.33	police	noun
+23.34	driver's license	noun
+23.35	license plate	noun
+23.36	birth certificate	noun
+23.37	crime	noun
+23.38	election	noun
+23.385	address	noun
+23.39	number	noun
+23.395	street	noun
+23.4	post/mail	noun
+23.42	letter	noun
+23.43	postcard	noun
+23.44	bank	noun
+23.51	sink	noun
+23.52	toilet	noun
+23.53	mattress	noun
+23.54	tin/can	noun
+23.55	screw	noun
+23.555	screwdriver	noun
+23.56	bottle	noun
+23.565	candy/sweets	noun
+23.57	plastic	noun
+23.575	bomb	noun
+23.58	workshop	noun
+23.59	cigarette	noun
+23.61	calendar	noun
+23.62	film/movie	noun
+23.63	music	noun
+23.64	song	noun
+23.91	coffee	noun
+23.99901	license	noun
+24.01	be	verb
+24.02	become	verb
+24.03	without	function word
+24.04	with	function word
+24.05	through	function word
+24.06	not	function word
+24.07	this	function word
+24.08	that	function word
+24.09	here	function word
+24.1	there	function word
+24.11	other	function word
+24.12	next	function word
+24.13	same	function word
+24.14	nothing	function word
+24.99901	and or but	function word
+24.99902	can	function word
+24.99904	hey!	function word
+24.99905	(interrogative)	function word
+24.99906	let	function word
+24.99907	(negative marker)	function word
+24.99908	neither	function word
+24.99909	nor	function word
+24.9991	someone	function word
+24.99911	(superlative marker)	function word
+24.99912	then	function word
+24.99913	they (dual)	function word
+24.99914	we (dual inclusive)	function word
+24.99917	which	function word
+24.99919	you (dual)	function word

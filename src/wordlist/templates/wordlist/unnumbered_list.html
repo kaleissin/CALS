@@ -1,0 +1,10 @@
+{% extends 'wordlist/list-base.html' %}
+
+{% block content %}
+<h1>{{ title }}</h1>
+<ul>
+{% for word in words %}
+<li class="{% cycle 'odd' 'odd' 'odd' 'odd' 'odd' 'even' 'even' 'even' 'even' 'even' %}">{{ word }}</li>
+{% endfor %}
+</ul>
+{% endblock content %}

@@ -1,0 +1,25 @@
+{% extends 'wordlist/base.html' %}
+
+{% block submenu %}
+<ul>
+    <li><b>{{ sense }}</b></li>
+</ul>
+{% endblock submenu %}
+
+{% block content %}
+<h1>{{ sense }}</h1>
+
+<p>More about {{sense }}: {{ sense.show_notes }}</p>
+
+{% if sense.words %}
+<ul>
+{% for word in sense.words.all %}
+<li>
+In {{ word.language }}: <b>{{ word }}</b>
+{% if word.notes %}{{ word.notes }}{% endif%}
+</li>
+{% endfor %}
+</ul>
+{% endif %}
+
+{% endblock content %}

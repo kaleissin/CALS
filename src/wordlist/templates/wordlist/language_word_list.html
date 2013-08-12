@@ -1,0 +1,66 @@
+{% extends 'wordlist/base.html' %}
+
+{% block submenu %}
+<ul>
+    <li><a href="../">All languages</a></li>
+    <li><b>{{ language }} - English</b></li>
+    <li><a href="/language/{{ language.slug }}/">More about {{ language }}</a></li>
+</ul>
+{% endblock submenu %}
+
+{% block content %}
+<h1>{{ language }} - English</h1>
+
+{% if words %}
+<dl>
+{% for word in words %}
+<dt><b class="word">{{ word }}</b></dt>
+<dd>
+{% for sense in word.senses.all %}
+<b>{{ sense }}</b>{% if word.senses.count > 1 %},<br />{% endif%}
+{{ sense.show_notes }}
+{% if may_edit %}
+<a href="{% url add_word_for_language langslug=language.slug pk=sense.pk %}">Add a synonym</a>
+<a href="{% url edit_word_for_language langslug=language.slug pk=sense.pk wordid=word.pk %}">Edit</a>
+{% endif %}
+{% endfor %}
+{% if word.notes %}<p>Notes: {{ word.notes }}</p>{% endif %}
+</dd>
+{% endfor %}
+</dl>
+{% endif %}
+
+{% if not_words %}
+<h1>Senses that {{ language }} lacks</h1> 
+<ul>
+{% for word in not_words %}
+<li>
+{% for sense in word.senses.all %}
+<b>{{ sense }}</b>{% if word.senses.count > 1 %},{% endif%}
+{{ sense.show_notes }}
+<p>Notes: {{ word.notes|default:'None' }}</p>
+{% if may_edit %}
+{% ifequal language.id 80 %}
+<a href="{% url edit_word_for_language langslug=language.slug pk=sense.pk wordid=word.pk %}">Edit</a>
+{% endifequal %}
+{% endif %}
+{% endfor %}
+</li>
+{% endfor %}
+</ul>
+{% endif %}
+
+{% if may_edit and skipped_words %}
+<h1>Senses that {{ language }} still does not have</h1> 
+<ul>
+{% for sense in skipped_words %}
+<li>
+<b>{{ sense }}</b>
+{{ sense.sense.show_notes }}
+<a href="{% url add_word_for_language langslug=language.slug pk=sense.sense.pk %}">Add a word</a>
+</li>
+{% endfor %}
+</ul>
+{% endif %}
+
+    {% endblock content %}

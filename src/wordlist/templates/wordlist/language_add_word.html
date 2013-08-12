@@ -1,0 +1,41 @@
+{% extends 'wordlist/base.html' %}
+{% load cals_tags %}
+{% load badge_tags %}
+{% block submenu %}
+<ul>
+    <li><a href="{% url show_words_for_language langslug=language.slug %}">All words</a></li>
+    <li><b>Change</b></li>
+</ul>
+{% endblock submenu %}
+
+{% block content %}
+
+<h1>{{ language }} for {{ sense }}</h1>
+<p><span class="help">{{ sense.show_notes|safe }}</span></p>
+<div>
+<form method="post" action=".">
+    {{ form.non_field_errors }}
+    <p>In {{ language }}, this is: {{ form.word }}<br /> with the following
+caveats:</p>
+{{ form.word.errors }}
+{{ form.notes }} {{ form.notes.errors }}
+{{ form.language }}
+{{ form.sense }}
+{% if word %}
+{{ form.pk }}
+{% endif %}
+<table>
+    <tr>
+        {% if word %}
+        <td><input type="submit" name="go" value="Change" /></td>
+        <td><a href="{% url show_words_for_language langslug=language.slug %}">Never mind</a></td>
+        {% else %}
+        <td><input type="submit" name="go" value="Add" /></td>
+        <td><input type="submit" name="skip" value="Do it later, maybe" /></td>
+        {% endif %}
+    </tr>
+</table>
+</form>
+</div>
+
+{% endblock content %}
