@@ -1,0 +1,3 @@
+{% load cals_tags %}
+<dt><b>{{ language.created|date:"Y-m-d h:iO" }}</b></dt>
+<dd>{{ count }} languages, number {{ count }} is {% show_lang language %} added by {% showuser language.added_by %}!</dd>
