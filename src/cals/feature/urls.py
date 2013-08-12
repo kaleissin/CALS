@@ -28,7 +28,7 @@ urlpatterns = patterns('django.views.generic',
 #         (r'^suggested/$',                   'list_detail.object_list', suggested_features_dict),
 )
 
-urlpatterns += patterns('cals.views',
+urlpatterns += patterns('cals.feature.views',
         (r'^'+FEATURE_RE+r'$',             'show_feature'),
         (r'^(?P<objects>[+0-9]+)/$',       'compare_feature'), 
         (r'^'+FEATURE_RE+r'change$',       'change_feature_description'),

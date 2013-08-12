@@ -2,7 +2,6 @@
 {% block submenu %}
 <ul>
     <li><b>All features</b></li>
-    {# <li><a href="http://trac.aldebaaran.uninett.no/cals/wiki/CALSFeatures">Add a feature</a></li> #}
     <hr />
     {% for category in object_list %}
     <li><a href="#{{ category|slugify }}">{{ category }}</a></li>
