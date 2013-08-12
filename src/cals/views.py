@@ -85,7 +85,7 @@ def _get_user(*args, **kwargs):
     return get_object_or_404(User, username=kwargs.get('user', None))
 
 def _get_url_pieces(name='slug', **kwargs):
-    _LOG.debug('Url-pieces: %s' % kwargs)
+    _LOG.debug('Url-pieces: %s', kwargs)
     if name in kwargs:
         # split on +, remove empty pieces
         pieces = filter(None, kwargs[name].split('+'))
@@ -488,10 +488,10 @@ def compare_language(request, *args, **kwargs):
     comparison_type = kwargs.get('opt', request.REQUEST.get('compare', None))
     same, different = _generate_comparison_type(comparison_type)
     cform = CompareTwoForm()
-    _LOG.debug('0: %s' % comparison_type)
-    _LOG.debug('1: same %s, different %s' % (same, different))
+    _LOG.debug('0: %s', comparison_type)
+    _LOG.debug('1: same %s, different %s', (same, different))
     comparison = compare_languages(langs, same=same, different=different)
-    _LOG.debug('Last: Features compared: %s (%s)' % (len(comparison), comparison_type))
+    _LOG.debug('Last: Features compared: %s (%s)', (len(comparison), comparison_type))
     data = {
             'comparison': comparison, 
             'me': me,
@@ -727,7 +727,7 @@ def change_language(request, *args, **kwargs):
     if not may_edit:
         return HttpResponseForbidden(error_forbidden)
 
-    _LOG.info('%s about to change %s' % (user, lang))
+    _LOG.info('%s about to change %s', (user, lang))
 
     langform = LanguageForm(instance=lang)
     #moreinfoformset = ExternalInfoFormSet(queryset=lang.externalinfo.all())
@@ -1146,16 +1146,16 @@ def auth_login(request, *args, **kwargs):
                         except Profile.DoesNotExist:
                             error = "User '%s' does not exist! Typo?" % username
                             messages.error(request, error)
-                            _LOG.warn("User '%s' does not exist" % username)
+                            _LOG.warn("User '%s' does not exist", username)
                             if u'next' in request.REQUEST:
-                                _LOG.warn("Redirecting back to '%s' after failed login" % request.POST[u'next'] or '[redierct missing]')
+                                _LOG.warn("Redirecting back to '%s' after failed login", request.POST[u'next'] or '[redierct missing]')
                                 return HttpResponseRedirect(request.POST[u'next'])
                     except Profile.DoesNotExist:
                         error = "User %s is incomplete, lacks profile" % username
                         messages.error(request, error)
                         _LOG.warn(error)
                         if u'next' in request.REQUEST:
-                            _LOG.warn("Redirecting back to '%s' after failed login" % request.POST[u'next'] or '[redierct missing]')
+                            _LOG.warn("Redirecting back to '%s' after failed login", request.POST[u'next'] or '[redierct missing]')
                             return HttpResponseRedirect(request.POST[u'next'])
                     user = auth.authenticate(username=user.username, password=password)
                     _LOG.info("User: %s", pformat(user))
