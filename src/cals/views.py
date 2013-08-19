@@ -790,18 +790,21 @@ def compare_languagefeature_history(request, *args, **kwargs):
     descriptions = Description.archive.filter(object_id=lf.id, content_type=lf_type).order_by('-last_modified')
     may_edit, (is_admin, is_manager) = may_edit_lang(request.user, lang)
 
-    newest = descriptions[0]
-    oldest = tuple(descriptions)[-1]
-    oldid = request.GET.get('oldid', oldest.id)
-    newid = request.GET.get('newid', newest.id)
-    if oldid:
-        oldest = descriptions.get(id=int(oldid))
-    if newid:
-        newest = descriptions.get(id=int(newid))
-    link_format = '/language/%s/feature/%i/history/compare?' % (lang.slug, feature.id)
-    patch = u''
-    if request.method == 'GET':
-        patch = description_diff(oldest, newest, link_format, may_edit, is_admin)
+    if descriptions:
+        newest = descriptions[0]
+        oldest = tuple(descriptions)[-1]
+        oldid = request.GET.get('oldid', oldest.id)
+        newid = request.GET.get('newid', newest.id)
+        if oldid:
+            oldest = descriptions.get(id=int(oldid))
+        if newid:
+            newest = descriptions.get(id=int(newid))
+        link_format = '/language/%s/feature/%i/history/compare?' % (lang.slug, feature.id)
+        patch = u''
+        if request.method == 'GET':
+            patch = description_diff(oldest, newest, link_format, may_edit, is_admin)
+    else:
+        oldest, newest, patch = None, None, u''
     data = {'me': me,
             'oldest': oldest,
             'newest': newest,

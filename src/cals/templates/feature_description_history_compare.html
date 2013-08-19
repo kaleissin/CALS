@@ -16,7 +16,11 @@
 {% endblock submenu %}
 {% block content %}
     <h1>{{ feature.name }}</h1>
-    {{ patch|safe }}
-    <h2>Revision as of {{ newest.last_modified|date:"Y-m-d H:i:s" }}, by {% showuser newest.last_modified_by %}</h2>
-    {{ newest|safe }}
+    {% if newest != oldest %}
+        {{ patch|safe }}
+        <h2>Revision as of {{ newest.last_modified|date:"Y-m-d H:i:s" }}, by {% showuser newest.last_modified_by %}</h2>
+        {{ newest|safe }}
+    {% else %}
+        <p>No local descriptions, nothing to compare.</p>
+    {% endif %}
 {% endblock content %}

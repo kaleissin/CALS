@@ -6,7 +6,9 @@
     <li><a href="/language/">All languages</a></li>
     <li><a href="../../">Back to {{ feature.language }}</a></li>
     <li><a href=".">Back to overview</a></li>
-    <li><b>Change</b></li>
+    {% if user.is_authenticated %}
+    <li><b>Change description</b></li>
+    {% endif %}
     <li><a href="./history/">History</a></li>
 </ul>
 </ul>

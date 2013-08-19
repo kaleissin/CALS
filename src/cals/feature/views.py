@@ -261,18 +261,21 @@ def compare_feature_history(request, *args, **kwargs):
     feature_type = ContentType.objects.get(app_label="cals", model="feature")
     descriptions = Description.archive.filter(object_id=feature.id, content_type=feature_type).order_by('-last_modified')
 
-    newest = descriptions[0]
-    oldest = tuple(descriptions)[-1]
-    oldid = request.GET.get('oldid', oldest.id)
-    newid = request.GET.get('newid', newest.id)
-    if oldid:
-        oldest = descriptions.get(id=int(oldid))
-    if newid:
-        newest = descriptions.get(id=int(newid))
-    link_format = '/feature/%i/history/compare?' % feature.id
-    patch = u''
-    if request.method == 'GET':
-        patch = description_diff(oldest, newest, link_format)
+    if descriptions:
+        newest = descriptions[0]
+        oldest = tuple(descriptions)[-1]
+        oldid = request.GET.get('oldid', oldest.id)
+        newid = request.GET.get('newid', newest.id)
+        if oldid:
+            oldest = descriptions.get(id=int(oldid))
+        if newid:
+            newest = descriptions.get(id=int(newid))
+        link_format = '/feature/%i/history/compare?' % feature.id
+        patch = u''
+        if request.method == 'GET':
+            patch = description_diff(oldest, newest, link_format)
+    else:
+        oldest, newest, patch = None, None, u''
     data = {'me': me,
             'oldest': oldest,
             'newest': newest,

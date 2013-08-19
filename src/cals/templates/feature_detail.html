@@ -7,7 +7,9 @@
     {% if user.is_authenticated and user.is_staff %}
     <li><a href="./change">Change</a></li>
     {% endif %}
+    {% if description %}
     <li><a href="./history/">History</a></li>
+    {% endif %}
 </ul>
     <hr />
     <form action="" method="post">
