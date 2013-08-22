@@ -82,6 +82,8 @@ Home
     <div>{{ entry.content|safe }}
         <p>Pinned: {{ entry.pub_date|date:"Y-m-d H:i" }}</p>
     </div>
+    {% empty %}
+    foo
     {% endfor %}
     {% for entry in news %}
     <h3>{{ entry.pub_date|date:"Y-m-d H:i" }} {{ entry.headline }}</h3>
@@ -112,7 +114,7 @@ usable at all?</li>
     <tr>
         <td>
             <h3>
-                <a href="/feeds/languages/newest/"><img class="icon" src="{{ MEDIA_URL }}img/feed-icon-14x14.png" alt="Feed: New languages"/></a>
+                <a href="/feeds/languages/newest/"><img class="icon" src="{{ STATIC_URL }}img/feed-icon-14x14.png" alt="Feed: New languages"/></a>
                 Newly added</h3>
             <ul>
             {% for lang in langs_newest %}
@@ -122,7 +124,7 @@ usable at all?</li>
         </td>
         <td>
             <h3>
-                <a href="/feeds/languages/last_modified/"><img class="icon" src="{{ MEDIA_URL }}img/feed-icon-14x14.png" alt="Feed: Changed languages"/></a>
+                <a href="/feeds/languages/last_modified/"><img class="icon" src="{{ STATIC_URL }}img/feed-icon-14x14.png" alt="Feed: Changed languages"/></a>
                 Last modified</h3>
             <ul>
             {% for lang in langs_modified %}
@@ -133,7 +135,7 @@ usable at all?</li>
         <td>
             <h3>
                 <a href="/feeds/translations/exercises/"><img
-                class="icon" src="{{ MEDIA_URL }}img/feed-icon-14x14.png" alt="Feed: New translation exercises"/></a>
+                class="icon" src="{{ STATIC_URL }}img/feed-icon-14x14.png" alt="Feed: New translation exercises"/></a>
                 New translation exercises</h3>
             <ul>
             {% for ex in trans_exs_newest %}
@@ -143,7 +145,7 @@ usable at all?</li>
         </td>
         <td>
             <h3>
-                <a href="/feeds/people/recent/"><img class="icon" src="{{ MEDIA_URL }}img/feed-icon-14x14.png" alt="Feed: Recently joined"/></a>
+                <a href="/feeds/people/recent/"><img class="icon" src="{{ STATIC_URL }}img/feed-icon-14x14.png" alt="Feed: Recently joined"/></a>
                 Recently joined</h3>
             <ul>
             {% for person in people %}
