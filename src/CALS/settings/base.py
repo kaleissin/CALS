@@ -172,6 +172,7 @@ THIRD_PARTY_APPS = (
     'taggit',
     'voting',
     'actstream',
+    'social_auth',
 )
 
 PROJECT_APPS = (
@@ -200,6 +201,12 @@ AUTH_PROFILE_MODULE = 'cals.Profile'
 
 LOGIN_URL = '/'
 LOGIN_REDIRECT_URL = '/logged_in'
+
+AUTHENTICATION_BACKENDS = (
+    'social_auth.backends.twitter.TwitterBackend',
+    'social_auth.backends.contrib.github.GithubBackend',
+    'django.contrib.auth.backends.ModelBackend',
+)
 
 TEMPLATE_CONTEXT_PROCESSORS = (
         "django.contrib.auth.context_processors.auth",
@@ -302,3 +309,10 @@ ACTSTREAM_SETTINGS = {
 
     'MODELS': ('auth.user', 'cals.language',),
 }
+
+# Social-auth
+SOCIAL_AUTH_FORCE_POST_DISCONNECT = True
+SOCIAL_AUTH_PROTECTED_USER_FIELDS = ['email',]
+
+TWITTER_EXTRA_DATA = [('screen_name', 'username')]
+GITHUB_EXTRA_DATA = [('login', 'username')]                                                                                                                                                

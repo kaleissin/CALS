@@ -182,6 +182,30 @@
             </td>
         </tr>
         {% endif %}
+        {% if social_connections %}
+        <tr>
+            <th>Disconnect from:</th>
+            <td>
+                <ul>
+                {% for sc in social_connections %}
+                <li><a href="{% url "socialauth_disconnect_individual" sc.provider sc.connection.id %}?next={{ whereami }}">{{ sc.provider }}</a></li>
+                {% endfor %}
+                </ul>
+            </td>
+        </tr>
+        {% endif %}
+        {% if potential_social_connections %}
+        <tr>
+            <th>Connect to:</th>
+            <td>
+                <ul>
+                {% for psc in potential_social_connections %}
+                <li><a href="{% url "socialauth_begin" psc  %}">{{ psc }}</a></li>
+                {% endfor %}
+                </ul>
+            </td>
+        </tr>
+        {% endif %}
         {% ifequal user.username object.username %}
         <tr class="private">
             <th>Private messages</th>

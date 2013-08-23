@@ -961,19 +961,46 @@ def show_profile(request, *args, **kwargs):
         profile = user.get_profile()
     except Profile.DoesNotExist:
         return HttpResponseNotFound()
+
+    social_links = {
+            'twitter': 'http://twitter.com/account/redirect_by_id?id=%s',
+            'github': 'https://github.com/%s'
+    }
+    social_unconnected = set(social_links.keys())
+
+    looking_in_the_mirror = request.user == user
+
     seen = profile.seen_profile
+    
     pms, pms_archived, pms_sent = (), (), ()
-    if request.user == user:
+    social_connections = []
+    if looking_in_the_mirror:
         pms = PM.objects.received(user)
         pms_archived = PM.objects.archived(user)
         pms_sent = PM.objects.sent(user)
+
+        for sa in user.social_auth.all():
+            out = {}
+            provider = sa.provider
+            social_unconnected.discard(provider)
+            link = social_links[provider] 
+            out['provider'] = provider
+            out['link'] = link % sa.id
+            out['connection'] = sa
+            social_connections.append(out)
+    
     data = {'object': user, 
             'profile': profile, 
             'me': me, 
             'seen': seen,
+
             'pms': pms,
             'pms_archived': pms_archived,
             'pms_sent': pms_sent,
+
+            'social_connections': social_connections,
+            'potential_social_connections': social_unconnected,
+            
             'whereami': whereami,
             }
     return render_page(request, 'profile_detail.html', data)
