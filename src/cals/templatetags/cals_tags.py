@@ -100,6 +100,14 @@ def show_language_tags(language):
     return u''
 
 @register.simple_tag
+def cals_tags_status(verbose=False):
+    successmsg = u'cals_tags loaded successfully'
+    _LOG.info(successmsg)
+    if verbose:
+        return successmsg
+    return u''
+
+@register.simple_tag
 def currently_logged_in():
     now = datetime.now()
     sessions = Session.objects.filter(expire_date__gt=now)
