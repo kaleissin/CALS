@@ -1,0 +1,18 @@
+{% extends 'wordlist/list-base.html' %}
+
+{% block content %}
+<h1>Holman and Yakhontov combined</h1>
+<p>These {{ words.count }} words are all that the Holman and Yakhontov
+lists have in common.</p>
+
+<ul>
+{% for word in words %}
+<li class="{% cycle 'odd' 'odd' 'odd' 'odd' 'odd' 'even' 'even' 'even' 'even' 'even' %}">{{ word }} 
+{% ifequal request.user.id 1 %}
+{{ word.show_notes }}
+{{ word.words.count }}
+{% endifequal %}
+</li>
+{% endfor %}
+</ul>
+{% endblock content %}

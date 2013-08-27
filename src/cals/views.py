@@ -47,6 +47,8 @@ from cals.tools import description_diff, compare_features
 from cals.modeltools import compare_languages, \
         get_averageness_for_lang, LANGTYPES
 
+from cals.feature.views import show_feature
+
 from translations.models import TranslationExercise, Translation
 
 from nano.tools import render_page
@@ -85,7 +87,7 @@ def _get_user(*args, **kwargs):
     return get_object_or_404(User, username=kwargs.get('user', None))
 
 def _get_url_pieces(name='slug', **kwargs):
-    _LOG.debug('Url-pieces: %s' % kwargs)
+    _LOG.debug('Url-pieces: %s', kwargs)
     if name in kwargs:
         # split on +, remove empty pieces
         pieces = filter(None, kwargs[name].split('+'))
@@ -280,121 +282,6 @@ def list_people(request, template_name='cals/profile_list.html', *args, **kwargs
     return object_list(request, queryset=queryset, template_name=template_name,
             extra_context=extra_context, **kwargs)
 
-def show_feature(request, features=None, object_id=None, template_name='feature_detail.html', *args, **kwargs):
-    me = 'feature'
-    if not features:
-        features = Feature.objects.active()
-    try:
-        feature = features.get(id=object_id)
-    except Feature.DoesNotExist:
-        return HttpResponseNotFound()
-
-    cform = CompareTwoFeaturesForm()
-    if request.method == 'POST':
-        cform = CompareTwoFeaturesForm(data=request.POST)
-        if cform.is_valid():
-            feature2 = cform.cleaned_data['feature2']
-            return HttpResponseRedirect('/feature/%s+%s/' % (feature.id, feature2.id))
-    
-    data = {'object': feature, 
-            'me': me, 
-            'cform': cform}
-    return render_page(request, template_name, data)
-
-@login_required
-def change_feature_description(request, *args, **kwargs):
-    me = 'feature'
-    feature = get_object_or_404(Feature, id=kwargs.get('object_id', None))
-    preview = u''
-    link = '/feature/%i/' % feature.id
-    if not request.user.is_staff:
-        error = "You do not have permission to change this feature's description"
-        messages.error(request, error)
-        return HttpResponseRedirect(link)
-    if request.method == 'POST':
-        if feature.description:
-            form = DescriptionForm(data=request.POST, instance=feature.description)
-        else:
-            form = DescriptionForm(data=request.POST)
-        if form.is_valid():
-            featured = form.save(commit=False)
-            featured.freetext_type = 'rst'
-            if request.POST.get('preview'):
-                preview = featured.make_xhtml()
-                msg = "You are previewing the description of this feature"
-                messages.info(request, msg)
-            elif request.POST.get('submit'):
-                featured.content_type = ContentType.objects.get_for_model(feature)
-                featured.object_id = feature.id
-                featured.save()
-                return HttpResponseRedirect(link)
-    else:
-        if feature.description:
-            form = DescriptionForm(instance=feature.description)
-        else:
-            form = DescriptionForm()
-    data = {'me': me,
-            'form': form,
-            'preview': preview,
-            'feature': feature,}
-    return render_page(request, 'feature_description_form.html', data)
-
-def show_feature_history(request, *args, **kwargs):
-    me = 'feature'
-    feature = get_object_or_404(Feature, id=kwargs.get('object_id', None))
-    feature_type = ContentType.objects.get(app_label="cals", model="feature")
-    descriptions = Description.archive.filter(object_id=feature.id, content_type=feature_type).order_by('-last_modified')
-    link = '/feature/%i/' % feature.id
-    data = {'me': me,
-            'descriptions': descriptions,
-            'feature': feature,
-            }
-    return render_page(request, 'feature_description_history_list.html', data)
-
-def compare_feature_history(request, *args, **kwargs):
-    me = 'feature'
-    feature = get_object_or_404(Feature, id=kwargs.get('object_id', None))
-    feature_type = ContentType.objects.get(app_label="cals", model="feature")
-    descriptions = Description.archive.filter(object_id=feature.id, content_type=feature_type).order_by('-last_modified')
-
-    newest = descriptions[0]
-    oldest = tuple(descriptions)[-1]
-    oldid = request.GET.get('oldid', oldest.id)
-    newid = request.GET.get('newid', newest.id)
-    if oldid:
-        oldest = descriptions.get(id=int(oldid))
-    if newid:
-        newest = descriptions.get(id=int(newid))
-    link_format = '/feature/%i/history/compare?' % feature.id
-    patch = u''
-    if request.method == 'GET':
-        patch = description_diff(oldest, newest, link_format)
-    data = {'me': me,
-            'oldest': oldest,
-            'newest': newest,
-            'patch': patch,
-            'feature': feature,}
-    return render_page(request, 'feature_description_history_compare.html', data)
-
-@login_required
-def revert_feature_description(request, lang=None, object_id=None, *args, **kwargs):
-    me = 'language'
-    lang = get_object_or_404(Language, slug=lang)
-    feature = get_object_or_404(Feature, id=object_id)
-    feature_type = ContentType.objects.get(app_label="cals", model="feature")
-    may_edit, (is_admin, is_manager) = may_edit_lang(request.user, lang)
-    if not may_edit:
-        return HttpResponseForbidden(error_forbidden)
-
-    descriptions = Description.archive.filter(object_id=feature.id, content_type=feature_type).order_by('-last_modified')
-    link_format = '/feature/%i/history/compare?' % feature.id
-
-    revert_to = request.GET.get('id', 0)
-    error = revert_description(request.user, descriptions, revert_to)
-    if error:
-        messages.error(request, error)
-    return HttpResponseRedirect(link_format)
-
 # language
 
 def _generate_comparison_type(comparison_type):
@@ -488,10 +375,10 @@ def compare_language(request, *args, **kwargs):
     comparison_type = kwargs.get('opt', request.REQUEST.get('compare', None))
     same, different = _generate_comparison_type(comparison_type)
     cform = CompareTwoForm()
-    _LOG.debug('0: %s' % comparison_type)
-    _LOG.debug('1: same %s, different %s' % (same, different))
+    _LOG.debug('0: %s', comparison_type)
+    _LOG.debug('1: same %s, different %s', (same, different))
     comparison = compare_languages(langs, same=same, different=different)
-    _LOG.debug('Last: Features compared: %s (%s)' % (len(comparison), comparison_type))
+    _LOG.debug('Last: Features compared: %s (%s)', (len(comparison), comparison_type))
     data = {
             'comparison': comparison, 
             'me': me,
@@ -568,6 +455,14 @@ def show_language(request, *args, **kwargs):
     }
     return render_page(request, 'language_detail.html', data)
 
+def denormalize_lang(lang):
+    freq = get_averageness_for_lang(lang, scale=100, langtype=LANGTYPES.CONLANG)
+    _LOG.info('Freq now: %s' % repr(freq))
+    lang.num_features = LanguageFeature.objects.filter(language=lang).count()
+    lang.num_avg_features = freq
+    lang.set_average_score()
+    return lang
+
 def set_featurevalues_for_lang(lang, valuelist):
     """Given a (saved but not committed) language and a list of feature
     value pairs in the form 'featureid_valueid'... """
@@ -576,11 +471,7 @@ def set_featurevalues_for_lang(lang, valuelist):
         if not value_id:
             continue
         set_language_feature_value(lang, feature_id, value_id)
-    freq = get_averageness_for_lang(lang, scale=100, langtype=LANGTYPES.CONLANG)
-    _LOG.info('Freq now: %s' % repr(freq))
-    lang.num_features = LanguageFeature.objects.filter(language=lang).count()
-    lang.num_avg_features = freq
-    lang.set_average_score()
+    lang = denormalize_lang(lang)
     return lang
 
 def set_tags_for_lang(tags, lang):
@@ -643,7 +534,7 @@ def create_language(request, lang=None, fvlist=None, clone=False, *args, **kwarg
 
             # Final save
             lang.save(user=user)
-            if cloned_lang:
+            if cloned_from_lang:
                 streamaction.send(request.user, verb='added the language', action_object=lang)
             else:
                 streamaction.send(request.user, verb='cloned the language', action_object=cloned_from_lang, target=lang)
@@ -727,7 +618,7 @@ def change_language(request, *args, **kwargs):
     if not may_edit:
         return HttpResponseForbidden(error_forbidden)
 
-    _LOG.info('%s about to change %s' % (user, lang))
+    _LOG.info('%s about to change %s', (user, lang))
 
     langform = LanguageForm(instance=lang)
     #moreinfoformset = ExternalInfoFormSet(queryset=lang.externalinfo.all())
@@ -899,18 +790,21 @@ def compare_languagefeature_history(request, *args, **kwargs):
     descriptions = Description.archive.filter(object_id=lf.id, content_type=lf_type).order_by('-last_modified')
     may_edit, (is_admin, is_manager) = may_edit_lang(request.user, lang)
 
-    newest = descriptions[0]
-    oldest = tuple(descriptions)[-1]
-    oldid = request.GET.get('oldid', oldest.id)
-    newid = request.GET.get('newid', newest.id)
-    if oldid:
-        oldest = descriptions.get(id=int(oldid))
-    if newid:
-        newest = descriptions.get(id=int(newid))
-    link_format = '/language/%s/feature/%i/history/compare?' % (lang.slug, feature.id)
-    patch = u''
-    if request.method == 'GET':
-        patch = description_diff(oldest, newest, link_format, may_edit, is_admin)
+    if descriptions:
+        newest = descriptions[0]
+        oldest = tuple(descriptions)[-1]
+        oldid = request.GET.get('oldid', oldest.id)
+        newid = request.GET.get('newid', newest.id)
+        if oldid:
+            oldest = descriptions.get(id=int(oldid))
+        if newid:
+            newest = descriptions.get(id=int(newid))
+        link_format = '/language/%s/feature/%i/history/compare?' % (lang.slug, feature.id)
+        patch = u''
+        if request.method == 'GET':
+            patch = description_diff(oldest, newest, link_format, may_edit, is_admin)
+    else:
+        oldest, newest, patch = None, None, u''
     data = {'me': me,
             'oldest': oldest,
             'newest': newest,
@@ -982,6 +876,10 @@ def describe_languagefeature(request, *args, **kwargs):
     preview = u''
     preview_value = u''
     link = '/language/%s/feature/%i/' % (lang.slug, feature.id)
+    new_xhtml = ''
+    lfd = lf.description
+    if lfd:
+        new_xhtml = lfd.make_xhtml()
 
     if request.method == 'POST':
         if lf.description:
@@ -990,39 +888,50 @@ def describe_languagefeature(request, *args, **kwargs):
             descriptionform = DescriptionForm(data=request.POST)
         valueform = FeatureValueForm(feature=feature, data=request.POST)
 
-        if descriptionform.is_valid() and valueform.is_valid():
+        if valueform.is_valid():
             new_f, new_v = map(int, valueform.cleaned_data.get('value', value_str).split('_'))
             new_fv = FeatureValue.objects.get(feature=feature, id=new_v)
             preview_value = new_fv
 
+        new_lfd = None
+        if descriptionform.is_valid():
             # Need to prevent extraenous saving here because of versioning
-            lfd = descriptionform.save(commit=False)
+            new_lfd = descriptionform.save(commit=False)
             
-            new_xhtml = lfd.make_xhtml()
+            new_xhtml = new_lfd.make_xhtml()
 
-            if request.POST.get('preview'):
-                preview = new_xhtml
-                msg = "You are previewing the description of '%s: %s' for %s" % (feature, new_fv, lang)
-                messages.info(request, msg)
-            elif request.POST.get('submit'):
-                # value
-                value_change = u''
-                if new_v and new_f == feature.id and new_v != lf.value.id:
-                    lf.value = new_fv
-                    lf.save()
-                    value_change = u'Value now "%s." ' % lf.value
-            
-                # description
-                desc_change = u''
-                if not lf.description or lfd.freetext != lf.description.freetext \
+        if request.POST.get('preview'):
+            preview = new_xhtml
+            msg = "You are previewing the description of '%s: %s' for %s" % (feature, new_fv, lang)
+            messages.info(request, msg)
+            if not new_lfd:
+                descriptionform = DescriptionForm()
+        elif request.POST.get('submit'):
+            # value
+            value_change = u''
+            if new_v and new_f == feature.id and new_v != lf.value.id:
+                lf.value = new_fv
+                lf.save()
+                value_change = u'Value now "%s." ' % lf.value
+        
+            # description
+            desc_change = u''
+            # Add/change desc
+            if new_lfd and new_xhtml:
+                if not lf.description or new_lfd.freetext != lf.description.freetext \
                         or new_xhtml != lf.description.freetext_xhtml \
                         or lfd.freetext_type != lf.description.freetext_type:
-                    lfd.content_type = ContentType.objects.get_for_model(lf)
-                    lfd.object_id = lf.id
-                    lfd.save(user=request.user)
+                    new_lfd.content_type = ContentType.objects.get_for_model(lf)
+                    new_lfd.object_id = lf.id
+                    new_lfd.save(user=request.user)
                     desc_change = u'Description changed.'
-                messages.info(request, u'%s%s' % (value_change, desc_change))
-                return HttpResponseRedirect(link)
+            # Delete desc
+            else:
+                if lfd:
+                    lfd.delete()
+                descriptionform = DescriptionForm()
+            messages.info(request, u'%s%s' % (value_change, desc_change))
+            return HttpResponseRedirect(link)
     else:
         valueform = FeatureValueForm(feature=feature, initial={'value': value_str})
 
@@ -1146,16 +1055,16 @@ def auth_login(request, *args, **kwargs):
                         except Profile.DoesNotExist:
                             error = "User '%s' does not exist! Typo?" % username
                             messages.error(request, error)
-                            _LOG.warn("User '%s' does not exist" % username)
+                            _LOG.warn("User '%s' does not exist", username)
                             if u'next' in request.REQUEST:
-                                _LOG.warn("Redirecting back to '%s' after failed login" % request.POST[u'next'] or '[redierct missing]')
+                                _LOG.warn("Redirecting back to '%s' after failed login", request.POST[u'next'] or '[redierct missing]')
                                 return HttpResponseRedirect(request.POST[u'next'])
                     except Profile.DoesNotExist:
                         error = "User %s is incomplete, lacks profile" % username
                         messages.error(request, error)
                         _LOG.warn(error)
                         if u'next' in request.REQUEST:
-                            _LOG.warn("Redirecting back to '%s' after failed login" % request.POST[u'next'] or '[redierct missing]')
+                            _LOG.warn("Redirecting back to '%s' after failed login", request.POST[u'next'] or '[redierct missing]')
                             return HttpResponseRedirect(request.POST[u'next'])
                     user = auth.authenticate(username=user.username, password=password)
                     _LOG.info("User: %s", pformat(user))

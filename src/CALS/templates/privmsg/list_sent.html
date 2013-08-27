@@ -19,7 +19,7 @@
         sent to <a href="/people/{{ pm.recipient.id }}/">{{ pm.recipient }}</a> 
         at {{ pm.sent|date:"Y-m-d H:i:s" }}
         | <a href="{% url 'add_pm' object_id=pm.recipient.id %}{% come_back %}">send pm</a>
-        | <a href="{% url 'delete_pm' object_id=pm.recipient.id,msgid=pm.id %}{% come_back %}">delete</a>
+        | <a href="{% url 'delete_pm' object_id=pm.recipient.id msgid=pm.id %}{% come_back %}">delete</a>
         </div>
     </div>
     {% endfor %}

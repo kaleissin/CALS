@@ -7,9 +7,12 @@ from django.contrib.contenttypes import generic
 from django.db import models
 from django.db.models import Q
 from django.db.models.query import QuerySet
+from django.utils.html import strip_tags
 
 from interlinears import leipzig
 from cals import markup_as_restructuredtext
+
+from cals.tools import next_id
 
 FREETEXT_TYPES = (
         ('rst', 'RestructuredText'),
@@ -129,16 +132,27 @@ class Description(Freetext):
         get_latest_by = 'last_modified'
         app_label = 'cals'
 
-    def save(self, user=None, batch=False, *args, **kwargs):
+    def save(self, user=None, batch=False, using=None, *args, **kwargs):
+        if using:
+            desc_obj = Description.objects.using(using)
+        else:
+            desc_obj = Description.objects
         if not batch:
             self.id = next_id(self.__class__)
             self.last_modified = datetime.now()
             if user:
                 self.last_modified_by = user
-            Description.objects.filter(object_id=self.object_id).update(current=False)
-            super(Description, self).save(force_insert=True, *args, **kwargs)
+            desc_obj.filter(object_id=self.object_id).update(current=False)
+            super(Description, self).save(force_insert=True, using=using, *args, **kwargs)
         else:
-            super(Description, self).save(*args, **kwargs)
+            super(Description, self).save(using=using, *args, **kwargs)
+
+    def delete(self, using=None, *args, **kwargs):
+        if using:
+            desc_obj = Description.objects.using(using)
+        else:
+            desc_obj = Description.objects
+        desc_obj.filter(object_id=self.object_id).update(current=False)
 
     def next_version(self):
         try:

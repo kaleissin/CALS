@@ -1,0 +1,15 @@
+{% extends 'wordlist/list-base.html' %}
+
+{% block content %}
+<h1>{{ title }}</h1>
+{% if info %}<p>{{ info }}</p>{% endif %}
+<p>{{ words.count }} senses.</p>
+<ol class="buck">
+{% for word in words %}
+<li class="{% cycle 'odd' 'odd' 'odd' 'odd' 'odd show' 'even' 'even' 'even' 'even' 'even show' %}">
+<span class="buck">{{ word.show_buck_numbers }}</span>
+{{ word }}
+<span class="help">{{ word.notes|default:''|safe }}</span></li>
+{% endfor %}
+</ol>
+{% endblock content %}

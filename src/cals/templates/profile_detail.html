@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 {% load url from future %}
-{# {% load nano_web20_tags %} #}
 {% load cals_tags %}
 {% load badge_tags %}
 {% block title %}{{ object.get_profile.display_name|default:object.username }}'s page{% endblock title %}
@@ -194,8 +193,8 @@
             <div class="pm-footer">
             sent by {% showuser pm.sender %} at {{ pm.sent }} 
             | <a href="{% url 'add_pm' object_id=pm.sender.id %}{% if whereami %}?next={{ whereami }}{% endif %}">send pm</a></a>
-            | <a href="{% url 'archive_pm' object_id=pm.recipient.id,msgid=pm.id %}{% if whereami %}?next={{ whereami }}{% endif %}">archive</a></a>
-            | <a href="{% url 'delete_pm' object_id=pm.recipient.id,msgid=pm.id %}{% if whereami %}?next={{ whereami }}{% endif %}">delete</a></a>
+            | <a href="{% url 'archive_pm' object_id=pm.recipient.id msgid=pm.id %}{% if whereami %}?next={{ whereami }}{% endif %}">archive</a></a>
+            | <a href="{% url 'delete_pm' object_id=pm.recipient.id msgid=pm.id %}{% if whereami %}?next={{ whereami }}{% endif %}">delete</a></a>
             </div>
             </div>
             {% endfor %}

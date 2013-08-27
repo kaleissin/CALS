@@ -129,6 +129,7 @@ STATICFILES_FINDERS = (
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
+    'nano.chunk.loader.Loader',
 #     'django.template.loaders.eggs.Loader',
 )
 
@@ -179,17 +180,17 @@ PROJECT_APPS = (
     'countries',
 #    'languages',
     'phonemes',
-#    'wordlist',
+    'wordlist',
 
     'nano.blog',
     'nano.badge',
     'nano.mark',
     'nano.comments',
+    'nano.chunk',
 
 #    'relay',
-    # Will work (excluding admin) even when not in INSTALLED_APPS
     'nano.privmsg',
-#     'nano.user',
+    'nano.user',
     'nano.faq',
 )
 
@@ -296,6 +297,7 @@ FORCE_LOWERCASE_TAGS = True
 
 # Nano-settings
 NANO_USER_EMAIL_SENDER = 'kaleissin@gmail.com'
+NANO_BLOG_USE_TAGS = True
 ACTSTREAM_SETTINGS = {
 
     'MODELS': ('auth.user', 'cals.language',),

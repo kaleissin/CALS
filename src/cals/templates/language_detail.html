@@ -91,6 +91,12 @@ have to do so at WALS, not here.</p>
     {% endif %}
     <tr><th>Author(s):</th><td>{{ object.author }}</td></tr>
     {% endif %}
+    {% if object.natlang and object.previous_names %}
+    <tr>
+        <th>Also known as:</th>
+        <td>{{ object.previous_names|join:", " }}</td>
+    </tr>
+    {% endif %}
     <tr><th>Homepage:</th><td>{% if object.homepage %}<a class="ext" href="{{ object.homepage }}">{{ object.homepage }}</a>{% else %}–{% endif %}</td></tr>
     {% if not object.natlang %}
     <tr><th>Background:</th><td>{{ object.background }}</td></tr>

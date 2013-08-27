@@ -72,6 +72,8 @@ urlpatterns += patterns('',
     (r'^password/change/$',     'nano.user.views.password_change'),
     (r'^news/',                 include('nano.blog.urls')),
 
+    (r'^word/list/',            include('wordlist.list.urls')),
+    (r'^word/$',                RedirectView.as_view(**{'url': '/word/list/'})),
     (r'^translation/',          include('translations.urls')),
     (r'^badge/',                include('nano.badge.urls')),
     (r'^faq/',                  include('nano.faq.urls')),

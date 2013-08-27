@@ -100,6 +100,14 @@ def show_language_tags(language):
     return u''
 
 @register.simple_tag
+def cals_tags_status(verbose=False):
+    successmsg = u'cals_tags loaded successfully'
+    _LOG.info(successmsg)
+    if verbose:
+        return successmsg
+    return u''
+
+@register.simple_tag
 def currently_logged_in():
     now = datetime.now()
     sessions = Session.objects.filter(expire_date__gt=now)
@@ -122,11 +130,14 @@ def graphline(barsize):
     return string % (int(barsize) * 10)
 
 @register.simple_tag
-def feature_graph(feature):
+def feature_graph(feature, ltype):
+    natlang = False
+    if ltype == 'nat':
+        natlang = True
     values = []
     max_count = 0
     for value in feature.values.all():
-        count = value.languagefeature_set.count()
+        count = value.languagefeature_set.filter(language__natlang=natlang).count()
         values.append(count)
         if count > max_count:
             max_count = count
@@ -177,13 +188,45 @@ def showuser(user):
         badges = u' ' + badges
     return _make_userlink(user) + badges
 
-def make_greet_link(lang, ahref_to_object):
+def _make_greet_link(greeting, objstring=''):
+    "Greeting is a string or a Translation object"
+
+    langlink = None
+    try:
+        # string!
+        greetstring = greeting + u''
+    except TypeError: # Translation!
+        langlink = u'<a href="/language/%s/">%%s</a>'
+        try:
+            greetstring = greeting.translation.strip()
+            langlink = langlink % greeting.language.slug
+        except AttributeError: # Language!
+            greetstring = get_greeting_of_lang(greeting)
+            langlink = langlink % greeting.slug
+    _LOG.info('1 ' + greetstring)
+    if not u'$' in greetstring:
+        greetstring = greetstring + u' $'
+    greetstring = greetstring.split(u'$', 1)
+    _LOG.info('2 ' + str( greetstring))
+    if langlink:
+        greetstring = [langlink % greetbit if greetbit else u'' for greetbit in greetstring]
+    _LOG.info('3 ' + str( greetstring))
+    _LOG.info('4 ' + objstring.join(greetstring))
+    return objstring.join(greetstring)
+
+def get_greeting_of_lang(lang):
     greeting_trans = Translation.objects.filter(language=lang, exercise__id=1)
     greeting = lang.greeting.strip()
     if not (greeting_trans or greeting):
         return 'Hello, %s!' % ahref_to_object
     if not greeting:
         greeting = greeting_trans.order_by('?')[0]
+    return greeting
+
+def make_greet_link(lang, ahref_to_object):
+    greeting = get_greeting_of_lang(lang)
+    if not greeting:
+        return 'Hello, %s!' % ahref_to_object
     _link = u'<a href="/language/%%(slug)s/">%%(%s)s</a>'
     _link1 = _link % u'greeting'
     _link_front = _link % u'front'
@@ -210,12 +253,12 @@ def greet(user, lang):
 
 @register.simple_tag
 def greetings(user):
-    trans = cache.get('greeting')
-    if not trans:
-        trans = [trans for trans in Translation.objects.filter(exercise__id=1, translation__isnull=False)]
-        cache.set('greeting', trans, 60*10)
-    tran = choice(tuple(trans))
-    greeting = greet(user, tran.language)
+    greetings = cache.get('greetings')
+    if not greetings:
+        greetings = [greeting for greeting in Translation.objects.filter(exercise__id=1, translation__isnull=False)]
+        cache.set('greetings', greetings, 60**2)
+    tran = choice(tuple(greetings))
+    greeting = _make_greet_link(tran, _make_userlink(user))
     return greeting
 
 @register.simple_tag
@@ -224,10 +267,7 @@ def greet_user_in_lang(user, lang):
 
 @register.simple_tag
 def greet_lang_in_lang(lang):
-    greeting_trans = Translation.objects.filter(language=lang, exercise__id=1).count()
-    if not greeting_trans or not lang.greeting:
-        return u''
-    return greet_link(lang, _make_langlink(lang, internal=True))
+    return _make_greet_link(lang, _make_langlink(lang, internal=True))
 
 def latest_modified_languages(num_lang):
     try:

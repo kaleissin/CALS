@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block submenu %}
+<ul>
+    <li><a href="../">All lists</a></li>
+    <li><b>{{ title }}</b></li>
+</ul>
+<hr />
+<h4>Download CSV</h4>
+<ul>
+    <li><a href="./?csv=simple">Simple</a></li>
+    <li><a href="./?csv=full">Full</a></li>
+</ul>
+{% endblock submenu %}

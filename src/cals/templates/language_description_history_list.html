@@ -16,30 +16,34 @@
 {% endblock submenu %}
 {% block content %}
     <h1>{{ lang.name }}: {{ feature.feature.name }}: {{ feature.value.name }}</h1>
-    <form action="./compare" method="get">
-    <input type="submit" value="Compare" />
-    <ul>
-    {% for d in descriptions %}
-    <li>
-    <input type="radio" value="{{ d.id }}" name="oldid"/> 
-    <input type="radio" value="{{ d.id }}" name="newid"/> 
-    {{ d.last_modified|date:"Y-m-d H:i:s" }}
-    {% showuser d.last_modified_by %}
-    {% if d.current %} 
-    Current
+    {% if descriptions %}
+        <form action="./compare" method="get">
+        <input type="submit" value="Compare" />
+        <ul>
+        {% for d in descriptions %}
+        <li>
+        <input type="radio" value="{{ d.id }}" name="oldid"/> 
+        <input type="radio" value="{{ d.id }}" name="newid"/> 
+        {{ d.last_modified|date:"Y-m-d H:i:s" }}
+        {% showuser d.last_modified_by %}
+        {% if d.current %} 
+        Current
+        {% else %}
+        {% if user.is_authenticated %}
+        {% ifequal user lang.manager %}
+        (<a href="../use?id={{ d.id }}">Use this one</a>)
+        {% endifequal %}
+        {% if user.is_superuser %}
+        (<a href="./delete?id={{ d.id }}">Remove this one</a>)
+        {% endif %}
+        {% endif %}
+        {% endif %}
+        </li>
+        {% endfor %}
+        </ul>
+        <input type="submit" value="Compare" />
+        </form>
     {% else %}
-    {% if user.is_authenticated %}
-    {% ifequal user lang.manager %}
-    (<a href="../use?id={{ d.id }}">Use this one</a>)
-    {% endifequal %}
-    {% if user.is_superuser %}
-    (<a href="./delete?id={{ d.id }}">Remove this one</a>)
+        <p>No local descriptions, nothing to compare.</p>
     {% endif %}
-    {% endif %}
-    {% endif %}
-    </li>
-    {% endfor %}
-    </ul>
-    <input type="submit" value="Compare" />
-    </form>
 {% endblock content %}

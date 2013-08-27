@@ -1,0 +1,39 @@
+{% extends 'wordlist/base.html' %}
+
+{% block submenu %}
+<ul>
+    <li><a href="../">All languages</a></li>
+    <li><b>{{ language }} - English</b></li>
+    <li><a href="../">More words of {{ language }}</a></li>
+    <li><a href="/language/{{ language.slug }}/">More about {{ language }}</a></li>
+</ul>
+{% endblock submenu %}
+
+{% block content %}
+<h1>Words meaning {{ sense }} in {{ language }}</h1>
+
+<p>More about {{sense }}: {{ sense.show_notes }}</p>
+
+{% for word in words %}
+<p>{% if word.word %}<b>{{ word }}</b>
+<p>{{ word.notes }}</p>
+{% else %}</p>
+Not applicable because:
+<p>{{ word.notes }}</p>
+{% endif %}
+<a href="{% url edit_word_for_language langslug=language.slug pk=sense.pk wordid=word.pk %}">Edit</a>
+{% endfor %}
+
+{% if may_edit %}
+<h1>Senses that {{ language }} still does not have</h1> 
+<ul>
+{% for sense in skipped_words %}
+<li>
+<b>{{ sense }}</b>
+{{ sense.show_notes }}
+</li>
+{% endfor %}
+</ul>
+{% endif %}
+
+{% endblock content %}

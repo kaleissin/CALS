@@ -38,6 +38,7 @@
         <a {% ifequal me 'language' %}class="me" {% endifequal %}href="/language/">Languages</a> |
         <a {% ifequal me 'feature' %}class="me" {% endifequal %}href="/feature/">Features</a> |
         <a {% ifequal me 'translation' %}class="me" {% endifequal %}href="/translation/">Translations</a> |
+        <a {% ifequal me 'word' %}class="me" {% endifequal %}href="/word/list/">Words</a> |
         <a {% ifequal me 'people' %}class="me" {% endifequal %}href="/people/">People</a> |
         <a {% ifequal me 'statistics' %}class="me" {% endifequal %}href="/statistics/">Statistics</a> {% comment %}|
         <a {% ifequal me 'bugs' %}class="me" {% endifequal %}href="http://trac.aldebaaran.uninett.no/cals/">Bugs and features</a>
@@ -76,10 +77,10 @@
                 <td rowspan="2" width="180">
                     <div id="techfooter" class="right">
                     <a href="http://validator.w3.org/check?uri=referer"><img
-                        src="{{ MEDIA_URL }}img/valid-xhtml10.png"
+                        src="{{ STATIC_URL }}img/valid-xhtml10.png"
                             alt="Valid XHTML 1.0 Strict" height="31" width="88" /></a>
                     <a href="http://jigsaw.w3.org/css-validator/validator?uri=http://cals.conlang.org{{ request.path }}"><img height="31" width="88"
-                        src="{{ MEDIA_URL }}img/vcss.gif"
+                        src="{{ STATIC_URL }}img/vcss.gif"
                             alt="Valid CSS!" />
                     </a>
                     </div>
@@ -102,7 +103,7 @@
     </div>
 <!--[if lt IE 7]></div><![endif]-->
 <!-- <script type="text/javascript"
-    src="{{ MEDIA_URL }}js/jquery-1.2.5.min.js"></script>
+    src="{{ STATIC_URL }}js/jquery-1.2.5.min.js"></script>
 -->
 </body>
 </html>

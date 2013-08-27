@@ -7,7 +7,9 @@
     {% if user.is_authenticated and user.is_staff %}
     <li><a href="./change">Change</a></li>
     {% endif %}
+    {% if description %}
     <li><a href="./history/">History</a></li>
+    {% endif %}
 </ul>
     <hr />
     <form action="" method="post">
@@ -22,22 +24,52 @@
     <table>
         <tr>
             <th>In-depth description:</th>
-        {% if object.wals %}
-            {% if not object.description.freetext %}<td>Only at {% wals object.id %}</td>{% else %}<td>At {% wals object.id %}</td>{% endif %}
-            {% else %}{% if object.description.freetext_link %}<td><a href="{{ object.description.freetext_link }}">{{ object.description.freetext_link }}</a></td>{% endif %}
-        {% endif %}
+            {% if object.wals %}
+                {% if not object.description.freetext %}
+                <td>Only at {% wals object.id %}</td>
+                {% else %}
+                <td>At {% wals object.id %}</td>
+                {% endif %}
+            {% else %}
+                {% if object.description.freetext_link %}
+                <td><a href="{{ object.description.freetext_link }}">{{ object.description.freetext_link }}</a></td>
+                {% endif %}
+            {% endif %}
         </tr>
         <tr>
             <th>Values:</th>
-            <td></td>
-            <td rowspan="{{ object.values.count|add:1 }}" class="graph">{% feature_graph object %}</td>
+            <td>
+                <table>
+                    <tr>
+                        <th>Conlangs:</th>
+                        <td rowspan="{{ object.values.count|add:1 }}"
+                            class="graph">{% feature_graph object "con" %}</td>
+                    </tr>
+                    {% for value in object.values.all %}
+                    <tr class="{% cycle odd,even %}">
+                        <td><a href="/value/{{ value.id }}">{{ value.name }}</a> 
+                            ({{ value.languagefeature_set.for_conlangs.count }} 
+                            language{{ value.languagefeature_set.for_conlangs.count|pluralize }})</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </td>
+            <td>
+                <table>
+                    <tr>
+                        <th>Natlangs:</th>
+                        <td rowspan="{{ object.values.count|add:1 }}"
+                            class="graph">{% feature_graph object "nat" %}</td>
+                    </tr>
+                    {% for value in object.values.all %}
+                    <tr class="{% cycle odd,even %}">
+                        <td><a href="/value/{{ value.id }}">{{ value.name }}</a> 
+                            ({{ value.languagefeature_set.for_natlangs.count }} 
+                            language{{ value.languagefeature_set.for_natlangs.count|pluralize }})</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </td>
         </tr>
-        {% for value in object.values.all %}
-        <tr class="{% cycle odd,even %}">
-            <td></td>
-            <td><a href="/value/{{ value.id }}">{{ value.name }}</a> 
-                ({{ value.languagefeature_set.count }} language{{ value.languagefeature_set.count|pluralize }})</td>
-        </tr>
-        {% endfor %}
     </table>
 {% endblock content %}

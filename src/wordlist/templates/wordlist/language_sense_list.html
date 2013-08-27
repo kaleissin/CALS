@@ -1,0 +1,10 @@
+{% extends 'wordlist/base.html' %}
+
+{% block content %}
+<h1>English - {{ language }}</h1>
+<ul>
+{% for word in words %}
+<li>{{ word }}</li>
+{% endfor %}
+</ul>
+{% endblock content %}

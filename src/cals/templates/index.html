@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load cals_tags %}
+{% load other_tags %}
 {% block title %}
 Home
 {% endblock title %}
@@ -13,29 +14,6 @@ Home
 <link rel="alternate" type="application/atom+xml" title="Recent comments" href="/feeds/comments/" />
 <meta name="y_key" content="0f4f0fec0e8eceb3" />
 <meta name="verify-v1" content="Ogg2GMii+ZXlMGMqUGIf2PDuCjhxfQCFiTpf9T6159o=" />
-{% comment %}
-<!--
-<script language="javascript" type="text/javascript">
-
-function flipsignup(donew)
-{
-var url = '/inc_entrybox.php?newaccount=' + donew;
-basic_ajax_updater(url, '', 'entrybox');
-}
-
-function focusOnSignup()
-{
-if (document.signup)
-    {
-    document.signup.formusername.focus();
-    document.signup.formusername.selectionStart = 0;
-    document.signup.formusername.selectionEnd = document.signup.formusername.textLength;
-    }   
-}
-
-</script>
--->
-{% endcomment %}
 {% endblock head %}{% block no_submenu %}{% endblock no_submenu %}
 {% block loginbox %}
     <form method="post" action=".">
@@ -86,6 +64,14 @@ if (document.signup)
 
 <div id="content">
 
+    {% if "new_years_eve"|special_date or "new_year"|special_date%}
+    {% include 'new-year' %}
+    {% else %}
+    {% if "christmas"|special_date %}
+    {% include 'christmas' %}
+    {% endif %}
+    {% endif %}
+
     <div class="newsbox">
     <h1>Latest news
     <small><a href="/news/latest/">Older
@@ -96,6 +82,8 @@ if (document.signup)
     <div>{{ entry.content|safe }}
         <p>Pinned: {{ entry.pub_date|date:"Y-m-d H:i" }}</p>
     </div>
+    {% empty %}
+    foo
     {% endfor %}
     {% for entry in news %}
     <h3>{{ entry.pub_date|date:"Y-m-d H:i" }} {{ entry.headline }}</h3>
@@ -126,7 +114,7 @@ usable at all?</li>
     <tr>
         <td>
             <h3>
-                <a href="/feeds/languages/newest/"><img class="icon" src="{{ MEDIA_URL }}img/feed-icon-14x14.png" alt="Feed: New languages"/></a>
+                <a href="/feeds/languages/newest/"><img class="icon" src="{{ STATIC_URL }}img/feed-icon-14x14.png" alt="Feed: New languages"/></a>
                 Newly added</h3>
             <ul>
             {% for lang in langs_newest %}
@@ -136,7 +124,7 @@ usable at all?</li>
         </td>
         <td>
             <h3>
-                <a href="/feeds/languages/last_modified/"><img class="icon" src="{{ MEDIA_URL }}img/feed-icon-14x14.png" alt="Feed: Changed languages"/></a>
+                <a href="/feeds/languages/last_modified/"><img class="icon" src="{{ STATIC_URL }}img/feed-icon-14x14.png" alt="Feed: Changed languages"/></a>
                 Last modified</h3>
             <ul>
             {% for lang in langs_modified %}
@@ -147,7 +135,7 @@ usable at all?</li>
         <td>
             <h3>
                 <a href="/feeds/translations/exercises/"><img
-                class="icon" src="{{ MEDIA_URL }}img/feed-icon-14x14.png" alt="Feed: New translation exercises"/></a>
+                class="icon" src="{{ STATIC_URL }}img/feed-icon-14x14.png" alt="Feed: New translation exercises"/></a>
                 New translation exercises</h3>
             <ul>
             {% for ex in trans_exs_newest %}
@@ -157,7 +145,7 @@ usable at all?</li>
         </td>
         <td>
             <h3>
-                <a href="/feeds/people/recent/"><img class="icon" src="{{ MEDIA_URL }}img/feed-icon-14x14.png" alt="Feed: Recently joined"/></a>
+                <a href="/feeds/people/recent/"><img class="icon" src="{{ STATIC_URL }}img/feed-icon-14x14.png" alt="Feed: Recently joined"/></a>
                 Recently joined</h3>
             <ul>
             {% for person in people %}

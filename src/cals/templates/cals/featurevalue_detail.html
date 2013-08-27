@@ -8,16 +8,31 @@
 {% endblock submenu %}
 {% block content %}
     <table>
-        <tr><th>Category:</th><td>{{ object.feature.category }}</td></tr>
-        <tr><th>Feature:</th><td><a href="/feature/{{ object.feature.id }}/">{{ object.feature }}</a> {% wals object.feature.id %}</td></tr>
-        <tr><th>Name:</th><td>{{ object }}</td></tr>
-        <tr><th colspan="2">Languages ({{ object.languagefeature_set.count }}):</th></tr>
-        {% for lf in object.languagefeature_set.all %}
-        <tr class="{% cycle odd,even %}">
-            <td></td>
-            <td><a href="/language/{{ lf.language.slug }}/feature/{{ lf.feature.id }}/"> {{ lf.language.name }}</a></td>
-            <td>{{ lf.description|default:""|safe }}</td>
+        <tr><th>Category:</th><td colspan="2">{{ object.feature.category }}</td></tr>
+        <tr><th>Feature:</th><td colspan="2"><a href="/feature/{{ object.feature.id }}/">{{ object.feature }}</a> {% wals object.feature.id %}</td></tr>
+        <tr><th>Name:</th><td colspan="2">{{ object }}</td></tr>
+        <tr><th>Languages ({{ object.languagefeature_set.count }}):</th>
+            <td><br />
+                <table>
+                    <tr><th colspan="2">Conlangs ({{ conlangs.count }}):</th></tr>
+                    {% for lf in conlangs %}
+                    <tr class="{% cycle odd,even %}">
+                        <td><a href="/language/{{ lf.language.slug }}/feature/{{ lf.feature.id }}/"> {{ lf.language.name }}</a></td>
+                        <td>{{ lf.description|default:""|safe }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </td>
+            <td><br />
+                <table>
+                    <tr><th colspan="1">Natlangs ({{ natlangs.count }}):</th></tr>
+                    {% for lf in natlangs %}
+                    <tr class="{% cycle odd,even %}">
+                        <td><a href="/language/{{ lf.language.slug }}/feature/{{ lf.feature.id }}/"> {{ lf.language.name }}</a></td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </td>
         </tr>
-        {% endfor %}
     </table>
 {% endblock content %}

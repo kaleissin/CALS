@@ -28,8 +28,8 @@ value_detail_dict = {
         'extra_context': { 'me': 'feature' },
 }
 
-urlpatterns += patterns('django.views.generic',
-        (r'^value/(?P<object_id>[0-9]+)/$',         'list_detail.object_detail', dict(value_detail_dict)),
+urlpatterns += patterns('cals.feature.views',
+        (r'^value/(?P<object_id>[0-9]+)/$',         'show_featurevalue'),
 )
 
 # other

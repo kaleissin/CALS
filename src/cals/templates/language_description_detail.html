@@ -11,7 +11,9 @@
     <li><a href="./change">Change</a></li>
     {% endifequal %}
     {% endif %}
+    {% if description %}
     <li><a href="./history">History</a></li>
+    {% endif %}
 </ul>
 {% endblock submenu %}
 {% block content %}

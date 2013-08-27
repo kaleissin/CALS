@@ -6,32 +6,36 @@
     <li><a href="/feature/">All features</a></li>
     <li><a href="../">Back to overview</a></li>
     {% if user.is_authenticated and user.is_staff %}
-    <li><a href="./change">Change description</a></li>
+    <li><a href="../change">Change description</a></li>
     {% endif %}
     <li><b>History</b></li>
 </ul>
 {% endblock submenu %}
 {% block content %}
     <h1>{{ feature.name }}</h1>
-    <form action="./compare" method="get">
-    <input type="submit" value="Compare" />
-    <ul>
-    {% for d in descriptions %}
-    <li>
-    <input type="radio" value="{{ d.id }}" name="oldid"/> 
-    <input type="radio" value="{{ d.id }}" name="newid"/> 
-    {{ d.last_modified|date:"Y-m-d H:i:s" }}
-    {% showuser d.last_modified_by %}
-    {% if d.current %} 
-    Current
+    {% if descriptions %}
+        <form action="./compare" method="get">
+        <input type="submit" value="Compare" />
+        <ul>
+        {% for d in descriptions %}
+        <li>
+        <input type="radio" value="{{ d.id }}" name="oldid"/>
+        <input type="radio" value="{{ d.id }}" name="newid"/>
+        {{ d.last_modified|date:"Y-m-d H:i:s" }}
+        {% showuser d.last_modified_by %}
+        {% if d.current %}
+        Current
+        {% else %}
+        {% if user.is_authenticated and user.is_staff %}
+        (<a href="../use?id={{ d.id }}">Use this one</a>)
+        {% endif %}
+        {% endif %}
+        </li>
+        {% endfor %}
+        </ul>
+        <input type="submit" value="Compare" />
+        </form>
     {% else %}
-    {% if user.is_authenticated and user.is_staff %}
-    (<a href="../use?id={{ d.id }}">Use this one</a>)
+        <p>No descriptions, nothing to compare.</p>
     {% endif %}
-    {% endif %}
-    </li>
-    {% endfor %}
-    </ul>
-    <input type="submit" value="Compare" />
-    </form>
 {% endblock content %}
