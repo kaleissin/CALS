@@ -13,6 +13,10 @@ middleware here, or combine a Django application with an application of another
 framework.
 
 """
+# Workaround for http://bugs.python.org/issue8098
+# Closes github issue #7
+import _strptime
+
 import os
 
 # We defer to a DJANGO_SETTINGS_MODULE already in the environment. This
