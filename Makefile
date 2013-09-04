@@ -55,10 +55,10 @@ refresh:
 	touch src/$(PROJECT)/wsgi.py
 
 rsync:
-	rsync -avz --exclude-from .gitignore --exclude-from .rsyncignore . ${REMOTE_URI}
+	rsync -avz --checksum --exclude-from .gitignore --exclude-from .rsyncignore . ${REMOTE_URI}
 
 compare:
-	rsync -avz --dry-run --exclude-from .gitignore --exclude-from .rsyncignore . ${REMOTE_URI}
+	rsync -avz --checksum --dry-run --exclude-from .gitignore --exclude-from .rsyncignore . ${REMOTE_URI}
 
 clean:
 	find . -name "*.pyc" -print0 | xargs -0 rm -rf
