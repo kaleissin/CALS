@@ -43,6 +43,6 @@ urlpatterns += patterns('cals.views',
 
         (r'^test/$',                                'test'),
 
-        (r'^$',                                     'auth_login'),
+        (r'^$',                                     'home'),
 )
 

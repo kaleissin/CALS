@@ -35,8 +35,8 @@
 {% endif %}
 {% endblock submenu %}
 {% block content %}
-    {% ifequal profile.user user %}
-    <div class="help">
+    {% if private %}
+    <div class="help private">
     {% if not profile.seen_profile %}
     <h1>Welcome to CALS</h1>
 
@@ -48,8 +48,11 @@
     yourself, click <a href="./change">Change</a> in the menu to the
     right.</p>
 
-    <p>On every page you will find your username, {{ user.username }}, 
-    (or display name{% if profile.display_name %}, {{ profile.display_name }}, {% endif %} 
+    <p>Any stuff surrounded by a <span class="private">pale green
+    border</span> is only visible to you.</p>
+
+    <p>On every page you will find your username, {{ user.username }},
+    (or display name{% if profile.display_name %}, {{ profile.display_name }}, {% endif %}
     if you have set this) in the upper right corner of every page, like
     this: {% showuser profile.user %}. Clicking on that will take you
     back here. You can also add languages and change any of the public
@@ -61,20 +64,23 @@
     <a href="http://en.gravatar.com/site/signup/">set up a gravatar</a>,
     one will be generated for you.</p>
     </div>
-    {% endifequal %}
+    {% endif %}
 
     <h1>{% gravatar object 20 %} {{ profile.display_name|default:object.username }}</h1>
+
+    {% if private %}<h2>You</h2>{% endif %}
+
     <table>
         <tr><th>Username:</th><td>{{ object.username }}</td></tr>
         <tr><th>Link:</th><td><a href="{{ profile.get_absolute_url }}">{{ request.SITE }}{{ profile.get_absolute_url }}</a></td></tr>
         {% ifequal user.username object.username %}
         <tr class="private"><th>Email:</th>
-            <td>{% if object.email %}{{ object.email }}{% else %}None registered{% endif %} 
+            <td>{% if object.email %}{{ object.email }}{% else %}None registered{% endif %}
                 {# <span class="message">Your email-address is only shown to you</span></td> #}
         </tr>
         {% comment %}
         <tr><th>Secret:</th>
-            <td>{% if object.secret %}{{ object.secret }}{% else %}None registered{% endif %} 
+            <td>{% if object.secret %}{{ object.secret }}{% else %}None registered{% endif %}
                 <span class="message">Your secret is only shown to you</span></td>
         </tr>
         {% endcomment %}
@@ -99,25 +105,6 @@
             </td>
         </tr>
         {% endif %}
-        {% comment %}
-        {% for web20acc in user.web20.all %}
-        <tr>
-            <th>{{ web20acc.type }}:</th>
-            <td>{% if web20acc.username %}<a href="http://twitter.com/{{ web20acc.username }}">{{ web20acc.username }}</a>{% else %}None registered{% endif %}</td>
-        </tr>
-        {% endfor %}
-        {% if profile.twittername %} 
-        <tr><th>Latest tweet:</th>
-            <td class="tweet">
-                <ul id="twitter_update_list"></ul>
-            </td>
-        </tr>
-        {% endif %}
-        <tr>
-            <th>Also on:</th>
-            <td>{% web20accounts user %}</td>
-        </tr>
-        {% endcomment %}
         <tr><th>Joined:</th>
             <td>{{ object.date_joined|date:"Y-m-d H:i T" }}</td>
         </tr>
@@ -154,85 +141,76 @@
             </td>
         </tr>
         {% endif %}
-        {% if object.translations.count %}
-        <tr>
-            <th>Translations ({{ object.translations.count }}):</th>
-            <td>
-                <table>
-                {% for translation in object.translations.all %}
-                    <tr class="{% cycle odd,even %}">
-                        <th>{{ translation.exercise }}</th>
-                        <td>{{ translation.language }}</td>
-                        <td><a href="/translation/language/{{ translation.language.slug }}/" class="plaintext">{{ translation }}</a></td>
-                    </tr>
-                {% endfor %}
-                </table>
-            </td>
-        </tr>
-        {% endif %}
-        {% if object.badges.count %}
-        <tr>
-            <th>Badges earned ({{ object.badges.count }}):</th>
-            <td>
+    </table>
+
+    {% if object.translations.count %}
+    <h2>Translations ({{ object.translations.count }})</h2>
+    <div>
+        <table>
+        {% for translation in object.translations.all %}
+            <tr class="{% cycle odd,even %}">
+                <th>{{ translation.exercise }}</th>
+                <td>{{ translation.language }}</td>
+                <td><a href="/translation/language/{{ translation.language.slug }}/" class="plaintext">{{ translation }}</a></td>
+            </tr>
+        {% endfor %}
+        </table>
+    </div>
+    {% endif %}
+
+    {% if object.badges.count %}
+    <h2>Badges ({{ object.badges.count }})</h2>
+    <div>
             {% for badge_row in object.badges.all|partition %}
             <div class="badge-list">
             {% for badge in badge_row %}{% show_badge badge %}{% endfor %}
             </div>
             {% endfor %}
-            </td>
-        </tr>
-        {% endif %}
-        {% if social_connections %}
-        <tr>
-            <th>Disconnect from:</th>
-            <td>
-                <ul>
-                {% for sc in social_connections %}
-                <li><a href="{% url "socialauth_disconnect_individual" sc.provider sc.connection.id %}?next={{ whereami }}">{{ sc.provider }}</a></li>
-                {% endfor %}
-                </ul>
-            </td>
-        </tr>
-        {% endif %}
-        {% if potential_social_connections %}
-        <tr>
-            <th>Connect to:</th>
-            <td>
-                <ul>
-                {% for psc in potential_social_connections %}
-                <li><a href="{% url "socialauth_begin" psc  %}">{{ psc }}</a></li>
-                {% endfor %}
-                </ul>
-            </td>
-        </tr>
-        {% endif %}
-        {% ifequal user.username object.username %}
-        <tr class="private">
-            <th>Private messages</th>
-            <td>
-            {% if pms %}
-            {% for pm in pms %}
-            <div class="pm">
-            <div class="plaintext">{{ pm.text }}</div>
-            <div class="pm-footer">
-            sent by {% showuser pm.sender %} at {{ pm.sent }} 
-            | <a href="{% url 'add_pm' object_id=pm.sender.id %}{% if whereami %}?next={{ whereami }}{% endif %}">send pm</a></a>
-            | <a href="{% url 'archive_pm' object_id=pm.recipient.id msgid=pm.id %}{% if whereami %}?next={{ whereami }}{% endif %}">archive</a></a>
-            | <a href="{% url 'delete_pm' object_id=pm.recipient.id msgid=pm.id %}{% if whereami %}?next={{ whereami }}{% endif %}">delete</a></a>
-            </div>
-            </div>
-            {% endfor %}
-            {% else %}
-            None here, {{ pms_archived.count }} in the archive.
-            {% endif %}
-            </td>
-        </tr>
-        {% endifequal %}
-    </table>
-    {% comment %}
-    {% if user.web20.type %}
-    <script type="text/javascript" src="http://twitter.com/javascripts/blogger.js"></script>
-    <script type="text/javascript" src="http://twitter.com/statuses/user_timeline/{{ profile.twittername }}.json?callback=twitterCallback2&count=1"></script>
+    </div>
     {% endif %}
-    {% endcomment %}
+
+    {% if private %}
+    <div class="private">
+    <h2>Connections</h2>
+    {% if social_connections %}
+    <div>
+        <h3>Disconnect from:</h3>
+        <ul>
+        {% for sc in social_connections %}
+        <li><a href="{% url "socialauth_disconnect_individual" sc.provider sc.connection.id %}?next={{ whereami }}"><img src="{{ STATIC_URL }}{{ sc.icon }}" /> {{ sc.provider }}</a></li>
+        {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    {% if potential_social_connections %}
+    <div>
+        <h3>Connect to:</h3>
+        <ul>
+        {% for psc in potential_social_connections %}
+        <li><a href="{% url "socialauth_begin" psc.provider %}"><img src="{{ STATIC_URL }}{{ psc.icon }}" /> {{ psc.provider }}</a></li>
+        {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <h2>Private messages</h2>
+    <div>
+        {% if pms %}
+        {% for pm in pms %}
+        <div class="pm">
+        <div class="plaintext">{{ pm.text }}</div>
+        <div class="pm-footer">
+        sent by {% showuser pm.sender %} at {{ pm.sent }}
+        | <a href="{% url 'add_pm' object_id=pm.sender.id %}{% if whereami %}?next={{ whereami }}{% endif %}">send pm</a></a>
+        | <a href="{% url 'archive_pm' object_id=pm.recipient.id msgid=pm.id %}{% if whereami %}?next={{ whereami }}{% endif %}">archive</a></a>
+        | <a href="{% url 'delete_pm' object_id=pm.recipient.id msgid=pm.id %}{% if whereami %}?next={{ whereami }}{% endif %}">delete</a></a>
+        </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        None here, {{ pms_archived.count }} in the archive.
+        {% endif %}
+    </div>
+    </div>
+    {% endif %}
 {% endblock content %}

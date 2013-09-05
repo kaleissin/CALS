@@ -40,8 +40,9 @@ from translations.models import TranslationExercise, Translation
 
 from nano.tools import render_page
 from nano.blog.models import Entry
+from nano.blog.tools import get_nano_blog_entries                                                                                                                                         
 
-from tagtools import set_tags_for_model
+from tagtools import set_tags_for_model, get_tagcloud_for_model
 
 _error_forbidden_msg = "You don't have the necessary permissions to edit here."
 error_forbidden = render_to_string('error.html', 
@@ -954,3 +955,37 @@ def test(request, *args, **kwargs):
             }
     return render_page(request, template, data)
 
+def home(request, *args, **kwargs):
+    _LOG.info('Homepage')
+    greeting = None
+    nexthop = ''
+    nextfield = u'next'
+    langs = Language.objects.exclude(slug__startswith='testarossa')
+    langs_newest = langs.order_by('-created')[:5]
+    langs_modified = langs.order_by('-last_modified')[:5]
+    people = User.objects.exclude(username='countach')
+    people_recent = people.order_by('-date_joined')[:5]
+    trans_ex_recent = TranslationExercise.objects.order_by('-added')[:5]
+    if nextfield in request.REQUEST:
+        nexthop = request.REQUEST[nextfield]
+    if request.method == 'POST':
+        _LOG.debug('request: %s', request.POST)
+
+        did_login = auth_login(request, *args, **kwargs)
+        if did_login:
+            return did_login
+
+    l_cloud = get_tagcloud_for_model(Language, steps=7, min_count=2)
+
+    news, devel_news = get_nano_blog_entries()
+
+    data = {'me': 'home',
+            'next': nexthop,
+            'news': news,
+            'devel_news': devel_news,
+            'language_cloud': l_cloud,
+            'langs_newest': langs_newest,
+            'langs_modified': langs_modified,
+            'trans_exs_newest': trans_ex_recent,
+            'people': people_recent,}
+    return render_page(request, 'index.html', data)

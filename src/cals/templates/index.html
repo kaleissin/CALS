@@ -15,36 +15,6 @@ Home
 <meta name="y_key" content="0f4f0fec0e8eceb3" />
 <meta name="verify-v1" content="Ogg2GMii+ZXlMGMqUGIf2PDuCjhxfQCFiTpf9T6159o=" />
 {% endblock head %}{% block no_submenu %}{% endblock no_submenu %}
-{% block loginbox %}
-    <form method="post" action=".">
-        {% csrf_token %}
-        <fieldset class="loginbox">
-            <legend>Log in/sign up</legend>
-            <table>
-                <tr>
-                    <th><label for="id_username">Username:</label></th>
-                    <td><input id="id_username" type="text" name="username" maxlength="30" /></td>
-                </tr>
-                <tr>
-                    <th><label for="id_password">Password:</label></th>
-                    <td><input id="id_password" type="password" name="password" maxlength="30" /></td>
-                </tr>
-                <tr><td></td>
-                    <td>
-                        <button type="submit" name="login" value="login">Log in</button>&nbsp;<a href="/account/signup/">Sign up</a>
-                       <!-- <button type="submit" name="signup" value="signup">Sign up</button> -->
-                    </td>
-                </tr>
-                <tr><td></td><td><a href="/password/reset/">Reset my password</a></td></tr>
-            </table>
-            <input type="hidden" name="next" value="{{ next }}" />
-        </fieldset>
-    </form>
-{% if form.errors %}
-<p>Your username and password didn't match. Please try again.</p>
-{% endif %}
-{% endblock loginbox %}
-
 {% block content %}
 
 <div id="sidebar">

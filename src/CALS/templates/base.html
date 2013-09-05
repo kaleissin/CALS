@@ -16,11 +16,10 @@
     <table>
         <tr>
             <th><h1><a href="/">CALS<sub>β</sub></a></h1></th><td><h1>Conlang Atlas of Language Structures</h1></td>
-            <td id="login">
+            <td id="login" class="right">
                 {% if not user.is_authenticated %}
-                {% block loginbox %}
-                    <a class="right" href="/?next={{ request.path }}">Log&nbsp;in</a>
-                {% endblock loginbox %}
+                <a class="right" href="/account/login/?next={{ request.get_full_path }}">Log&nbsp;in</a> |
+                <a class="right" href="/account/signup/?next={{ request.get_full_path }}">Sign&nbsp;up</a>
                 {% endif %}
             </td>
         </tr>
