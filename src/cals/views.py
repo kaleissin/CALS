@@ -1,32 +1,18 @@
-# Create your views here.
-from pprint import pprint, pformat
-from random import choice, sample
-import time
-import unicodedata
-import sys
-from datetime import datetime
-sys.stderr = sys.stdout
-
 import logging
 _LOG = logging.getLogger(__name__)
 _LOG.info(__name__)
 
-from countries.models import Country
 from actstream import action as streamaction
 
 from django.contrib.contenttypes.models import ContentType
-from django.contrib import auth, messages #.authenticate, auth.login
+from django.contrib import messages #.authenticate, auth.login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.core.mail import send_mail
 from django.http import HttpResponseRedirect, HttpResponseNotFound, HttpResponseForbidden
 from django.shortcuts import get_object_or_404
-from django.template import loader, Context
 from django.template.loader import render_to_string
 from django.views.generic.list_detail import object_list
-from django.views.generic.create_update import delete_object
-from django.utils.encoding import smart_unicode
-from django.db.models import Q, Count
+from django.db.models import Q
 
 from paginators.stringpaginator import SingleLetterPaginator, InvalidPage
 from paginators import Paginator
@@ -37,15 +23,16 @@ from cals.tools.models import Description
 from cals.language.models import Language, LanguageName
 from cals.models import LanguageFeature
 
-from cals.models import asciify, slugify
+from cals.models import slugify
 from cals.forms import FeatureValueForm, CategoryForm, FeatureForm, \
-        NewFeatureValueFormSet, CompareTwoFeaturesForm, DescriptionForm, \
-        CompareTwoForm, LanguageForm, EditorForm, UserForm, ProfileForm, \
-        SearchForm
+        NewFeatureValueFormSet, DescriptionForm, \
+        CompareTwoForm, LanguageForm, EditorForm, SearchForm
 from cals.statistics import generate_global_stats
 from cals.tools import description_diff, compare_features
 from cals.modeltools import compare_languages, \
         get_averageness_for_lang, LANGTYPES
+
+from cals.people.views import auth_login
 
 from cals.feature.views import show_feature
 
@@ -53,10 +40,8 @@ from translations.models import TranslationExercise, Translation
 
 from nano.tools import render_page
 from nano.blog.models import Entry
-from nano.blog.tools import get_nano_blog_entries
-from nano.privmsg.models import PM
 
-from tagtools import get_tagcloud_for_model, set_tags_for_model
+from tagtools import set_tags_for_model
 
 _error_forbidden_msg = "You don't have the necessary permissions to edit here."
 error_forbidden = render_to_string('error.html', 
@@ -80,9 +65,6 @@ def _get_exercise(*args, **kwargs):
     #assert False, kwargs.get('exercise', None)
     return get_object_or_404(TranslationExercise, slug=kwargs.get('exercise', None))
 
-def _get_profile(*args, **kwargs):
-    return get_object_or_404(User, id=kwargs.get('object_id', None))
-
 def _get_user(*args, **kwargs):
     return get_object_or_404(User, username=kwargs.get('user', None))
 
@@ -93,7 +75,6 @@ def _get_url_pieces(name='slug', **kwargs):
         pieces = filter(None, kwargs[name].split('+'))
         if pieces:
             return pieces
-    # '%s not in kwargs: %s' % (name, pformat(kwargs))
     return None
 
 def langs_for_user(user):
@@ -201,9 +182,6 @@ def revert_description(user, descriptions, revert_to):
             description_last_modified_by = user
             description.save()
 
-def language_tag_cloud(steps=6, min_count=1):
-    return get_tagcloud_for_model(Language, steps, min_count)
-
 # Feature
 def compare_feature(request, *args, **kwargs):
     me = 'feature'
@@ -269,18 +247,6 @@ def list_feature(request, *args, **kwargs):
     template = 'cals/feature_list.html'
     return object_list(request, queryset=queryset, template_name=template,
             extra_context=extra_context)
-
-def list_people(request, template_name='cals/profile_list.html', *args, **kwargs):
-    extra_context = {'me': 'people'}
-    if 'prolificness' in request.GET:
-        extra_context['prolificness'] = True
-        queryset = User.objects.filter(profile__is_lurker=False).annotate(m=Count('manages'), e=Count('edits')).order_by('-m', '-e')
-    else:
-        queryset = Profile.objects.filter(is_lurker=False, is_visible=True).order_by('display_name')
-    lurk_count = Profile.objects.filter(is_lurker=True, is_visible=True).count()
-    extra_context['lurk_count'] = lurk_count
-    return object_list(request, queryset=queryset, template_name=template_name,
-            extra_context=extra_context, **kwargs)
 
 # language
 
@@ -952,185 +918,12 @@ def describe_languagefeature(request, *args, **kwargs):
 
 # END LF
 
-def show_profile(request, *args, **kwargs):
-    me = 'people'
-    user = _get_profile(*args, **kwargs)
-    profile = None
-    whereami = request.META.get('PATH_INFO', None)
-    try:
-        profile = user.get_profile()
-    except Profile.DoesNotExist:
-        return HttpResponseNotFound()
-
-    social_links = {
-            'twitter': 'http://twitter.com/account/redirect_by_id?id=%s',
-            'github': 'https://github.com/%s'
-    }
-    social_unconnected = set(social_links.keys())
-
-    looking_in_the_mirror = request.user == user
-
-    seen = profile.seen_profile
-    
-    pms, pms_archived, pms_sent = (), (), ()
-    social_connections = []
-    if looking_in_the_mirror:
-        pms = PM.objects.received(user)
-        pms_archived = PM.objects.archived(user)
-        pms_sent = PM.objects.sent(user)
-
-        for sa in user.social_auth.all():
-            out = {}
-            provider = sa.provider
-            social_unconnected.discard(provider)
-            link = social_links[provider] 
-            out['provider'] = provider
-            out['link'] = link % sa.id
-            out['connection'] = sa
-            social_connections.append(out)
-    
-    data = {'object': user, 
-            'profile': profile, 
-            'me': me, 
-            'seen': seen,
-
-            'pms': pms,
-            'pms_archived': pms_archived,
-            'pms_sent': pms_sent,
-
-            'social_connections': social_connections,
-            'potential_social_connections': social_unconnected,
-            
-            'whereami': whereami,
-            }
-    return render_page(request, 'profile_detail.html', data)
-
-@login_required
-def change_profile(request, *args, **kwargs):
-    me = 'people'
-    user = _get_profile(*args, **kwargs)
-    if user != request.user:
-        return HttpResponseNotFound()
-    profile = None
-    try:
-        profile = user.get_profile()
-    except Profile.DoesNotExist:
-        return HttpResponseNotFound()
-    #web20acc = user.web20.all()
-
-    _LOG.info('User: %s', user)
-    _LOG.info('Profile: %s', profile)
-    uform = UserForm(instance=user)
-    pform = ProfileForm(instance=profile)
-    #w20forms = [Web20Form(instance=w20) for w20 in web20acc]
-    #new_w20 = Web20Form(prefix="new_w20")
-    if request.method == 'POST':
-        _LOG.debug('POST %s', request.POST)
-        uform = UserForm(data=request.POST, instance=user)
-        pform = ProfileForm(data=request.POST, instance=profile)
-        if uform.is_valid() and pform.is_valid():
-            _LOG.debug('Saving form')
-            user = uform.save()
-            profile = pform.save()
-            _LOG.debug('Form saved')
-            _LOG.debug('Country:', profile.country)
-            return HttpResponseRedirect('/people/%i' % user.id)
-    data = {#'w20forms': w20forms, 
-            #'new_w20': new_w20, 
-            'uform': uform,
-            'pform': pform, 
-            'me': me}
-    return render_page(request, 'profile_form.html', data)
-
 def show_stats(request, *args, **kwargs):
     me = 'statistics'
     data = {'me': me}
 
     data.update(generate_global_stats())
     return render_page(request, 'statistics.html', data)
-
-def auth_login(request, *args, **kwargs):
-    _LOG.info('Starting auth_login')
-    greeting = None
-    next = ''
-    langs = Language.objects.exclude(slug__startswith='testarossa')
-    langs_newest = langs.order_by('-created')[:5]
-    langs_modified = langs.order_by('-last_modified')[:5]
-    people = User.objects.exclude(username='countach')
-    people_recent = people.order_by('-date_joined')[:5]
-    trans_ex_recent = TranslationExercise.objects.order_by('-added')[:5]
-    if u'next' in request.REQUEST:
-        next = request.REQUEST[u'next']
-    if request.method == 'POST':
-        _LOG.debug('request: %s', request.POST)
-
-        # Login
-        if not request.user.is_authenticated():
-            username = asciify(smart_unicode(request.POST[u'username'], errors='ignore').strip())
-            password = request.POST['password'].strip()
-            if username and password:
-                try:
-                    _LOG.debug('Form valid')
-                    try:
-                        user = User.objects.get(username=username)
-                        profile = user.get_profile()
-                    except User.DoesNotExist:
-                        try:
-                            userslug = slugify(username)
-                            profile = Profile.objects.get(slug=userslug)
-                            user = profile.user
-                        except Profile.DoesNotExist:
-                            error = "User '%s' does not exist! Typo?" % username
-                            messages.error(request, error)
-                            _LOG.warn("User '%s' does not exist", username)
-                            if u'next' in request.REQUEST:
-                                _LOG.warn("Redirecting back to '%s' after failed login", request.POST[u'next'] or '[redierct missing]')
-                                return HttpResponseRedirect(request.POST[u'next'])
-                    except Profile.DoesNotExist:
-                        error = "User %s is incomplete, lacks profile" % username
-                        messages.error(request, error)
-                        _LOG.warn(error)
-                        if u'next' in request.REQUEST:
-                            _LOG.warn("Redirecting back to '%s' after failed login", request.POST[u'next'] or '[redierct missing]')
-                            return HttpResponseRedirect(request.POST[u'next'])
-                    user = auth.authenticate(username=user.username, password=password)
-                    _LOG.info("User: %s", pformat(user))
-                    if user is not None:
-                        auth.login(request, user)
-
-                        # IPv6
-                        if ':' in request.META.get('REMOTE_ADDR'):
-                            profile.seen_ipv6 = datetime.now()
-                            messages.success(request, "Welcome, oh fellow user of IPv6! A badge is on the way.")
-                            profile.save()
-                        else:
-                            messages.success(request, 'Welcome!')
-
-                    else:
-                        _LOG.warn("Invalid user for some reason")
-                        error = "Couldn't log you in: Your username and/or password does not match with what is stored here."
-                        messages.error(request, error)
-                except CALSUserExistsError, e:
-                    error = "Couldn't sign you up: " + e
-                    messages.error(request, error)
-            if u'next' in request.REQUEST:
-                _LOG.info('Redirecting back to %s', request.POST[u'next'])
-                return HttpResponseRedirect(request.POST[u'next'])
-
-    l_cloud = language_tag_cloud(steps=7, min_count=2)
-
-    news, devel_news = get_nano_blog_entries()
-
-    data = {'me': 'home', 
-            'next': next,
-            'news': news,
-            'devel_news': devel_news,
-            'language_cloud': l_cloud,
-            'langs_newest': langs_newest,
-            'langs_modified': langs_modified,
-            'trans_exs_newest': trans_ex_recent,
-            'people': people_recent,}
-    return render_page(request, 'index.html', data)
 
 def page_in_kwargs_or_get(request, kwargs):
     """If an url has the key-value-pair page=<page> in kwargs or
@@ -1150,12 +943,6 @@ def in_kwargs_or_get(request, kwargs, key, value):
     if kwargs.get(key, '') == value or value in request.GET:
         return True
     return False
-
-def show_people_map(request, *args, **kwargs):
-    people = User.objects.filter(is_active=True)
-
-def all_people_map(request, *args, **kwargs):
-    people = User.objects.filter(is_active=True)
 
 def test(request, *args, **kwargs):
     template = 'test.html'

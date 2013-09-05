@@ -6,7 +6,7 @@ urlpatterns = patterns('',
         (r'^$',                       RedirectView.as_view(url='/people/p1/')),
 )
 
-urlpatterns += patterns('cals.views',
+urlpatterns += patterns('cals.people.views',
         (r'^map$',                           'show_people_map'),
         (r'^(?P<object_id>[0-9]+)/$',        'show_profile'), 
         (r'^(?P<object_id>[0-9]+)/change$',  'change_profile'), 
