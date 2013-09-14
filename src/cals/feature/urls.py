@@ -1,5 +1,6 @@
 from django.conf.urls.defaults import *
 from django.contrib.auth.models import User
+from django.views.generic import RedirectView
 
 from voting.views import vote_on_object
 
@@ -10,25 +11,19 @@ FEATURE_HISTORY_RE = r'^' + FEATURE_RE + r'history/'
 SUGGESTED_RE = r'^suggested/'
 SUGGESTED_FEATURE_RE = SUGGESTED_RE + FEATURE_RE
 
-feature_list_dict = {
-        'queryset': Category.active_objects.filter(feature__active=True).distinct().order_by('id'),
-        'template_name': 'cals/feature_list.html', 
-        'extra_context': { 'me': 'feature' },
-}
-
 suggested_features_dict = {
         'queryset': Category.objects.filter(feature__active=False).distinct().order_by('id'),
         'template_name': 'cals/suggested_feature_list.html', 
         'extra_context': { 'me': 'feature' },
 }
 
-urlpatterns = patterns('django.views.generic',
-        (r'^$',                             'simple.redirect_to', {'url': '/feature/p1/'}),
-        (r'^p(?P<page>[0-9]+)/$',           'list_detail.object_list', feature_list_dict),
+urlpatterns = patterns('',
+        (r'^$',                            RedirectView.as_view(**{'url': '/feature/p1/'})),
 #         (r'^suggested/$',                   'list_detail.object_list', suggested_features_dict),
 )
 
 urlpatterns += patterns('cals.feature.views',
+        (r'^p(?P<page>[0-9]+)/$',          'list_feature'),
         (r'^'+FEATURE_RE+r'$',             'show_feature'),
         (r'^(?P<objects>[+0-9]+)/$',       'compare_feature'), 
         (r'^'+FEATURE_RE+r'change$',       'change_feature_description'),

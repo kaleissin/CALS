@@ -10,21 +10,19 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib import messages #.authenticate, auth.login
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponseNotFound, HttpResponseForbidden
-from django.shortcuts import get_object_or_404
-from django.views.generic.list_detail import object_list
+from django.shortcuts import get_object_or_404, render
+from django.views.generic import ListView
 
 from cals.feature.models import Feature, FeatureValue, Category
 from cals.tools.models import Description
 from cals.language.models import Language
 from cals.models import LanguageFeature
 
-from cals.forms import FeatureValueForm, CategoryForm, FeatureForm, \
-        NewFeatureValueFormSet, CompareTwoFeaturesForm, DescriptionForm, \
-        CompareTwoForm
+from cals.forms import (FeatureValueForm, CategoryForm, FeatureForm,
+        NewFeatureValueFormSet, CompareTwoFeaturesForm, DescriptionForm,
+        CompareTwoForm)
 from cals.tools import description_diff, compare_features
 from cals.modeltools import get_averageness_for_lang, LANGTYPES
-
-from nano.tools import render_page
 
 def _get_feature(*args, **kwargs):
     return get_object_or_404(Feature, id=kwargs.get('object_id', None))
@@ -162,7 +160,7 @@ def compare_feature(request, *args, **kwargs):
             'features': fs,
             'fvs': fvs,
             }
-    return render_page(request, 'feature_compare.html', data)
+    return render(request, 'feature_compare.html', data)
 
 @login_required
 def change_or_add_feature(request, *args, **kwargs):
@@ -175,14 +173,17 @@ def change_or_add_feature(request, *args, **kwargs):
         'fvformset': valueformset,
     }
 
-    return render_page(request, 'cals/suggested_feature_form.html', data)
+    return render(request, 'cals/suggested_feature_form.html', data)
 
-def list_feature(request, *args, **kwargs):
-    extra_context = {'me': 'feature'}
-    queryset = Category.objects.all().order_by('id')
-    template = 'cals/feature_list.html'
-    return object_list(request, queryset=queryset, template_name=template,
-            extra_context=extra_context)
+class ListFeatureView(ListView):
+    queryset = Category.active_objects.filter(feature__active=True).distinct().order_by('id')
+    template_name = 'cals/feature_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ListFeatureView, self).get_context_data(**kwargs)
+        context['me'] = 'feature'
+        return context
+list_feature = ListFeatureView.as_view()
 
 def show_feature(request, features=None, object_id=None, template_name='feature_detail.html', *args, **kwargs):
     me = 'feature'
@@ -203,7 +204,7 @@ def show_feature(request, features=None, object_id=None, template_name='feature_
     data = {'object': feature, 
             'me': me, 
             'cform': cform}
-    return render_page(request, template_name, data)
+    return render(request, template_name, data)
 
 @login_required
 def change_feature_description(request, *args, **kwargs):
@@ -241,7 +242,7 @@ def change_feature_description(request, *args, **kwargs):
             'form': form,
             'preview': preview,
             'feature': feature,}
-    return render_page(request, 'feature_description_form.html', data)
+    return render(request, 'feature_description_form.html', data)
 
 def show_feature_history(request, *args, **kwargs):
     me = 'feature'
@@ -253,7 +254,7 @@ def show_feature_history(request, *args, **kwargs):
             'descriptions': descriptions,
             'feature': feature,
             }
-    return render_page(request, 'feature_description_history_list.html', data)
+    return render(request, 'feature_description_history_list.html', data)
 
 def compare_feature_history(request, *args, **kwargs):
     me = 'feature'
@@ -281,7 +282,7 @@ def compare_feature_history(request, *args, **kwargs):
             'newest': newest,
             'patch': patch,
             'feature': feature,}
-    return render_page(request, 'feature_description_history_compare.html', data)
+    return render(request, 'feature_description_history_compare.html', data)
 
 @login_required
 def revert_feature_description(request, object_id=None, *args, **kwargs):
@@ -313,7 +314,7 @@ def show_featurevalue(request, *args, **kwargs):
     data['natlangs'] = featurevalue.languagefeature_set.for_natlangs()
     #filter(language__natlang=True)
 
-    return render_page(request, template, data)
+    return render(request, template, data)
 
 # language
 
