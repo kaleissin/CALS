@@ -306,6 +306,7 @@ td.bgimg { margin-right: 250px; }
 .help {
     font-size: 0.7em;
     color: #008000;
+    max-width: 60em;
 }
 
 th h1 { color: #ffde28; }
