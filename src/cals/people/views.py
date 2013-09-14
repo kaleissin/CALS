@@ -20,9 +20,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect, HttpResponseNotFound
 from django.shortcuts import get_object_or_404, render
-from django.views.generic.list_detail import object_list
 from django.utils.encoding import smart_unicode
 from django.db.models import Count
+from django.views.generic import ListView
 
 from cals.people.models import Profile
 from cals.language.models import Language
@@ -32,7 +32,6 @@ from cals.forms import UserForm, ProfileForm
 
 from translations.models import TranslationExercise
 
-from nano.tools import render_page
 from nano.privmsg.models import PM
 
 class CALSError(Exception):
@@ -50,17 +49,36 @@ def show_people_map(request, *args, **kwargs):
 def all_people_map(request, *args, **kwargs):
     people = User.objects.filter(is_active=True)
 
-def list_people(request, template_name='cals/profile_list.html', *args, **kwargs):
-    extra_context = {'me': 'people'}
-    if 'prolificness' in request.GET:
-        extra_context['prolificness'] = True
-        queryset = User.objects.filter(profile__is_lurker=False).annotate(m=Count('manages'), e=Count('edits')).order_by('-m', '-e')
-    else:
-        queryset = Profile.objects.filter(is_lurker=False, is_visible=True).order_by('display_name')
-    lurk_count = Profile.objects.filter(is_lurker=True, is_visible=True).count()
-    extra_context['lurk_count'] = lurk_count
-    return object_list(request, queryset=queryset, template_name=template_name,
-            extra_context=extra_context, **kwargs)
+class ListPeopleView(ListView):
+    queryset = User.objects.filter(profile__is_lurker=False, profile__is_visible=True)
+    template_name = 'cals/profile_list.html'
+    http_method_names = [u'get', u'head', u'options', u'trace']
+
+    def __init__(self, **kwargs):
+        super(ListPeopleView, self).__init__(**kwargs)
+        self.lurk_count = Profile.objects.filter(is_lurker=True, is_visible=True).count()
+        self.prolificness = False
+
+    def get(self, request, *args, **kwargs):
+        if self.request.GET.has_key('prolificness'):
+            self.prolificness = True
+        return super(ListPeopleView, self).get(request, *args, **kwargs)
+
+    def get_queryset(self):
+        queryset = super(ListPeopleView, self).get_queryset()
+        if self.prolificness:
+            queryset = queryset.annotate(m=Count('manages'), e=Count('edits')).order_by('-m', '-e')
+        else:
+            queryset = queryset.order_by('profile__display_name')
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super(ListPeopleView, self).get_context_data(**kwargs)
+        context['me'] = 'people'
+        context['prolificness'] = self.prolificness
+        context['lurk_count'] = self.lurk_count
+        return context
+list_people = ListPeopleView.as_view()
 
 def show_profile(request, *args, **kwargs):
     me = u'people'
@@ -86,7 +104,7 @@ def show_profile(request, *args, **kwargs):
                     u'provider': u'github',
             }
     }
-    unsocial = social.keys()
+    unsocial = set(social.keys())
 
     pms, pms_archived, pms_sent = (), (), ()
 
@@ -104,7 +122,7 @@ def show_profile(request, *args, **kwargs):
             out = social[provider]
             out[u'connection'] = sa
             social_connections.append(out)
-            unsocial.pop(provider, None)
+            unsocial.discard(provider)
         for us in unsocial:
             social_unconnected.append(social[us])
     
@@ -129,7 +147,7 @@ def show_profile(request, *args, **kwargs):
             
             'whereami': whereami,
             }
-    return render_page(request, 'profile_detail.html', data)
+    return render(request, 'profile_detail.html', data)
 
 @login_required
 def change_profile(request, *args, **kwargs):
@@ -161,7 +179,7 @@ def change_profile(request, *args, **kwargs):
     data = {'uform': uform,
             'pform': pform, 
             'me': me}
-    return render_page(request, 'profile_form.html', data)
+    return render(request, 'profile_form.html', data)
 
 def check_for_ipv6(request, profile):
     if ':' in request.META.get('REMOTE_ADDR'):
