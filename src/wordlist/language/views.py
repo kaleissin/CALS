@@ -1,9 +1,12 @@
 import logging
 
-from django.views.generic import TemplateView, DetailView, ListView
+from django.views.generic import (TemplateView,
+                                  DetailView,
+                                  ListView,
+                                  TemplateResponseMixin,
+                                  View,
+                                  )
 from django.http import HttpResponseRedirect, HttpResponseForbidden
-from django.views.generic.simple import redirect_to
-from django.views.generic.base import TemplateResponseMixin, View
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
@@ -70,7 +73,7 @@ class AddWordForLanguageView(WordlistMixin, TemplateResponseMixin, View):
         self.object = None
         if self.word_id:
             self.object = get_object_or_404(Word, pk=self.word_id, language=self.language)
-        self.sense = get_object_or_404(Sense, pk=pk) 
+        self.sense = get_object_or_404(Sense, pk=pk)
         form = WordForm(initial=self.get_initial())
 
         context['language'] = self.language
@@ -170,7 +173,7 @@ class SenseDetailView(WordlistMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(SenseDetailView, self).get_context_data(**kwargs)
         pk = int(context['params'].get('pk', None))
-        self.sense = get_object_or_404(Sense, pk=pk) 
+        self.sense = get_object_or_404(Sense, pk=pk)
         context['sense'] = self.sense
         context['words'] = Word.objects.filter(senses=self.sense)
         return context
@@ -188,7 +191,7 @@ class LanguageSenseDetailView(WordlistMixin, DetailView):
         context = super(LanguageSenseDetailView, self).get_context_data(**kwargs)
         self.language = get_language_from_kwargs(**kwargs)
         pk = int(context['params'].get('pk', None))
-        self.sense = get_object_or_404(Sense, pk=pk) 
+        self.sense = get_object_or_404(Sense, pk=pk)
         context['language'] = self.language
         context['sense'] = self.sense
         context['words'] = Word.objects.filter(senses=self.sense, language=self.language)

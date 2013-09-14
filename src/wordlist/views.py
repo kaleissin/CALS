@@ -1,13 +1,16 @@
 import logging
 import operator
 
-from django.views.generic import TemplateView, DetailView, ListView, \
-        CreateView
+from django.views.generic import (TemplateView,
+                                  DetailView,
+                                  ListView,
+                                  ModelFormMixin,
+                                  ProcessFormView,
+                                  SingleObjectTemplateResponseMixin,
+                                  TemplateResponseMixin,
+                                  View,
+                                  )
 from django.http import HttpResponseRedirect, HttpResponseForbidden
-from django.views.generic.edit import ModelFormMixin, ProcessFormView
-from django.views.generic.simple import redirect_to
-from django.views.generic.detail import SingleObjectTemplateResponseMixin
-from django.views.generic.base import TemplateResponseMixin, View
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
@@ -292,7 +295,7 @@ class AddWordForLanguageView(WordlistMixin, TemplateResponseMixin, View):
         self.language = get_language_from_kwargs(**context['params'])
         pk = context['params'].get('pk', None) or kwargs.get('pk', None)
         self.word_id = get_field_from_kwargs(field='wordid', **context)
-        self.sense = get_object_or_404(Sense, pk=pk) 
+        self.sense = get_object_or_404(Sense, pk=pk)
         self.object = None
         form = WordForm(initial=self.get_initial())
 
@@ -365,7 +368,7 @@ class SenseDetailView(WordlistMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(SenseDetailView, self).get_context_data(**kwargs)
         pk = int(context['params'].get('pk', None))
-        self.sense = get_object_or_404(Sense, pk=pk) 
+        self.sense = get_object_or_404(Sense, pk=pk)
         context['sense'] = self.sense
         context['words'] = Word.objects.filter(senses=self.sense)
         return context
@@ -383,7 +386,7 @@ class LanguageSenseDetailView(WordlistMixin, DetailView):
         context = super(LanguageSenseDetailView, self).get_context_data(**kwargs)
         self.language = get_language_from_kwargs(**kwargs)
         pk = int(context['params'].get('pk', None))
-        self.sense = get_object_or_404(Sense, pk=pk) 
+        self.sense = get_object_or_404(Sense, pk=pk)
         context['language'] = self.language
         context['sense'] = self.sense
         context['words'] = Word.objects.filter(senses=self.sense, language=self.language)
