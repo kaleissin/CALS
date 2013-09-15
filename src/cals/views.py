@@ -9,9 +9,9 @@ from django.contrib import messages #.authenticate, auth.login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect, HttpResponseNotFound, HttpResponseForbidden
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
-from django.views.generic.list_detail import object_list
+from django.views.generic import ListView
 from django.db.models import Q
 
 from paginators.stringpaginator import SingleLetterPaginator, InvalidPage
@@ -34,13 +34,12 @@ from cals.modeltools import compare_languages, \
 
 from cals.people.views import auth_login
 
-from cals.feature.views import show_feature
+from cals.feature.views import show_feature, make_feature_list_for_lang
 
 from translations.models import TranslationExercise, Translation
 
-from nano.tools import render_page
 from nano.blog.models import Entry
-from nano.blog.tools import get_nano_blog_entries                                                                                                                                         
+from nano.blog.tools import get_nano_blog_entries
 
 from tagtools import set_tags_for_model, get_tagcloud_for_model
 
@@ -58,13 +57,6 @@ def _get_lang(all=False, *args, **kwargs):
     if all:
         return get_object_or_404(Language.all_langs, slug=kwargs.get('lang', None))
     return get_object_or_404(Language, slug=kwargs.get('lang', None))
-
-def _get_feature(*args, **kwargs):
-    return get_object_or_404(Feature, id=kwargs.get('object_id', None))
-
-def _get_exercise(*args, **kwargs):
-    #assert False, kwargs.get('exercise', None)
-    return get_object_or_404(TranslationExercise, slug=kwargs.get('exercise', None))
 
 def _get_user(*args, **kwargs):
     return get_object_or_404(User, username=kwargs.get('user', None))
@@ -108,69 +100,6 @@ def may_edit_lang(user, language):
         return standardreturn
     return False, (False, False)
 
-def set_language_feature_value(lang, feature_id, value_id):
-    feature = Feature.objects.active().get(id=feature_id)
-    try:
-        lf = LanguageFeature.objects.get(language=lang, feature=feature)
-    except LanguageFeature.DoesNotExist:
-        lf = None
-    try:
-        fv = FeatureValue.objects.get(id=int(value_id or 0))
-    except FeatureValue.DoesNotExist:
-        fv = None
-    if fv:
-        if lf:
-            if lf.value != fv: # change
-                lf.value = fv
-                lf.save()
-        else: # new
-            lf_new = LanguageFeature.objects.create(language=lang, feature=feature, value=fv) 
-    else:
-        if lf: # delete
-            lf.delete()
-
-def fvlist_to_fvdict(fvlist):
-    if fvlist:
-        return dict([(fv.feature, fv) for fv in fvlist])
-    return {}
-
-def make_feature_list_for_lang(lang=None, fvlist=None):
-    categories = Category.objects.all().select_related().order_by('id')
-    cats = []
-    fvdict = fvlist_to_fvdict(fvlist)
-    for category in categories:
-        try:
-            fvs = FeatureValue.objects.filter(feature__category=category)
-        except FeatureValue.DoesNotExist:
-            continue
-        features = Feature.objects.active().filter(category=category)
-        f = []
-        for feature in features:
-            form = FeatureValueForm(feature=feature)
-
-            lf = None
-
-            if lang or fvdict:
-                value = None
-                if fvdict:
-                    value = fvdict.get(feature, None)
-                else:
-                    try:
-                        lf = LanguageFeature.objects.get(language=lang, feature=feature)
-                        value = lf.value
-                    except LanguageFeature.DoesNotExist:
-                        pass
-                if value:
-                    form = FeatureValueForm(feature=feature,
-                    initial={'value': '%s_%s' % (feature.id, value.id)})
-            
-            f.append({'feature': feature, 'form':form, 'value': lf})
-        if f:
-            cats.append({'name': category.name, 'features': f})
-        else:
-            cats.append({'name': category.name})
-    return cats
-
 def revert_description(user, descriptions, revert_to):
     if revert_to:
         try:
@@ -182,72 +111,6 @@ def revert_description(user, descriptions, revert_to):
             description.current = True
             description_last_modified_by = user
             description.save()
-
-# Feature
-def compare_feature(request, *args, **kwargs):
-    me = 'feature'
-    features = _get_url_pieces(name='objects', **kwargs)
-    if not features:
-        # 'No feature'
-        return HttpResponseNotFound()
-    if len(features) == 1:
-        # 'One feature'
-        kwargs['object_id'] = features[0]
-        return show_feature(request, *args, **kwargs)
-    elif len(features) > 2:
-        # 'Too many features'
-        return HttpResponseNotFound()
-    fvs, fs = [], []
-    for feature in features:
-        try:
-            f = Feature.objects.active().get(id=feature)
-        except Feature.DoesNotExist:
-            # 
-            return HttpResponseNotFound()
-        fv = FeatureValue.objects.filter(feature__id=int(feature))
-        if not fv:
-            # 
-            return HttpResponseNotFound()
-        fvs.append(fv)
-        fs.append(f)
-    matrix = compare_features(fs, fvs)
-
-    # rewrite matrix into something the template-system can deal with
-    comparison = []
-    for v2 in fvs[1]:
-        vs = []
-        for v1 in fvs[0]:
-            vs.append(int(matrix[v1.id][v2.id]))
-        comparison.append({'fv': v2, 'counts': tuple(vs)})
-    #return comparison
-
-    data = { 
-            'comparison': comparison,
-            'me': me,
-            'features': fs,
-            'fvs': fvs,
-            }
-    return render_page(request, 'feature_compare.html', data)
-
-@login_required
-def change_or_add_feature(request, *args, **kwargs):
-    categoryform = CategoryForm()
-    featureform = FeatureForm()
-    valueformset = NewFeatureValueFormSet()
-
-    data = {u'me': u'feature',
-        'featureform': featureform,
-        'fvformset': valueformset,
-    }
-
-    return render_page(request, 'cals/suggested_feature_form.html', data)
-
-def list_feature(request, *args, **kwargs):
-    extra_context = {'me': 'feature'}
-    queryset = Category.objects.all().order_by('id')
-    template = 'cals/feature_list.html'
-    return object_list(request, queryset=queryset, template_name=template,
-            extra_context=extra_context)
 
 # language
 
@@ -353,7 +216,7 @@ def compare_language(request, *args, **kwargs):
             'langs': langs,
             'comparison_type': comparison_type,
             }
-    return render_page(request, 'language_compare.html', data)
+    return render(request, 'language_compare.html', data)
 
 def search_languages(request, *args, **kwargs):
     me = 'language'
@@ -391,7 +254,7 @@ def search_languages(request, *args, **kwargs):
             u'page_obj': page,
             u'paginator': paginator,
             u'is_paginated': True}
-    return render_page(request, 'cals/languagenames_search.html', data)
+    return render(request, 'cals/languagenames_search.html', data)
 
 def show_language(request, *args, **kwargs):
     me = 'language'
@@ -420,7 +283,7 @@ def show_language(request, *args, **kwargs):
             'cform': cform,
             'may_edit': may_edit,
     }
-    return render_page(request, 'language_detail.html', data)
+    return render(request, 'language_detail.html', data)
 
 def denormalize_lang(lang):
     freq = get_averageness_for_lang(lang, scale=100, langtype=LANGTYPES.CONLANG)
@@ -521,7 +384,7 @@ def create_language(request, lang=None, fvlist=None, clone=False, *args, **kwarg
             'state': state,
             'clone': clone,
     }
-    return render_page(request, 'language_form.html', data)
+    return render(request, 'language_form.html', data)
 
 @login_required
 def clone_language(request, *args, **kwargs):
@@ -655,7 +518,7 @@ def change_language(request, *args, **kwargs):
             #'moreinfoformset': moreinfoformset,
             'me': me, 
             'state': state,}
-    return render_page(request, 'language_form.html', data)
+    return render(request, 'language_form.html', data)
 
 def list_languages(request, *args, **kwargs):
     """Select and dispatch to a view of the list of languages"""
@@ -674,7 +537,7 @@ def list_languages(request, *args, **kwargs):
     #if not kwargs or kwargs.get('action', None) is None:
     form = SearchForm()
     data = {'me': me, 'searchform': form }
-    return render_page(request, 'cals/language_index.html', data)
+    return render(request, 'cals/language_index.html', data)
 
 def language_cloud(request, *args, **kwargs):
     me = 'language'
@@ -686,14 +549,20 @@ def language_cloud(request, *args, **kwargs):
                 'name': lang.name,
         })
     data = {'me': me, 'langs': langs}
-    return render_page(request, 'cals/language_cloud.html',
+    return render(request, 'cals/language_cloud.html',
             data)
 
-def language_jrklist(request, *args, **kwargs):
+
+class ListJRKLanguageView(ListView):
     queryset = LanguageName.objects.filter(language__natlang=False).exclude(language__background='').order_by('name')
-    return object_list(request, queryset, 
-            template_name='jrklist.html',
-            extra_context={'me': 'language'})
+    template_name = 'jrklist.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ListJRKLanguageView, self).get_context_data(**kwargs)
+        context['me'] = 'language'
+        return context
+language_jrklist = ListJRKLanguageView.as_view()
+
 
 def language_list(request, natlang=False, *args, **kwargs):
     if natlang or in_kwargs_or_get(request, kwargs, 'action', 'natlang'):
@@ -716,7 +585,7 @@ def language_list(request, natlang=False, *args, **kwargs):
             u'paginator': paginator,
             u'is_paginated': True}
 
-    return render_page(request, 'cals/language_list.html', data)
+    return render(request, 'cals/language_list.html', data)
 
 # BEGIN LF
 
@@ -733,7 +602,7 @@ def show_languagefeature(request, *args, **kwargs):
     data = {'me': me,
             'description': description,
             'lang': lang, 'feature': lf,}
-    return render_page(request, 'language_description_detail.html', data)
+    return render(request, 'language_description_detail.html', data)
 
 def show_languagefeature_history(request, *args, **kwargs):
     me = 'language'
@@ -746,7 +615,7 @@ def show_languagefeature_history(request, *args, **kwargs):
     data = {'me': me,
             'descriptions': descriptions,
             'lang': lang, 'feature': lf,}
-    return render_page(request, 'language_description_history_list.html', data)
+    return render(request, 'language_description_history_list.html', data)
 
 def compare_languagefeature_history(request, *args, **kwargs):
     me = 'language'
@@ -778,7 +647,7 @@ def compare_languagefeature_history(request, *args, **kwargs):
             'patch': patch,
             'lang': lang, 
             'feature': lf,}
-    return render_page(request, 'language_description_history_compare.html', data)
+    return render(request, 'language_description_history_compare.html', data)
 
 @login_required
 def revert_languagefeature_description(request, lang=None, object_id=None, *args, **kwargs):
@@ -915,7 +784,7 @@ def describe_languagefeature(request, *args, **kwargs):
             'preview': preview,
             'preview_value': preview_value,
             }
-    return render_page(request, 'language_description_form.html', data)
+    return render(request, 'language_description_form.html', data)
 
 # END LF
 
@@ -924,7 +793,7 @@ def show_stats(request, *args, **kwargs):
     data = {'me': me}
 
     data.update(generate_global_stats())
-    return render_page(request, 'statistics.html', data)
+    return render(request, 'statistics.html', data)
 
 def page_in_kwargs_or_get(request, kwargs):
     """If an url has the key-value-pair page=<page> in kwargs or
@@ -953,7 +822,7 @@ def test(request, *args, **kwargs):
             'features': Feature.objects.all(),
             'news': Entry.objects.latest('pub_date')
             }
-    return render_page(request, template, data)
+    return render(request, template, data)
 
 def home(request, *args, **kwargs):
     _LOG.info('Homepage')
@@ -988,4 +857,4 @@ def home(request, *args, **kwargs):
             'langs_modified': langs_modified,
             'trans_exs_newest': trans_ex_recent,
             'people': people_recent,}
-    return render_page(request, 'index.html', data)
+    return render(request, 'index.html', data)
