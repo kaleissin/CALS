@@ -1,11 +1,9 @@
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, Http404
-from django.shortcuts import get_object_or_404
-from django.views.generic.list_detail import object_list
-from django.views.generic.create_update import delete_object
+from django.core.exceptions import PermissionDenied
+from django.shortcuts import get_object_or_404, render
+from django.views.generic import ListView, DeleteView
 from django.contrib.contenttypes.models import ContentType
-
-from nano.tools import render_page, get_user_model
 
 import logging
 _LOG = logging.getLogger(__name__)
@@ -17,8 +15,6 @@ from translations.models import Translation, TranslationExercise
 from translations.forms import TranslationForm
 from translations import get_model_for_kwarg
 
-User = get_user_model()
-
 def get_translationexercise(**kwargs):
     return get_model_for_kwarg(TranslationExercise, 'exercise', 'slug', **kwargs)
 
@@ -28,27 +24,31 @@ def get_language(**kwargs):
 def get_user(**kwargs):
     return get_model_for_kwarg(User, 'translator', 'username', **kwargs)
 
-def show_languagetranslations(request, *args, **kwargs):
+
+class ListLanguageTranslationView(ListView):
     """List all translations for a specific language.
     
     Specific translations is reached by show_translation_for_language().
     """
+    template_name = 'translations/languagetranslation_list.html'
 
-    me = 'translation'
-    template = 'translations/languagetranslation_list.html'
-    lang = get_language(**kwargs)
-    trans = lang.translations.exclude(translation__isnull=True).exclude(translation='')
-    if request.user.is_authenticated():
-        exercises = TranslationExercise.objects.exclude(
-                translations__language=lang,
-                translations__translator=request.user)
-    else:
+    def get_queryset(self):
+        lang = get_language(**self.kwargs)
+        trans = lang.translations.exclude(translation__isnull=True).exclude(translation='')
         exercises = TranslationExercise.objects.exclude(translations__language=lang)
-    extra_context = {'lang': lang,
-            'exercises': exercises, 
-            'me': me,}
-    return object_list(request, queryset=trans, template_name=template,
-            extra_context=extra_context)
+        if self.request.user.is_authenticated():
+            exercises = exercises.exclude(translations__translator=self.request.user)
+        self.exercises = exercises
+        self.lang = lang
+        return trans
+
+    def get_context_data(self, **kwargs):
+        context = super(ListLanguageTranslationView, self).get_context_data(**kwargs)
+        context['me'] = 'translation'
+        context['lang'] = self.lang
+        context['exercises'] = self.exercises
+        return context
+show_languagetranslations = ListLanguageTranslationView.as_view()    
 
 
 def list_translation_for_language(request, *args, **kwargs):
@@ -65,8 +65,9 @@ def list_translation_for_language(request, *args, **kwargs):
     data = {'exercise': exercise,
             'lang': lang,
             'object_list': trans,
+            'doop': 'derp',
             'me': me,}
-    return render_page(request, template, data)
+    return render(request, template, data)
 
 def show_translation_for_language(request, *args, **kwargs):
     """Show a specific translation by a specific user for a specific
@@ -86,7 +87,7 @@ def show_translation_for_language(request, *args, **kwargs):
     data = {'lang': trans.language,
             'translation': trans,
             'me': me,}
-    return render_page(request, template, data)
+    return render(request, template, data)
 
 @login_required
 def add_languagetranslations(request, *args, **kwargs):
@@ -123,7 +124,7 @@ def add_languagetranslations(request, *args, **kwargs):
             'exercise': exercise, 
             'help_message': help_message,
             'me': me}
-    return render_page(request, template, data)
+    return render(request, template, data)
 
 @login_required
 def change_languagetranslations(request, *args, **kwargs):
@@ -149,66 +150,82 @@ def change_languagetranslations(request, *args, **kwargs):
     data = {'form': form,
             'exercise': exercise, 'help_message': help_message,
             'me': me}
-    return render_page(request, template, data)
+    return render(request, template, data)
 
-def list_all_translations(request, template_name='translations/translation_list.html', *args, **kwargs):
+
+class ListAllTranslationView(ListView):
     """List all translations."""
+    queryset = TranslationExercise.objects.all()
+    template_name = 'translations/translation_list.html'
 
-    me = 'translation'
-    exercises = TranslationExercise.objects.all()
-    extra_context = {'me': me,}
-    return object_list(request, queryset=exercises, template_name=template_name,
-            extra_context=extra_context)
+    def get_context_data(self, **kwargs):
+        context = super(ListAllTranslationView, self).get_context_data(**kwargs)
+        context['me'] = 'translation'
+        context['exercises'] = self.queryset
+        return context
+list_all_translations = ListAllTranslationView.as_view()
 
-def show_translationexercise(request, template_name='translations/translationexercise_list.html', *args, **kwargs):
+
+class ListTranslationsForExercise(ListView):
     """List all translations for a specific exercise, and provide links
     to add more translations.
     """
 
-    me = 'translation'
-    user = request.user
-    exercise = get_translationexercise(**kwargs)
-    trans = exercise.translations.exclude(translation__isnull=True).exclude(translation='').order_by('language')
-    natlangs, other_conlangs, own_conlangs, favelangs = None, None, None, None
-    if user.is_authenticated():
-        ctl = ContentType.objects.get_for_model(Language)
-        favelangs = [m.content_object for m in user.marks.filter(marktype__slug='fave', content_type=ctl)]
-        natlangs = Language.objects.natlangs()
-        conlangs = Language.objects.conlangs()
-        own_conlangs = langs_for_user(request.user)
-        other_conlangs = conlangs.exclude(id__in=[l.id for l in list(own_conlangs)+favelangs])
-    extra_context = {
-            'me': me, 
-            'exercise': exercise,
-            'natlangs': natlangs,
-            'own_conlangs': own_conlangs,
-            'favorite_langs': favelangs,
-            'other_conlangs': other_conlangs,
-            }
-    return object_list(request, queryset=trans, template_name=template_name,
-            extra_context=extra_context)
+    template_name = 'translations/translationexercise_list.html'
 
-@login_required
-def delete_languagetranslations(request, template_name='translations/delete_translation.html', *args, **kwargs):
+    def get_queryset(self):
+        self.exercise = get_translationexercise(**self.kwargs)
+        queryset = self.exercise.translations.exclude(translation__isnull=True).exclude(translation='').order_by('language')
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super(ListTranslationsForExercise, self).get_context_data(**kwargs)
+        context['me'] = 'translation'
+        natlangs, other_conlangs, own_conlangs, favelangs = None, None, None, None
+        user = self.request.user
+        if user.is_authenticated():
+            ctl = ContentType.objects.get_for_model(Language)
+            favelangs = [m.content_object 
+                    for m in user.marks.filter(marktype__slug='fave', content_type=ctl)]
+            natlangs = Language.objects.natlangs()
+            conlangs = Language.objects.conlangs()
+            own_conlangs = langs_for_user(user)
+            other_conlangs = conlangs.exclude(id__in=[l.id for l in list(own_conlangs)+favelangs])
+        context['natlangs'] = natlangs
+        context['other_conlangs'] = other_conlangs
+        context['own_conlangs'] = own_conlangs
+        context['favorite_langs'] = favelangs
+        context['exercise'] = self.exercise
+        return context
+show_translationexercise = ListTranslationsForExercise.as_view()
+
+
+class DeleteTranslationForLanguageView(DeleteView):
     """Delete a specific translation for a specific language."""
 
-    me = 'translation'
-    lang = get_language(**kwargs)
-    exercise = get_translationexercise(**kwargs)
-    trans = Translation.objects.get(language=lang, translator=request.user, exercise=exercise)
-    extra_context = {'me': me,}
-    final_page = "/translation/language/%s/" % lang.slug
-    _LOG.info('About to delete %s, (%s)', trans, request.method)
-    if request.method == 'POST':
-        _LOG.info('Deleting %s', trans)
-        trans.delete()
-        return HttpResponseRedirect(final_page)
-    elif request.method == 'GET':
-        _LOG.info('Attempting to use generic view')
-        return delete_object(request, model=Translation, object_id=trans.id,
-                template_name=template_name,
-                post_delete_redirect=final_page,
-                template_object_name='translation',
-                login_required=True,
-                extra_context=extra_context)
+    template_name = 'translations/delete_translation.html'
+    context_object_name = 'translation'
 
+    def get_context_data(self, **kwargs):
+        context = super(DeleteTranslationForLanguage, self).get_context_data(**kwargs)
+        context['me'] = 'translation'
+        return context
+
+    def get_success_url(self):
+        success_url = "/translation/language/%s/" % self.lang.slug 
+        return success_url
+
+    def get_object(self, queryset=None):
+        # XXX: While deciding on how to replace login_required()
+        if not self.request.user.is_authenticated():
+            raise PermissionDenied
+        self.lang = get_language(**self.kwargs)
+        exercise = get_translationexercise(**self.kwargs)
+        try:
+            trans = Translation.objects.get(language=self.lang, translator=self.request.user, exercise=exercise)
+        except Translation.DoesNotExist:
+            raise Http404("No %(verbose_name)s found matching the query" %
+                            {'verbose_name':
+                            Translation._meta.verbose_name})
+        return trans
+delete_languagetranslations = DeleteTranslationForLanguageView.as_view()
