@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Q
 
-from countries.models import Country
+from nano.countries.models import Country
 
 # Signals defined here
 

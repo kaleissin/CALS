@@ -178,7 +178,7 @@ THIRD_PARTY_APPS = (
 PROJECT_APPS = (
     'translations',
     'cals',
-    'countries',
+    'nano.countries',
 #    'languages',
     'phonemes',
     'wordlist',

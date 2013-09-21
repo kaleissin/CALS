@@ -10,7 +10,7 @@ from django.forms.models import modelformset_factory, BaseModelFormSet
 
 from django.db import models
 
-from countries.models import Country
+from nano.countries.models import Country
 
 from cals.feature.models import Feature, FeatureValue, Category
 from cals.people.models import Profile

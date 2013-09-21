@@ -14,7 +14,7 @@ from django.db.models import Q, Count, Avg, Max, Min
 from django.contrib.auth.models import User
 
 from pygooglechart import Axis, SimpleLineChart
-from countries.models import Country
+from nano.countries.models import Country
 
 from cals.forms import *
 from cals.tools import compare_features
