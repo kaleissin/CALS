@@ -19,29 +19,15 @@ tags_language_dict = {
 #        'extra_context': { 'me': 'language' },
 }
 
-taglist_language_dict = {
-        'queryset': Tag.objects.all(),
-        'template_name': 'tagging/tag_list.html',
-        'extra_context': { 'me': 'language' },
-}
-
-langfam_dict = {
-    'queryset': LanguageFamily.objects.all(),
-    'extra_context': { 'me': 'language' },
-}
-
 urlpatterns = patterns('tagtools.views',
         (r'^tag/(?P<tag>[-\w\d]+)/$', 'tagged_object_list', tags_language_dict),
 )
 
-urlpatterns += patterns('django.views.generic',
-        (r'^tag/$',                        'list_detail.object_list', taglist_language_dict),
-        (r'^family/$',                      'list_detail.object_list', langfam_dict), 
-        (r'^family/'+SLUG_RE+r'$',          'list_detail.object_detail', langfam_dict), 
+#urlpatterns += patterns('django.views.generic',
 # #        (r'^latest/$', 'date_based.archive_index', language_by_date),
 # #        (r'^(?P<year>\d{4})/$',            'date_based.archive_year', language_by_year),
         #(r'^(?P<year>\d{4})/w(?P<week>[a-z]{3})/$', 'date_based.archive_week', language_by_week),
-)
+#)
 
 urlpatterns += patterns('',
         (LANG_RE+r'comment/', include('nano.comments.urls', app_name='language'),
@@ -75,18 +61,21 @@ urlpatterns += patterns('cals.views',
         (r'^jrklist/$',                       'language_jrklist'),
         (r'^p(?P<page>[0-9]+)/$',             'language_list'),
         (r'^new$',                            'create_language'),
-        (LANG_RE+r'$',                        'show_language'), 
+        (LANG_RE+r'$',                        'show_language'),
         (LANG_RE+r'change$',                  'change_language'),
-        (LANG_FEAT_RE+r'$',                   'show_languagefeature'), 
-        (LANG_FEAT_RE+r'change$',             'describe_languagefeature'), 
-        (LANG_FEAT_RE+r'use$',                'revert_languagefeature_description'), 
-        (LANG_FEAT_HIST_RE+r'delete$',        'remove_languagefeature_description_version'), 
-        (LANG_FEAT_HIST_RE+r'$',              'show_languagefeature_history'), 
-        (LANG_FEAT_HIST_RE+r'compare$',       'compare_languagefeature_history'), 
-        (MULTISLUGS_RE+r'clone$',             'clone_language'), 
-        (MULTISLUGS_RE+r'(?P<opt>[^/]*?)/?$', 'compare_language'), 
+        (LANG_FEAT_RE+r'$',                   'show_languagefeature'),
+        (LANG_FEAT_RE+r'change$',             'describe_languagefeature'),
+        (LANG_FEAT_RE+r'use$',                'revert_languagefeature_description'),
+        (LANG_FEAT_HIST_RE+r'delete$',        'remove_languagefeature_description_version'),
+        (LANG_FEAT_HIST_RE+r'$',              'show_languagefeature_history'),
+        (LANG_FEAT_HIST_RE+r'compare$',       'compare_languagefeature_history'),
+        (MULTISLUGS_RE+r'clone$',             'clone_language'),
+        (MULTISLUGS_RE+r'(?P<opt>[^/]*?)/?$', 'compare_language'),
 )
 
 urlpatterns += patterns('cals.language.views',
-        (LANG_NAMES_RE+r'change$',            'change_languagenames'),
+        (r'^tag/$',                         'list_languagetags'),
+        (LANG_NAMES_RE+r'change$',          'change_languagenames'),
+        (r'^family/$',                      'list_languagefamilies'),
+        (r'^family/'+SLUG_RE+r'$',          'show_languagefamilies'),
 )
