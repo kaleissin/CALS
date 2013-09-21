@@ -3,7 +3,7 @@
 {% load badge_tags %}
 {% block submenu %}
 <ul>
-    <li><a href="{% url show_words_for_language langslug=language.slug %}">All words</a></li>
+    <li><a href="{% url 'show_words_for_language' langslug=language.slug %}">All words</a></li>
     <li><b>Change</b></li>
 </ul>
 {% endblock submenu %}
@@ -28,7 +28,7 @@ caveats:</p>
     <tr>
         {% if word %}
         <td><input type="submit" name="go" value="Change" /></td>
-        <td><a href="{% url show_words_for_language langslug=language.slug %}">Never mind</a></td>
+        <td><a href="{% url 'show_words_for_language' langslug=language.slug %}">Never mind</a></td>
         {% else %}
         <td><input type="submit" name="go" value="Add" /></td>
         <td><input type="submit" name="skip" value="Do it later, maybe" /></td>

@@ -20,8 +20,8 @@
 <b>{{ sense }}</b>{% if word.senses.count > 1 %},<br />{% endif%}
 {{ sense.show_notes }}
 {% if may_edit %}
-<a href="{% url add_word_for_language langslug=language.slug pk=sense.pk %}">Add a synonym</a>
-<a href="{% url edit_word_for_language langslug=language.slug pk=sense.pk wordid=word.pk %}">Edit</a>
+<a href="{% url 'add_word_for_language' langslug=language.slug pk=sense.pk %}">Add a synonym</a>
+<a href="{% url 'edit_word_for_language' langslug=language.slug pk=sense.pk wordid=word.pk %}">Edit</a>
 {% endif %}
 {% endfor %}
 {% if word.notes %}<p>Notes: {{ word.notes }}</p>{% endif %}
@@ -41,7 +41,7 @@
 <p>Notes: {{ word.notes|default:'None' }}</p>
 {% if may_edit %}
 {% ifequal language.id 80 %}
-<a href="{% url edit_word_for_language langslug=language.slug pk=sense.pk wordid=word.pk %}">Edit</a>
+<a href="{% url 'edit_word_for_language' langslug=language.slug pk=sense.pk wordid=word.pk %}">Edit</a>
 {% endifequal %}
 {% endif %}
 {% endfor %}
@@ -57,7 +57,7 @@
 <li>
 <b>{{ sense }}</b>
 {{ sense.sense.show_notes }}
-<a href="{% url add_word_for_language langslug=language.slug pk=sense.sense.pk %}">Add a word</a>
+<a href="{% url 'add_word_for_language' langslug=language.slug pk=sense.sense.pk %}">Add a word</a>
 </li>
 {% endfor %}
 </ul>

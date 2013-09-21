@@ -21,7 +21,7 @@
 Not applicable because:
 <p>{{ word.notes }}</p>
 {% endif %}
-<a href="{% url edit_word_for_language langslug=language.slug pk=sense.pk wordid=word.pk %}">Edit</a>
+<a href="{% url 'edit_word_for_language' langslug=language.slug pk=sense.pk wordid=word.pk %}">Edit</a>
 {% endfor %}
 
 {% if may_edit %}
