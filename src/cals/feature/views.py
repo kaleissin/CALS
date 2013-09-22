@@ -13,6 +13,10 @@ from django.http import HttpResponseRedirect, HttpResponseNotFound, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.views.generic import ListView
 
+import pygal
+from pygal.style import LightGreenStyle
+from pygal.style import Style
+
 from cals.feature.models import Feature, FeatureValue, Category
 from cals.tools.models import Description
 from cals.language.models import Language
@@ -185,6 +189,24 @@ class ListFeatureView(ListView):
         return context
 list_feature = ListFeatureView.as_view()
 
+def graph_feature(feature):
+    con = []
+    nat = []
+    label  =[]
+    for value in feature.values.all():
+        con.append(value.languagefeature_set.filter(language__natlang=False).count())
+        nat.append(value.languagefeature_set.filter(language__natlang=True).count())
+        label.append(value.name)
+
+    chart = pygal.Bar(style=LightGreenStyle)
+    chart.disable_xml_declaration = True
+    chart.add('Conlang', con)
+    chart.add('Natlang', nat)
+    chart.x_labels = label
+    chart.legend_at_bottom = True
+    chart.label_font_size = 12
+    return chart.render()
+
 def show_feature(request, features=None, object_id=None, template_name='feature_detail.html', *args, **kwargs):
     me = 'feature'
     if not features:
@@ -203,6 +225,7 @@ def show_feature(request, features=None, object_id=None, template_name='feature_
     
     data = {'object': feature, 
             'me': me, 
+            'chart': graph_feature(feature),
             'cform': cform}
     return render(request, template_name, data)
 

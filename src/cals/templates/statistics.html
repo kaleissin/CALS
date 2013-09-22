@@ -113,13 +113,17 @@
 
 <h2><a name="people"></a>Frequency of conlanger countries</h2>
 <table class="statistics">
-{% for country in users.countries %}
+{% for country in users.country.most_common %}
     <tr><td>{{ country.printable_name }}</td>
         <td class="right">{{ country.count|default:"0" }}</td>
         <td>{% graphline country.count %}</td>
     </tr>
 {% endfor %}
 </table>
+
+<div style="max-width: 66em">
+{{ users.country.map|safe }}
+</div>
 
 <h2><a name="vocab"></a>Size of conlang vocabulary</h2>
 
@@ -157,7 +161,10 @@
         <td class="fraction">.{{ langs.vocabulary.stddev|fraction }}</td>
     </tr>
 </table>
-<p><img src="{{ langs.vocabulary.chart }}" /></p>
+
+<div style="max-width: 66em">
+{{ langs.vocabulary.chart_svg|safe }}
+</div>
 
 <p>Most common sizes:</p>
 <ul>{% for mode in langs.vocabulary.common %}

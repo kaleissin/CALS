@@ -42,8 +42,6 @@
                 <table>
                     <tr>
                         <th>Conlangs:</th>
-                        <td rowspan="{{ object.values.count|add:1 }}"
-                            class="graph">{% feature_graph object "con" %}</td>
                     </tr>
                     {% for value in object.values.all %}
                     <tr class="{% cycle odd,even %}">
@@ -58,8 +56,6 @@
                 <table>
                     <tr>
                         <th>Natlangs:</th>
-                        <td rowspan="{{ object.values.count|add:1 }}"
-                            class="graph">{% feature_graph object "nat" %}</td>
                     </tr>
                     {% for value in object.values.all %}
                     <tr class="{% cycle odd,even %}">
@@ -70,6 +66,10 @@
                     {% endfor %}
                 </table>
             </td>
+        </tr>
+        <tr>
+        <td></td>
+        <td colspan="2" style="min-width: 50em">{{ chart|safe }}</td>
         </tr>
     </table>
 {% endblock content %}

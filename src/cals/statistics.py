@@ -13,7 +13,9 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.db.models import Q, Count, Avg, Max, Min
 from django.contrib.auth.models import User
 
-from pygooglechart import Axis, SimpleLineChart
+import pygal
+from pygal.style import LightGreenStyle, Style
+
 from nano.countries.models import Country
 
 from cals.forms import *
@@ -33,6 +35,15 @@ from translations.models import Translation
 
 def country_most_common():
     return Country.objects.annotate(count=Count('profile')).filter(count__gt=0).order_by('-count')
+
+def conlanger_map():
+    foo = dict([(country.iso.lower(), country.count) for country in country_most_common()])
+
+    chart = pygal.Worldmap(style=LightGreenStyle)
+    chart.disable_xml_declaration = True
+    chart.show_legend = False
+    chart.add('Conlangers', foo)
+    return chart.render()
 
 def unused_featurevalues():
     """Returns feature values not used by conlangs.
@@ -79,6 +90,16 @@ def stddev(datapoints):
     std = sqrt(sum((float(dp) - mean)**2 for dp in datapoints)/n)
     return std
 
+def vocab_chart(rows):
+    chart = pygal.Line(style=LightGreenStyle)
+    chart.disable_xml_declaration = True
+    chart.show_y_guides = False
+    chart.show_dots = False
+    chart.human_readable = True
+    chart.show_legend = False
+    chart.add('', rows)
+    return chart.render()
+
 def vocab_size():
     """Generate statistics on the vocabulary_size-field."""
 
@@ -102,22 +123,7 @@ def vocab_size():
     curve = ls.order_by('-vocabulary_size')
     rows = [v.vocabulary_size for v in curve]
 
-    chart = SimpleLineChart(400, 200, y_range=(0, maximum))
-    chart.add_data(rows)
-    eightmax = maximum / 8.0
-    quartmax = maximum / 4.0
-    halfmax = maximum / 2.0
-    axis = [0, 
-            str(int(eightmax)), 
-            str(int(quartmax)), 
-            str(int(quartmax+eightmax)), 
-            str(int(halfmax)), 
-            str(int(halfmax+eightmax)), 
-            str(int(halfmax+quartmax)), 
-            str(int(halfmax+quartmax+eightmax)), 
-            maximum]
-    chart.set_axis_labels(Axis.LEFT, axis)
-    chart_url = chart.get_url()
+    chart_svg = vocab_chart(rows)
 
     # median
     med = median(rows)
@@ -126,7 +132,7 @@ def vocab_size():
             'min': minimum, 
             'max': maximum, 
             'median': med, 
-            'chart': chart_url,
+            'chart_svg': chart_svg,
             'mode': mode,
             'common': modes,
             'stddev': stddev(rows),
@@ -142,6 +148,19 @@ def get_all_lurkers():
             translation_exercises__isnull=True, 
             languages_modified__isnull=True)
     return lurkers
+
+def country():
+
+    barchart = pygal.Bar(style=LightGreenStyle)
+    barchart.add('', [c.count for c in country_most_common()])
+    barchart.x_labels = [c.name for c in country_most_common()]
+    barchart.x_label_rotation = 90
+
+    return {
+        'most_common': country_most_common(),
+        'map': conlanger_map(),
+        'chart': barchart.render(),
+    }
 
 def generate_global_stats():
     "Used by the statistics-view"
@@ -185,6 +204,7 @@ def generate_global_stats():
     not_used = unused_featurevalues()
 
     countries = country_most_common()
+    cmap = conlanger_map()
 
     skeleton_langs = conlangs.filter(num_features=0)
 
@@ -233,7 +253,7 @@ def generate_global_stats():
     data['users'] = { 
             'number': num_users,
             'langs_per_user': str(num_langs/float(num_users)),
-            'countries': countries,
+            'country': country(),
             'percentage_countries': str(num_countries/float(num_users)*100),
             'percentage_lurkers': str(num_lurkers / float(num_users) * 100)
             }

@@ -14,7 +14,7 @@ from django.core.cache import cache
 from django.utils.encoding import smart_str, force_unicode
 from django.utils.safestring import mark_safe
 
-from pygooglechart import StackedVerticalBarChart, Axis
+import pygal
 
 from nano.tools import grouper
 from nano.tools.templatetags.nano_tags import *
@@ -144,11 +144,10 @@ def feature_graph(feature, ltype):
     num_values = len(values)
     if not num_values or max_count == 0:
         return u''
-    chart = StackedVerticalBarChart((num_values+1)*15, 100, y_range=(0, max_count))
-    chart.set_bar_width(10)
-    chart.add_data(values)
-    chart.set_axis_labels(Axis.BOTTOM, map(str, xrange(1, num_values+1)))
-    chart.set_axis_labels(Axis.LEFT, ['0', '', '', '', str(int(max_count))])
+    chart = pygal.Bar()
+    chart.disable_xml_declaration = True
+    chart.add('', values)
+    return chart.render()
     return u'<img src="%s" />' % chart.get_url()
 
 @register.simple_tag
