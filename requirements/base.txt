@@ -7,7 +7,7 @@ pygal
 python-memcached
 ipython
 django-tag-tools
-actstream
+django-activity-stream==0.4.5beta1
 
 -e git://github.com/kaleissin/django-nano.git#egg=django-nano
 
