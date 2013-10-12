@@ -215,6 +215,7 @@ def auth_login(request, *args, **kwargs):
                         error = "User '%s' does not exist! Typo?" % username
                         messages.error(request, error)
                         _LOG.warn(error)
+                        return HttpResponseRedirect(nexthop)
                 except Profile.DoesNotExist:
                     error = "User %s is incomplete, lacks profile" % username
                     messages.error(request, error)
