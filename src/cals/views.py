@@ -34,7 +34,9 @@ from cals.modeltools import compare_languages, \
 
 from cals.people.views import auth_login
 
-from cals.feature.views import show_feature, make_feature_list_for_lang
+from cals.feature.views import (show_feature,
+    make_feature_list_for_lang,
+    set_language_feature_value)
 
 from translations.models import TranslationExercise, Translation
 
