@@ -8,6 +8,7 @@ python-memcached
 ipython
 django-tag-tools
 django-activity-stream==0.4.5beta1
+django-social-auth==0.7.25
 
 -e git://github.com/kaleissin/django-nano.git#egg=django-nano
 
