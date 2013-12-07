@@ -17,6 +17,11 @@ urlpatterns += patterns('',
         (r'^people/', include('cals.people.urls')),
 )
 
+# statistics
+urlpatterns += patterns('',
+        (r'^statistics/', include('cals.statistics.urls')),
+)
+
 # value
 value_list_dict = {
         'queryset': FeatureValue.objects.all().order_by('feature'),
@@ -35,8 +40,6 @@ urlpatterns += patterns('cals.feature.views',
 # other
 urlpatterns += patterns('cals.views',
         (r'^jrklist/$',                             'language_jrklist'),
-
-        (r'^statistics/$',                          'show_stats'),
 
         #(r'^search([?](?P<action>[a-z]+))?$',                              'search'),
         #(r'^search([?]q=.*)?$',                     'search'),

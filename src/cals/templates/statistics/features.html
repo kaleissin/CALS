@@ -1,0 +1,45 @@
+{% extends "statistics/base.html" %}
+{% load cals_tags %}
+{% load stats_tags %}
+{% block title %}Statistics: Features{% endblock title %}
+{% block content %}
+
+<h1>Feature statistics</h1>
+
+<h2><a name="popular_features"></a>Most popular conlang features</h2>
+<table class="statistics">
+{% for feature in features.most_used %}
+<tr>
+    <td><a href="/value/{{ feature.value.id }}/">{{ feature.feature }}: {{ feature.value }}</a></td>
+    <td>{{ feature.languages }} language{{ feature.languages|pluralize }}</td>
+    <td>{{ feature.percentage|floatformat:1 }}%</td>
+</tr>
+{% endfor %}
+</table>
+
+<h2><a name="common_natlang_features"></a>Most common natlang features</h2>
+<table class="statistics">
+{% for feature in features.natlang_most_used %}
+<tr>
+    <td><a href="/value/{{ feature.value.id }}/">{{ feature.feature }}: {{ feature.value }}</a></td>
+    <td>{{ feature.languages }} language{{ feature.languages|pluralize }}</td>
+    <td>{{ feature.percentage|floatformat:1 }}%</td>
+</tr>
+{% endfor %}
+</table>
+
+<h2><a name="unused_features"></a>Unused values for features ({{ features.num_not_used }})</h2>
+<ul class="statistics">
+{% for fv in features.not_used %}
+    <li><a href="/value/{{ fv.id }}/">{{ fv.feature }}: {{ fv.name }}</a></li>
+{% endfor %}
+</ul>
+
+<h2><a name="featureless"></a>Conlangs with no features</h2>
+<ul>
+{% for lang in features.skeleton_langs %}
+<li><a href="/language/{{ lang.slug }}/">{{ lang }}</a></li>
+{% endfor %}
+</ul>
+
+{% endblock content %}

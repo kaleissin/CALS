@@ -1,0 +1,72 @@
+{% extends "statistics/base.html" %}
+{% load cals_tags %}
+{% load stats_tags %}
+{% block title %}Statistics{% endblock title %}
+{% block content %}
+
+<h2><a name="quick"></a>Quick numbers</h2>
+
+<table class="statistics">
+    <tr>
+        <td class="integer">{{ langs.number }}</td>
+        <td></td>
+        <td>conlangs</td>
+    </tr>
+    <tr>
+        <td class="integer">{{ langs.number_natlangs }}</td>
+        <td></td>
+        <td>natlangs</td>
+    </tr>
+    <tr>
+        <td class="integer">{{ langs.features_per_lang|integer }}</td>
+        <td class="fraction">.{{ langs.features_per_lang|fraction }}</td>
+        <td>features per language, on average</td>
+    </tr>
+    <tr>
+        <td class="integer">{{ langs.percentage_greetings|integer }}</td>
+        <td class="fraction">.{{ langs.percentage_greetings|fraction }}%</td>
+        <td>of all languages have a greeting</td>
+    </tr>
+    <tr>
+        <td class="integer">{{ langs.percentage_backgrounds|integer }}</td>
+        <td class="fraction">.{{ langs.percentage_backgrounds|fraction }}%</td>
+        <td>of all languages have a background</td>
+    </tr>
+    <tr>
+        <td class="integer">{{ langs.num_translations }}</td>
+        <td></td>
+        <td>translations</td>
+    </tr>
+    <tr>
+        <td class="integer">{{ users.number }}</td>
+        <td></td>
+        <td>people</td>
+    </tr>
+    <tr>
+        <td class="integer">{{ users.langs_per_user|integer }}</td>
+        <td class="fraction">.{{ users.langs_per_user|fraction }}</td>
+        <td>languages per person, on average</td>
+    </tr>
+    <tr>
+        <td class="integer">{{ users.percentage_countries|integer }}</td>
+        <td class="fraction">.{{ users.percentage_countries|fraction }}%</td>
+        <td>of all people have set a country</td>
+    </tr>
+    <tr>
+        <td class="integer">{{ users.percentage_lurkers|integer }}</td>
+        <td class="fraction">.{{ users.percentage_lurkers|fraction }}%</td>
+        <td>of all people are lurkers</td>
+    </tr>
+    <tr>
+        <td class="integer">{{ features.number }}</td>
+        <td></td>
+        <td>features</td>
+    </tr>
+    <tr>
+        <td class="integer">{{ features.percentage_wals|integer }}</td>
+        <td class="fraction">.{{ features.percentage_wals|fraction }}%</td>
+        <td>of all features are from WALS</td>
+    </tr>
+</table>
+
+{% endblock content %}

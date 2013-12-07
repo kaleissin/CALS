@@ -31,7 +31,6 @@ from cals.tools import uslugify
 from cals.forms import FeatureValueForm, CategoryForm, FeatureForm, \
         NewFeatureValueFormSet, DescriptionForm, \
         CompareTwoForm, LanguageForm, EditorForm, SearchForm
-from cals.statistics import generate_global_stats
 from cals.tools import description_diff, compare_features
 from cals.modeltools import compare_languages, \
         get_averageness_for_lang, LANGTYPES
@@ -562,13 +561,6 @@ def language_list(request, natlang=False, *args, **kwargs):
             u'is_paginated': True}
 
     return render(request, 'cals/language_list.html', data)
-
-def show_stats(request, *args, **kwargs):
-    me = 'statistics'
-    data = {'me': me}
-
-    data.update(generate_global_stats())
-    return render(request, 'statistics.html', data)
 
 def page_in_kwargs_or_get(request, kwargs):
     """If an url has the key-value-pair page=<page> in kwargs or

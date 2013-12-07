@@ -1,0 +1,34 @@
+{% extends "statistics/base.html" %}
+{% load cals_tags %}
+{% load stats_tags %}
+{% block title %}Statistics: Conalngers{% endblock title %}
+{% block head %}
+<style type="text/css">
+g.country { 
+    stroke: #2b4824 !important; 
+}
+g.country:hover { 
+    stroke: #222 !important; 
+    stroke-width: 3 !important;
+}
+</style>
+{% endblock head %}
+{% block content %}
+
+<h1>Conlanger statistics</h1>
+
+<h2><a name="people"></a>Frequency of conlanger countries</h2>
+<table class="statistics">
+{% for country in users.country.most_common %}
+    <tr><td>{{ country.printable_name }}</td>
+        <td class="right">{{ country.count|default:"0" }}</td>
+        <td>{% graphline country.count %}</td>
+    </tr>
+{% endfor %}
+</table>
+
+<div style="max-width: 66em">
+{{ users.country.map|safe }}
+</div>
+
+{% endblock content %}
