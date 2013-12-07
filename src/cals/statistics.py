@@ -38,8 +38,19 @@ def country_most_common():
 
 def conlanger_map():
     foo = dict([(country.iso.lower(), country.count) for country in country_most_common()])
+    custom_style = Style(
+      background='#fff',
+      plot_background='#fff',
+      foreground='#ffffff',
+      foreground_light='#ffffff',
+      foreground_dark='#ffffff',
+      opacity='.6',
+      opacity_hover='.9',
+      transition='400ms ease-in',
+      colors=('#527C3A', '#E8537A', '#E95355', '#E87653', '#E89B53'))
 
-    chart = pygal.Worldmap(style=LightGreenStyle)
+    chart = pygal.Worldmap(style=custom_style)
+    chart.no_prefix = True
     chart.disable_xml_declaration = True
     chart.show_legend = False
     chart.add('Conlangers', foo)

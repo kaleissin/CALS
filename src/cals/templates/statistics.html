@@ -2,6 +2,17 @@
 {% load cals_tags %}
 {% load stats_tags %}
 {% block title %}Statistics{% endblock title %}
+{% block head %}
+<style type="text/css">
+g.country {
+    stroke: #2b4824 !important;
+}
+g.country:hover {
+    stroke: #222 !important;
+    stroke-width: 3 !important;
+}
+</style>
+{% endblock head %}
 {% block submenu %}
 <p><b>Skip to:</b></p>
 <ul>
