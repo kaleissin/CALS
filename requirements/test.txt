@@ -1,4 +1,4 @@
 -r base.txt
 
-coverage==3.7
-django-discover-runner==1.0
+coverage
+django-discover-runner
