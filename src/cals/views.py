@@ -728,7 +728,12 @@ def describe_languagefeature(request, *args, **kwargs):
 
         if valueform.is_valid():
             new_f, new_v = map(int, valueform.cleaned_data.get('value', value_str).split('_'))
-            new_fv = FeatureValue.objects.get(feature=feature, id=new_v)
+            try:
+                new_fv = FeatureValue.objects.get(feature=feature, id=new_v)
+            except FeatureValue.DoesNotExist:
+                err = 'Attempted to get value "%s" for feature "%s" (form feature: "%s")'
+                _LOG.debug(err % (new_v, feature, new_f))
+                raise
             preview_value = new_fv
 
         new_lfd = None
