@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 
 from wordlist.views import LanguageWordListView, WordlistView, \
         LanguageListView, LanguageSenseDetailView, AddWordForLanguageView, \
