@@ -8,7 +8,10 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib import messages #.authenticate, auth.login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.http import HttpResponseRedirect, HttpResponseNotFound, HttpResponseForbidden
+from django.http import (HttpResponseRedirect,
+        HttpResponseNotFound,
+        HttpResponseForbidden,
+        Http404)
 from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
 from django.views.generic import ListView
@@ -135,7 +138,8 @@ def _generate_comparison_url(langs, comparison_type=''):
 
 def _compare(request, langs, comparison_type=None):
     # langs should be a non-string iterator/generator over strings
-    assert len(langs)
+    if not len(langs):
+        raise ValueError('No languages given to compare')
     langs = tuple(langs)
 
     # Get existing comparison-type
@@ -201,6 +205,8 @@ def compare_language(request, *args, **kwargs):
             redirect_to = _generate_comparison_url(langslugs, comparison_type)
             return HttpResponseRedirect(redirect_to)
 
+        if not len(langslugs): # Nothing to compare
+            raise Http404
         # Add a slug to langslugs
         return _compare(request, langslugs, comparison_type)
 
