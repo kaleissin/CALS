@@ -207,7 +207,7 @@ class DeleteTranslationForLanguageView(DeleteView):
     context_object_name = 'translation'
 
     def get_context_data(self, **kwargs):
-        context = super(DeleteTranslationForLanguage, self).get_context_data(**kwargs)
+        context = super(DeleteTranslationForLanguageView, self).get_context_data(**kwargs)
         context['me'] = 'translation'
         return context
 
