@@ -235,7 +235,7 @@ def auth_login(request, *args, **kwargs):
                 return HttpResponseRedirect(nexthop)
             # /2
         else:
-            messages.info('You are already logged in')
+            messages.info(request, 'You are already logged in')
             nexthop = request.user.get_profile().get_absolute_url()
             return HttpResponseRedirect(nexthop)
         # /1
