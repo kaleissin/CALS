@@ -145,7 +145,10 @@ have to do so at WALS, not here.</p>
         <td class="fv">{{ feature.value }}</td>
         {% if not object.natlang %}
         {% if may_edit %}
-        <td><a href="/language/{{ object.slug }}/feature/{{ feature.feature.id }}/change">Edit</a></td>
+        <td>
+            <a href="/language/{{ object.slug }}/feature/{{ feature.feature.id }}/change">Edit</a>
+            <a href="/language/{{ object.slug }}/feature/{{ feature.feature.id }}/delete">Delete</a>
+        </td>
         {% endif %}
         {% endif %}
     </tr>

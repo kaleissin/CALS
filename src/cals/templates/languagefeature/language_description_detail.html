@@ -1,15 +1,14 @@
-{% extends "base.html" %}
+{% extends "languagefeature/base.html" %}
 {% load cals_tags %}
-{% block title %} Language: {{ lang.name }}: {{ feature.feature.name }}: {{ feature.value.name }}{% endblock title %}
+{% block title %} Language: {{ language.name }}: {{ feature.name }}: {{ object.value.name }}{% endblock title %}
 {% block submenu %}
 <ul>
     <li><a href="/language/">All languages</a></li>
-    <li><a href="/language/{{ lang.slug }}/">Back to {{ lang }}</a></li>
-    <li><b>Overview</b></li>
-    {% if user.is_authenticated %}
-    {% ifequal user lang.added_by %}
+    <li><a href="/language/{{ language.slug }}/">{{ language }}</a></li>
+    <li><b>{{ feature.name }}</b></li>
+    {% if user.is_authenticated and may_edit %}
     <li><a href="./change">Change</a></li>
-    {% endifequal %}
+    <li><a href="./delete">Delete</a></li>
     {% endif %}
     {% if description %}
     <li><a href="./history">History</a></li>
@@ -17,7 +16,7 @@
 </ul>
 {% endblock submenu %}
 {% block content %}
-    <h1>{{ lang.name }}: {{ feature.feature.category.name }}: {{ feature.feature.name }}: {{ feature.value.name }}</h1>
+    <h1>{{ language.name }}: {{ feature.category.name }}: {{ feature.name }}: {{ object.value.name }}</h1>
     {% if description.freetext_xhtml %}
     {{ description.freetext_xhtml|safe }}
     {% else %}

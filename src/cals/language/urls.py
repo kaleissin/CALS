@@ -7,8 +7,6 @@ from cals.models import Language, LanguageFamily
 
 LANG_RE = r'^(?P<lang>[-\w]+)/'
 LANG_NAMES_RE = LANG_RE + r'names/'
-LANG_FEAT_RE = LANG_RE + r'feature/(?P<object_id>[0-9]+)/'
-LANG_FEAT_HIST_RE = LANG_FEAT_RE + r'history/'
 MULTISLUGS_RE = r'^(?P<slugs>[-+\w]+)/'
 SLUG_RE = r'(?P<slug>[-\w]+)/'
 
@@ -63,12 +61,7 @@ urlpatterns += patterns('cals.views',
         (r'^new$',                            'create_language'),
         (LANG_RE+r'$',                        'show_language'),
         (LANG_RE+r'change$',                  'change_language'),
-        (LANG_FEAT_RE+r'$',                   'show_languagefeature'),
-        (LANG_FEAT_RE+r'change$',             'describe_languagefeature'),
-        (LANG_FEAT_RE+r'use$',                'revert_languagefeature_description'),
-        (LANG_FEAT_HIST_RE+r'delete$',        'remove_languagefeature_description_version'),
-        (LANG_FEAT_HIST_RE+r'$',              'show_languagefeature_history'),
-        (LANG_FEAT_HIST_RE+r'compare$',       'compare_languagefeature_history'),
+        (r'^',                  include('cals.languagefeature.urls')),
         (MULTISLUGS_RE+r'clone$',             'clone_language'),
         (MULTISLUGS_RE+r'(?P<opt>[^/]*?)/?$', 'compare_language'),
 )

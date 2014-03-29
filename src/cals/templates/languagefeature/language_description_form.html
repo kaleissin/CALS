@@ -1,26 +1,29 @@
-{% extends "base.html" %}
+{% extends "languagefeature/base.html" %}
 {% load cals_tags %}
-{% block title %} Language: {{ lang.name }}: {{ feature.feature.name }}: {{ feature.value.name }}: change{% endblock title %}
+{% block title %} Language: {{ language.name }}: {{ feature.name }}: {{ object.value.name }}: change{% endblock title %}
 {% block submenu %}
 <ul>  
     <li><a href="/language/">All languages</a></li>
-    <li><a href="../../">Back to {{ feature.language }}</a></li>
-    <li><a href=".">Back to overview</a></li>
-    {% if user.is_authenticated %}
+    <li><a href="../../">{{ language.name }}</a></li>
+    <li><a href=".">{{ feature.name }}</a></li>
+    {% if user.is_authenticated and may_edit %}
     <li><b>Change description</b></li>
+    <li><a href="./delete">Delete</a></li>
     {% endif %}
+    {% if description %}
     <li><a href="./history/">History</a></li>
+    {% endif %}
 </ul>
 </ul>
 {% endblock submenu %}
 {% block content %}
 <form action="" method="post">
     {% csrf_token %}
-    <h1>{{ lang.name }}: {{ feature.feature.category.name }}: {{ feature.feature.name }}: {{ feature.value }} </h1>
+    <h1>{{ language.name }}: {{ feature.category.name }}: {{ feature.name }}: {{ object.value }} </h1>
     {% if preview %}
     <fieldset>
     <legend>Preview</legend>
-    <h3>{{ lang.name }}: {{ feature.feature.category.name }}: {{ feature.feature.name }}: {{ preview_value }}</h3>
+    <h3>{{ language.name }}: {{ feature.category.name }}: {{ feature.name }}: {{ preview_value }}</h3>
     {{ preview|safe }}
     </fieldset>
     {% endif %}

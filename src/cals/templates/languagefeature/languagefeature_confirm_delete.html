@@ -1,0 +1,31 @@
+{% extends "languagefeature/base.html" %}
+{% load cals_tags %}
+{% block title %}Delete feature &#x201c;{{ feature.name }}&#x201d; of language {{ language.name }}?{% endblock title %}
+{% block submenu %}
+<ul>
+    <li><a href="/language/">All languages</a></li>
+    <li><a href="/language/{{ language.slug }}/">{{ language }}</a></li>
+    <li><a href=".">{{ feature.name }}</a></li>
+    {% if user.is_authenticated and may_edit %}
+    <li><a href="./change">Change</a></li>
+    <li><b>Delete</b></li>
+    {% endif %}
+    {% if description %}
+    <li><a href="./history">History</a></li>
+    {% endif %}
+</ul>
+{% endblock submenu %}
+{% block content %}
+
+    <h2>Really delete the feature {{ feature.category.name }}: {{ feature.name }} of language {{ language.name }}?</h2>
+    <p>It is currently set to: <a href="/value/{{ object.value.id }}/">{{ object.value.name }}</a>.</p>
+    {% if description.freetext_xhtml %}
+    <p>Deleting the feature will also delete the description, which
+    currently is as follows:</p>
+    {{ description.freetext_xhtml|safe }}
+    {% endif %}
+    <form method="post" action="./delete">
+        {% csrf_token %}
+        <input type="submit" value="Yes, really delete" /> <a href=".">No, I've changed my mind</a>
+    </form>
+{% endblock content %}

@@ -24,23 +24,10 @@ from cals.feature.models import FEATURE_GROUPS_CHOICES, Category, FeatureValue, 
 
 from cals.language.models import LanguageFamily, LanguageName, WALSCode, Language
 
+from cals.languagefeature.models import LanguageFeature
+
 from phonemes.models import Sound
 
-# Glue models 
-
-class LanguageFeature(models.Model, DescriptionMixin):
-    language = models.ForeignKey(Language, related_name='features')
-    feature = models.ForeignKey(Feature, related_name='languages')
-    value = models.ForeignKey(FeatureValue, related_name='languages') #, related_name='languages')
-
-    objects = models.Manager()
-
-    class Meta:
-        unique_together = ('language', 'feature')
-        db_table = 'cals_languagefeature'
-
-    def __unicode__(self):
-        return u"%s / %s / %s" % (self.language, self.feature, self.value)
 
 def add_filter(queryset, **kwargs):
     return queryset.filter(**kwargs)
@@ -57,6 +44,8 @@ def without_args(qs, keyword, *values):
     for v in values:
         qs = add_exclude(qs, **{keyword: v})
     return qs
+
+# Glue models
 
 class SoundDataPointQuerySet(models.query.QuerySet):
 

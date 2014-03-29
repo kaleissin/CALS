@@ -1,21 +1,20 @@
-{% extends "base.html" %}
+{% extends "languagefeature/base.html" %}
 {% load cals_tags %}
-{% block title %} Language: {{ lang.name }}: {{ feature.feature.name }}: {{ feature.value.name }}{% endblock title %}
+{% block title %} Language: {{ language.name }}: {{ feature.name }}: {{ object.value.name }}{% endblock title %}
 {% block submenu %}
 <ul>
     <li><a href="/language/">All languages</a></li>
-    <li><a href="/language/{{ lang.slug }}/">Back to {{ lang }}</a></li>
-    <li><a href="../">Back to overview</a></li>
-    {% if user.is_authenticated %}
-    {% ifequal user lang.added_by %}
+    <li><a href="/language/{{ language.slug }}/">{{ language }}</a></li>
+    <li><a href=".">{{ feature.name }}</a></li>
+    {% if user.is_authenticated and may_edit %}
     <li><a href="../change">Change description</a></li>
-    {% endifequal %}
+    <li><a href="../delete">Delete</a></li>
     {% endif %}
     <li><b>History</b></li>
 </ul>
 {% endblock submenu %}
 {% block content %}
-    <h1>{{ lang.name }}: {{ feature.feature.name }}: {{ feature.value.name }}</h1>
+    <h1>{{ language.name }}: {{ feature.name }}: {{ object.value.name }}</h1>
     {% if descriptions %}
         <form action="./compare" method="get">
         <input type="submit" value="Compare" />
@@ -30,7 +29,7 @@
         Current
         {% else %}
         {% if user.is_authenticated %}
-        {% ifequal user lang.manager %}
+        {% ifequal user language.manager %}
         (<a href="../use?id={{ d.id }}">Use this one</a>)
         {% endifequal %}
         {% if user.is_superuser %}

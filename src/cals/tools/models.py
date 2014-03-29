@@ -185,7 +185,6 @@ class DescriptionMixin(object):
     @property
     def description(self):
         self_type = ContentType.objects.get_for_model(self)
-        description_type = ContentType.objects.get(app_label="cals", model="description")
         try:
             return Description.archive.get(object_id=self.id, current=True, content_type=self_type)
         except Description.DoesNotExist:
