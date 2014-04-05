@@ -255,7 +255,7 @@ LOGGING = {
             'datefmt' : '%Y-%m-%d %H:%M:%S',
         },
         'simple': {
-            'format': '%(levelname)s %(message)s',                              
+            'format': '%(levelname)s %(message)s',
         },
     },
     'filters': {
@@ -274,29 +274,29 @@ LOGGING = {
             'formatter': 'default',
             'filename': '/var/log/cals.log',
         },
-        'null': {                                                               
-            'level':'DEBUG',                                                    
-            'class':'django.utils.log.NullHandler',                             
-        },                                                                      
-        'console': {                                                            
-            'class': 'logging.StreamHandler',                                   
-            'formatter': 'default',                                             
-        },                                                                      
+        'null': {
+            'level':'DEBUG',
+            'class':'django.utils.log.NullHandler',
+        },
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'default',
+        },
     },
     'loggers': {
-        '': {                                                                   
-            'handlers': ['console'],                                            
-            'level': 'DEBUG',                                                   
-            'propagate': True,                                                  
-        },                                                                      
+        '': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
         'django.request': {
             'handlers': ['mail_admins'],
             'level': 'ERROR',
             'propagate': True,
         },
-        'django.db': {                                                          
-            'handlers': ['null'],                                               
-            'propagate': False,                                                 
+        'django.db': {
+            'handlers': ['null'],
+            'propagate': False,
         },
     },
 }
@@ -318,4 +318,4 @@ SOCIAL_AUTH_FORCE_POST_DISCONNECT = True
 SOCIAL_AUTH_PROTECTED_USER_FIELDS = ['email',]
 
 TWITTER_EXTRA_DATA = [('screen_name', 'username')]
-GITHUB_EXTRA_DATA = [('login', 'username')]                                                                                                                                                
+GITHUB_EXTRA_DATA = [('login', 'username')]
