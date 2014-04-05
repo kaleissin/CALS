@@ -17,20 +17,9 @@
             {% for feature in category.feature_set.active %}
             <li class="{% cycle odd,even %}">
                 <a class="feature" href="../{{ feature.id }}">{{ feature }}</a>
-                ({{ feature.languages.count }} language{{ feature.languages.count|pluralize }})
-                ({{ feature.values.count }} value{{ feature.values.count|pluralize }})
-                {% if feature.values.count %}
-                <ul>
-                {% for fv in feature.values.all %}
-                <li>
-                    <a href="/value/{{ fv.id }}">{{ fv }}</a>
-                    ({{ fv.languagefeature_set.count }} language{{ fv.languagefeature_set.count|pluralize }})
-                </li>
-                {% endfor %}
-                </ul>
-                {% else %}
-                <p>No values registered</p>
-                {% endif %}
+                {% with feature.languages.count as feature_count %}
+                    ({{ feature_count }} language{{ feature_count|pluralize }})
+                {% endwith %}
             </li>
             {% endfor %}
         </ul></li>
