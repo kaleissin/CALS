@@ -10,21 +10,12 @@ _LOG = logging.getLogger(__name__)
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.query import QuerySet
-from django.template.defaultfilters import slugify
-from django.utils.encoding import smart_unicode
 
 from cals import markup_as_restructuredtext
-from cals.tools import uni_slugify, asciify, next_id
-
-from cals.tools.models import Description, DescriptionMixin, FREETEXT_TYPES
 
 from cals.people.models import Profile
 
-from cals.feature.models import FEATURE_GROUPS_CHOICES, Category, FeatureValue, Feature
-
-from cals.language.models import LanguageFamily, LanguageName, WALSCode, Language
-
-from cals.languagefeature.models import LanguageFeature
+from cals.language.models import Language
 
 from phonemes.models import Sound
 
