@@ -27,10 +27,8 @@ from django.views.generic import ListView
 from cals.people.models import Profile
 from cals.language.models import Language
 
-from cals.models import asciify, slugify
+from cals.tools import asciify, uslugify
 from cals.forms import UserForm, ProfileForm
-
-from translations.models import TranslationExercise
 
 from nano.privmsg.models import PM
 
@@ -208,7 +206,7 @@ def auth_login(request, *args, **kwargs):
                     profile = user.get_profile()
                 except User.DoesNotExist:
                     try:
-                        userslug = slugify(username)
+                        userslug = uslugify(username)
                         profile = Profile.objects.get(slug=userslug)
                         user = profile.user
                     except Profile.DoesNotExist:

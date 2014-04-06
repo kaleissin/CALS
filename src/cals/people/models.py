@@ -1,9 +1,10 @@
-from django.template.defaultfilters import slugify
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Q
 
 from nano.countries.models import Country
+
+from cals.tools import uslugify
 
 # Signals defined here
 
@@ -65,7 +66,7 @@ class Profile(models.Model):
 
     def save(self, *args, **kwargs):
         self.username = self.user.username
-        self.slug = slugify(self.username)
+        self.slug = uslugify(self.username)
         if not self.display_name:
             self.display_name = self.username
 #         if not self.show_username:

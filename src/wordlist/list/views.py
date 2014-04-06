@@ -7,7 +7,8 @@ from django.views.generic import TemplateView
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
-from django.template.defaultfilters import slugify
+
+from cals.tools import uslugify
 
 from wordlist import WordlistMixin
 from wordlist.models import Sense
@@ -107,12 +108,12 @@ class SpecificListView(WordlistMixin, TemplateView):
 
     def csv_simple(self, queryset):
         fields = ('id', 'entry', 'pos', 'notes') + tuple(self.clean_fields)
-        return self.csv(queryset, fields, slugify(self.title) + '-simple.csv')
+        return self.csv(queryset, fields, uslugify(self.title) + '-simple.csv')
 
     def csv_full(self, queryset):
         fields = [f.name for f in queryset[0]._meta.fields 
                 if f.name not in ('added', 'suggested_by', 'uld2')]
-        return self.csv(queryset, fields, slugify(self.title) + '-full.csv')
+        return self.csv(queryset, fields, uslugify(self.title) + '-full.csv')
 
     def render_to_response(self, context):
         csv_type = self.request.GET.get('csv', None)

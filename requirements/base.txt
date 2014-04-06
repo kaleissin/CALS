@@ -10,3 +10,4 @@ django-tag-tools
 django-activity-stream==0.4.5beta1
 django-social-auth==0.7.28
 nano==0.7.3
+unidecode

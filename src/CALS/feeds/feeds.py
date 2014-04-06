@@ -1,15 +1,18 @@
 from datetime import datetime
 
-from django.template.defaultfilters import slugify
 from django.contrib.syndication.views import Feed
 from django.utils.feedgenerator import Atom1Feed
+from django.template.loader import render_to_string
 
 from nano.blog.models import Entry
+from nano.comments.models import Comment
+
+from cals.tools import uslugify
+
 from cals.language.models import Language
 from cals.people.models import Profile
+
 from translations.models import TranslationExercise, Translation
-from nano.comments.models import Comment
-from django.template.loader import render_to_string
 
 STANDARD_AUTHOR = u'admin'
 
@@ -83,7 +86,7 @@ class RecentCommentsFeed(AbstractFeed):
         return Comment.objects.order_by('-added')[:15]
 
     def item_guid(self, item):
-        return self.base_id(item) + '/%s-%s' % (slugify(item.content_object), item.user.id)
+        return self.base_id(item) + '/%s-%s' % (uslugify(item.content_object), item.user.id)
 
     def item_title(self, item):
         return 'New comment by %s on %s' % (item.user.get_profile().display_name, item.content_object)
@@ -222,8 +225,8 @@ class NewTranslationFeed(AbstractFeed):
 
     def item_guid(self, item):
         return self.base_id(item) + '%s/%s/%s' % (item.exercise.slug, 
-                slugify(item.language), 
-                slugify(item.translator.username))
+                uslugify(item.language),
+                uslugify(item.translator.username))
 
     def item_title(self, item):
         return '%s translated "%s" into %s' % (item.translator, item.exercise.name, item.language)

@@ -27,7 +27,7 @@ from cals.tools.auth import may_edit_lang
 from cals.language.models import Language, LanguageName
 from cals.models import LanguageFeature
 
-from cals.models import slugify
+from cals.tools import uslugify
 from cals.forms import FeatureValueForm, CategoryForm, FeatureForm, \
         NewFeatureValueFormSet, DescriptionForm, \
         CompareTwoForm, LanguageForm, EditorForm, SearchForm
@@ -200,7 +200,7 @@ def search_languages(request, *args, **kwargs):
     raw_q = request.GET.get('q', '')
     limit = int(request.GET.get('limit', 10))
     anywhere = request.GET.get('anywhere', False)
-    q = slugify(raw_q)
+    q = uslugify(raw_q)
 
     if raw_q:
         if q:

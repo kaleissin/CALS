@@ -7,8 +7,9 @@ _LOG = logging.getLogger(__name__)
 
 from django.contrib.auth.models import User
 from django.db import models
-from django.template.defaultfilters import slugify
 from django.utils.html import escape
+
+from cals.tools import uslugify
 
 from cals.language.models import Language
 
@@ -81,7 +82,7 @@ class TranslationExercise(models.Model):
 
     def save(self, user=None, *args, **kwargs):
         if not self.id:
-            self.slug = slugify(self.name)
+            self.slug = uslugify(self.name)
             if user:
                 self.added_by = user
             self.added = datetime.now()

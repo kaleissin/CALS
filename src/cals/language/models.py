@@ -10,13 +10,12 @@ import django.dispatch
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.query import QuerySet
-from django.template.defaultfilters import slugify
 from django.utils.encoding import smart_unicode
 
 from taggit.managers import TaggableManager
 
 from cals import markup_as_restructuredtext
-from cals.tools import uni_slugify, asciify, next_id
+from cals.tools import uslugify, asciify
 
 from cals.tools.models import FREETEXT_TYPES, DescriptionMixin
 
@@ -126,7 +125,7 @@ class LanguageFamily(UnorderedTreeMixin):
         return self.name
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.name)
+        self.slug = uslugify(self.name)
 
         super(LanguageFamily, self).save(*args, **kwargs)
 
@@ -221,7 +220,7 @@ class Language(models.Model):
         if not self.internal_name:
             self.internal_name = self.name
             self.name = asciify(self.name)
-        self.slug = slugify(self.name)
+        self.slug = uslugify(self.name)
 
         if not self.manager:
             self.manager = self.added_by or user
@@ -315,11 +314,11 @@ class Language(models.Model):
 class SearchManager(models.Manager):
 
     def find_prefix(self, q):
-        q = uni_slugify(q)
+        q = uslugify(q)
         return self.get_query_set().filter(slug__istartswith=q)
 
     def find_anywhere(self, q):
-        q = uni_slugify(q)
+        q = uslugify(q)
         return self.get_query_set().filter(slug__icontains=q)
 
     def find(self, q, anywhere=False):
@@ -346,7 +345,7 @@ class LanguageName(models.Model):
         app_label = 'cals'
 
     def save(self, *args, **kwargs):
-        self.slug = uni_slugify(smart_unicode(self.name))
+        self.slug = uslugify(smart_unicode(self.name))
         if not self.added:
             self.added = datetime.utcnow()
         super(LanguageName, self).save(*args, **kwargs)

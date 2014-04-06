@@ -1,16 +1,16 @@
-
+from __future__ import unicode_literals
 # -*- coding: utf8 -*-
 
 import unicodedata
-
+import re
 import difflib
+from unidecode import unidecode
 
 import logging
 _LOG = logging.getLogger(__name__)
 
 from django.contrib.contenttypes.models import ContentType
 from django.db import connection
-from django.db.models import Q, Count, Avg, Max, Min
 from django.http import HttpResponseNotFound, HttpResponseForbidden
 from django.shortcuts import get_object_or_404
 from django.template import Template, Context, loader
@@ -22,42 +22,14 @@ class LANGTYPES(object):
 
     types = (ALL, NATLANG, CONLANG)
 
-def strip_diacritics(string, slugify=False):
-    """Strip any diacritic."""
-
-    string = unicodedata.normalize('NFKD', string)
-    out = []
-    for c in string:
-        cat = unicodedata.category(c)
-        if slugify and cat[0] in ('P', 'Z', 'C'):
-            c = u'-'
-        if unicodedata.combining(c):
-            continue
-        if cat in ('Lm', 'Sk'):
-            continue
-        out.append(c)
-    string = u''.join(out)
-    if slugify:
-        string = u'-'.join(filter(None, string.split(u'-'))).lower()
-    if string:
-        return unicodedata.normalize('NFKC', string)
-    else:
-        raise ValueError, 'String has only combining charcters'
-
-def uni_slugify(string):
-    """Slugify without stripping non-ascii-characters."""
-    assert string, "String must not be empty"
-    assert isinstance(string, unicode), "String must be unicode"
-    try:
-        return strip_diacritics(string, slugify=True)
-    except ValueError:
-        return string
+def uslugify(value):
+    "Strip diacritics then slugify"
+    value = unidecode(value.strip()).lower()
+    value = '-'.join(re.sub('[^\w\s-]', '', value).split())
+    return value
 
 def asciify(string):
-    string = unicodedata.normalize('NFKD', string).encode('ascii', 'ignore')
-    if not string:
-        string = 'Non-ascii: %s' % datetime.now()
-    return string
+    return unidecode(string)
 
 def next_id(model):
     # postgres only

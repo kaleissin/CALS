@@ -12,7 +12,7 @@ from django.utils.html import strip_tags
 from interlinears import leipzig
 from cals import markup_as_restructuredtext
 
-from cals.tools import next_id
+from cals.tools import next_id, uslugify
 
 FREETEXT_TYPES = (
         ('rst', 'RestructuredText'),
@@ -193,11 +193,11 @@ class DescriptionMixin(object):
 class SearchManager(models.Manager):
 
     def find_prefix(self, q):
-        q = uni_slugify(q)
+        q = uslugify(q)
         return self.get_query_set().filter(slug__istartswith=q)
 
     def find_anywhere(self, q):
-        q = uni_slugify(q)
+        q = uslugify(q)
         return self.get_query_set().filter(slug__icontains=q)
 
     def find(self, q, anywhere=False):

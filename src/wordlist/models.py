@@ -3,7 +3,8 @@ import operator
 import logging
 
 from django.db import models
-from django.template.defaultfilters import slugify
+
+from cals.tools import uslugify
 
 LOG = logging.getLogger(__name__)
 
@@ -65,7 +66,7 @@ class Sense(models.Model):
         return u'\u201c%s\u201d' % self.entry
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.entry)
+        self.slug = uslugify(self.entry)
         super(Sense, self).save(*args, **kwargs)
 
     def show_notes(self):
