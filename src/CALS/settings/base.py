@@ -173,7 +173,7 @@ THIRD_PARTY_APPS = (
     'taggit',
     'voting',
     'actstream',
-    'social_auth',
+    'social.apps.django_app.default',
 )
 
 PROJECT_APPS = (
@@ -205,9 +205,9 @@ LOGIN_ERROR_URL = '/'
 LOGIN_REDIRECT_URL = '/logged_in'
 
 AUTHENTICATION_BACKENDS = (
-    'social_auth.backends.twitter.TwitterBackend',
-    'social_auth.backends.contrib.github.GithubBackend',
-    'social_auth.backends.OpenIDBackend',
+    'social.backends.twitter.TwitterOAuth',
+    'social.backends.github.GithubOAuth2',
+    'social.backends.open_id.OpenIdAuth',
     'django.contrib.auth.backends.ModelBackend',
 )
 
@@ -220,6 +220,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
         "django.core.context_processors.tz",
         "django.contrib.messages.context_processors.messages",
         "django.core.context_processors.request",
+        "social.apps.django_app.context_processors.backends",
 )
 
 INTERNAL_IPS = ['127.0.0.1']
@@ -313,9 +314,5 @@ ACTSTREAM_SETTINGS = {
     'MODELS': ('auth.user', 'cals.language',),
 }
 
-# Social-auth
-SOCIAL_AUTH_FORCE_POST_DISCONNECT = True
+# Python Social Auth
 SOCIAL_AUTH_PROTECTED_USER_FIELDS = ['email',]
-
-TWITTER_EXTRA_DATA = [('screen_name', 'username')]
-GITHUB_EXTRA_DATA = [('login', 'username')]

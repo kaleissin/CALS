@@ -5,9 +5,9 @@
 <div id="content">
         <fieldset>
             <legend>Connect with a remote user</legend>
-            <a class="button" href="{% url "socialauth_begin" "twitter" %}"><img src="{{ STATIC_URL }}img/bird_blue_16.png" /> Connect with Twitter</a>
-            <a class="button" href="{% url "socialauth_begin" "github" %}"><img src="{{ STATIC_URL }}img/blacktocat-16.png" /> Connect with Github</a>
-            <form action="{% url "socialauth_begin" "openid" %}" method="post">{% csrf_token %}
+            <a class="button" href="{% url "social:begin" "twitter" %}"><img src="{{ STATIC_URL }}img/bird_blue_16.png" /> Connect with Twitter</a>
+            <a class="button" href="{% url "social:begin" "github" %}"><img src="{{ STATIC_URL }}img/blacktocat-16.png" /> Connect with Github</a>
+            <form action="{% url "social:begin" "openid" %}" method="post">{% csrf_token %}
           <div>
             <label for="openid_identifier">OpenId provider</label>
             <input id="openid_identifier" type="text" value="" name="openid_identifier" />

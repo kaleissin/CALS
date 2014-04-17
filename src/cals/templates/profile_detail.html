@@ -177,7 +177,7 @@
         <h3>Disconnect from:</h3>
         <ul>
         {% for sc in social_connections %}
-        <li><a href="{% url "socialauth_disconnect_individual" sc.provider sc.connection.id %}?next={{ whereami }}"><img src="{{ STATIC_URL }}{{ sc.icon }}" /> {{ sc.provider }}</a></li>
+        <li><a href="{% url "social:disconnect_individual" sc.provider sc.connection.id %}?next={{ whereami }}"><img src="{{ STATIC_URL }}{{ sc.icon }}" /> {{ sc.provider }}</a></li>
         {% endfor %}
         </ul>
     </div>
@@ -187,7 +187,7 @@
         <h3>Connect to:</h3>
         <ul>
         {% for psc in potential_social_connections %}
-        <li><a href="{% url "socialauth_begin" psc.provider %}"><img src="{{ STATIC_URL }}{{ psc.icon }}" /> {{ psc.provider }}</a></li>
+        <li><a href="{% url "social:begin" psc.provider %}"><img src="{{ STATIC_URL }}{{ psc.icon }}" /> {{ psc.provider }}</a></li>
         {% endfor %}
         </ul>
     </div>

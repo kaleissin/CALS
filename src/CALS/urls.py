@@ -65,7 +65,7 @@ urlpatterns += patterns('',
     (r'^logged_in$',            'django.shortcuts.render', login_params),
     (r'^logout$',               'django.contrib.auth.views.logout_then_login'),
 
-    url(r'account/social/',    include('social_auth.urls')),
+    url(r'account/social/',    include('social.apps.django_app.urls', namespace='social')),
     (r'account/login/$',        'cals.people.views.auth_login'),
     (r'^account/',              include('nano.user.urls')),
     # redirect the three links below into account/...
