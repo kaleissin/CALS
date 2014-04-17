@@ -18,6 +18,9 @@ PYTHON_BIN := $(VIRTUAL_ENV)/bin
 
 .PHONY: clean showenv coverage test bootstrap pip virtualenv sdist virtual_env_set
 
+.DEFAULT: virtual_env_set
+	$(PYTHON_BIN)/django-admin.py $@ $(DJANGO_LOCAL_POSTFIX)
+
 showenv:
 	@echo 'Environment:'
 	@echo '-----------------------'
