@@ -4,4 +4,7 @@
 *~
 *.conf
 .git*
+.tox
+.coverage
 pylintrc
+htmlcov
