@@ -10,7 +10,8 @@ from cals.tools.admin import DescriptionAdmin
 from cals.language.models import Language, LanguageFamily, LanguageName
 from cals.language.admin import LanguageAdmin, \
         LanguageFamilyAdmin, LanguageNameAdmin
-from cals.models import LanguageFeature, SoundDataPoint
+from cals.languagefeature.models import LanguageFeature
+from cals.models import SoundDataPoint
 
 admin.site.register(Profile, ProfileAdmin)
 admin.site.register(Category, CategoryAdmin)

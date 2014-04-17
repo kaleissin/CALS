@@ -18,7 +18,7 @@ from django.template import Template, Context, loader
 from cals.feature.models import Feature, FeatureValue
 from cals.tools.models import Description
 from cals.language.models import Language
-from cals.models import LanguageFeature
+from cals.languagefeature.models import LanguageFeature
 
 class LANGTYPES(object):
     CONLANG = 1

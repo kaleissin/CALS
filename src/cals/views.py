@@ -25,7 +25,7 @@ from cals.people.models import Profile
 from cals.tools.models import Description
 from cals.tools.auth import may_edit_lang
 from cals.language.models import Language, LanguageName
-from cals.models import LanguageFeature
+from cals.languagefeature.models import LanguageFeature
 
 from cals.tools import uslugify
 from cals.forms import FeatureValueForm, CategoryForm, FeatureForm, \

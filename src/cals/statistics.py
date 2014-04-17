@@ -29,7 +29,7 @@ from cals.modeltools import languages_ranked_by_averageness, get_langs, \
 from cals.feature.models import FeatureValue, Feature
 from cals.language.models import Language
 from cals.people.models import Profile
-from cals.models import LanguageFeature
+from cals.languagefeature.models import LanguageFeature
 
 from translations.models import Translation
 

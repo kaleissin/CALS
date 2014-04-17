@@ -17,7 +17,7 @@ from cals.tools.models import Description
 from cals.tools.auth import may_edit_lang
 from cals.tools.decorators import MayEditMixin, SuperUserMixin
 from cals.language.models import Language
-from cals.models import LanguageFeature
+from cals.languagefeature.models import LanguageFeature
 
 from cals.forms import FeatureValueForm, DescriptionForm
 from cals.tools import description_diff

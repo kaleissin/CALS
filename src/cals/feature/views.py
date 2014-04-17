@@ -20,7 +20,7 @@ from pygal.style import Style
 from cals.feature.models import Feature, FeatureValue, Category
 from cals.tools.models import Description
 from cals.language.models import Language
-from cals.models import LanguageFeature
+from cals.languagefeature.models import LanguageFeature
 
 from cals.forms import (FeatureValueForm, CategoryForm, FeatureForm,
         NewFeatureValueFormSet, CompareTwoFeaturesForm, DescriptionForm,

@@ -24,7 +24,8 @@ from nano.privmsg.models import PM
 import logging
 _LOG = logging.getLogger(__name__)
 
-from cals.models import Language, LanguageFeature
+from cals.language.models import Language
+from cals.languagefeature.models import LanguageFeature
 from cals.feature.models import Feature
 from cals.people.models import Profile
 from translations.models import Translation
