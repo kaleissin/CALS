@@ -334,7 +334,7 @@ class AddWordForLanguageView(WordlistMixin, TemplateResponseMixin, View):
             return self.form_invalid(form)
 
     def form_valid(self, form):
-        with transaction.commit_on_success():
+        with transaction.atomic():
             old_word = self.context.get('word', None)
             word = form.save(commit=False)
             if old_word:

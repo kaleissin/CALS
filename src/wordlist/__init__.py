@@ -86,7 +86,7 @@ def may_edit(language, user):
     return False
 
 def save_word(self, word):
-    with transaction.commit_on_success():
+    with transaction.atomic():
         word = form.save(commit=False)
         word.language = self.language
         word.not_applicable = False
