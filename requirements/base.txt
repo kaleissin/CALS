@@ -7,7 +7,7 @@ pygal
 python-memcached
 ipython
 django-tag-tools
-django-activity-stream==0.4.5beta1
-python-social-auth==0.1.24
+django-activity-stream==0.4.5
+python-social-auth==0.1.26
 nano==0.7.3
 unidecode
