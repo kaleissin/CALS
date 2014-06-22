@@ -86,7 +86,7 @@ class RecentCommentsFeed(AbstractFeed):
         return Comment.objects.order_by('-added')[:15]
 
     def item_guid(self, item):
-        return self.base_id(item) + '/%s-%s' % (uslugify(item.content_object), item.user.id)
+        return self.base_id(item) + '/%s-%s' % (uslugify(unicode(item.content_object)), item.user.id)
 
     def item_title(self, item):
         return 'New comment by %s on %s' % (item.user.get_profile().display_name, item.content_object)
