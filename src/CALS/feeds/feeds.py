@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 from datetime import datetime
 
 from django.contrib.syndication.views import Feed
@@ -224,8 +226,8 @@ class NewTranslationFeed(AbstractFeed):
         return Translation.objects.order_by('-added')[:15]
 
     def item_guid(self, item):
-        return self.base_id(item) + '%s/%s/%s' % (item.exercise.slug, 
-                uslugify(item.language),
+        return self.base_id(item) + '%s/%s/%s' % (item.exercise.slug,
+                uslugify(item.language.name),
                 uslugify(item.translator.username))
 
     def item_title(self, item):
