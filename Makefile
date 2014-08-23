@@ -97,5 +97,11 @@ virtualenv:
 	virtualenv --no-site-packages $(VIRTUAL_ENV)
 	echo $(VIRTUAL_ENV)
 
+batchbadge:
+	$(PYTHON_BIN)/django-admin.py batchbadge -v 0 $(DJANGO_POSTFIX)
+
+batchbadge-verbose:
+	$(PYTHON_BIN)/django-admin.py batchbadge $(DJANGO_POSTFIX)
+
 all: collectstatic refresh
 

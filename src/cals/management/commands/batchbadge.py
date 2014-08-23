@@ -1,15 +1,9 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 import sys
-sys.path.append('/home/python/django-trunk/')
-sys.path.append('/home/python/django-sites/')
-sys.path.append('/home/python/django-sites/CALS/')
 
 from django.db.models import Q, F
-from django.core.management import setup_environ
 from django.core.management.base import NoArgsCommand, BaseCommand
-
-import settings
-setup_environ(settings)
+from django.utils import timezone
 
 from cals.models import *
 from translations.models import *
@@ -49,8 +43,9 @@ def developers():
 
 def early_birds():
     # Pointless to use signal
+    magic_date = '2008-06-08T00:00:00+00:00'
     badge = Badge.objects.get(name='Early bird')
-    early_birds = User.objects.filter(date_joined__lte='2008-06-07')
+    early_birds = User.objects.filter(date_joined__lt=magic_date)
     batchbadge(badge, early_birds)
 
 def conlangers():
@@ -78,7 +73,7 @@ def connoiseurs():
 
 def _active_year_ago(years):
     assert int(years)
-    now = datetime.now()
+    now = timezone.now()
     # averaged year
     x_years_ago = now - timedelta(days=years*365, seconds=6*60*60)
     # averaged month
