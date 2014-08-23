@@ -182,6 +182,8 @@ PROJECT_APPS = (
     'phonemes',
     'wordlist',
 
+    'verification',
+
     'nano.blog',
     'nano.badge',
     'nano.mark',
@@ -192,6 +194,7 @@ PROJECT_APPS = (
     'nano.privmsg',
     'nano.user',
     'nano.faq',
+    'meetups',
 )
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS

@@ -1,0 +1,15 @@
+{% extends 'meetups/london2014/base.html' %}
+{% block content %}
+<h1>Welcome to London!</h1>
+
+<p>Hopefully the weather's just right, so that you can do
+more than just claim this rare, once-in-a-lifetime CALS badge by
+just clicking the button below:</p>
+<form action="." method="post">
+    {% csrf_token %}
+    <p><b>Click here &rightarrow;</b>
+    <input type="submit" value="Bebadge me!"/>
+    </p>
+</form>
+<p>{% if key.expires %}This page will self-destruct on {{ key.expires }}.</p>{% endif %} 
+{% endblock content %}

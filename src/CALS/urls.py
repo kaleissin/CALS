@@ -80,7 +80,9 @@ urlpatterns += patterns('',
     (r'^badge/',                include('nano.badge.urls')),
     (r'^faq/',                  include('nano.faq.urls')),
     (r'^mark/',                 include('nano.mark.urls')),
-    (r'^',                      include('cals.urls')),
 
+    (r'meetups/',               include('meetups.urls')),
+
+    (r'^',                      include('cals.urls')),
 )
 

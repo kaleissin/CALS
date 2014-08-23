@@ -1,0 +1,19 @@
+{% extends 'meetups/london2014/base.html' %}
+{% block content %}
+<h1>Welcome to London!</h1>
+
+<p>Hopefully the weather's just right, so that you can do
+more than just claim this rare, once-in-a-lifetime CALS badge by
+entering your five letter code into the box below:</p>
+<form action="." method="post">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <p>
+    {{ form.key.errors }}
+    <b><label for="{{ form.key.id_for_label }}">Input code here
+    &rightarrow;</label></b> {{ form.key }}
+    <input type="submit" value="Bebadge me!"/>
+    </p>
+</form>
+{% if key.expires %}<p>The code will self-destruct on {{ key.expires }}.</p>{% endif %}
+{% endblock content %}

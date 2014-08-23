@@ -14,6 +14,8 @@ from nano.tools import get_user_model, get_profile_model
 from nano.privmsg.models import PM
 from nano.mark.models import *
 from nano.comments.models import Comment
+from verification.models import Key, KeyGroup
+from meetups.settings import MEETUPS
 
 from cals.people.models import user_unlurked
 
@@ -213,6 +215,16 @@ def timetravellers():
             if profile.seen_ipv6] 
     batchbadge(badge, timetravellers)
 
+# -- meetups
+def meetups():
+    for keygroup, setup in MEETUPS.items():
+        badge_dict = setup['badge']
+        badge = Badge.objects.get(name=badge_dict['name'])
+        keygroup = KeyGroup.objects.get(name=keygroup)
+        showed_up = [k.claimed_by for k in
+            Key.objects.filter(group=keygroup).exclude(claimed_by__isnull=True)]
+        batchbadge(badge, showed_up)
+
 _batch_jobs = {
         'connoiseurs': connoiseurs,
         'developers': developers,
@@ -234,6 +246,7 @@ _batch_jobs = {
         'timetravellers': timetravellers,
         'phoneticians': phoneticians,
         'regulars': regulars,
+        'meetups': meetups,
 }
 
 def run_batch(verbose=True):

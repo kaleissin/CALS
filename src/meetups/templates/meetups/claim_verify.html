@@ -1,0 +1,14 @@
+{% extends 'meetups/base.html' %}
+{% block content %}
+<h1>Hello!</h1>
+
+<p>This is your chance to claim a rare, once-in-a-lifetime CALS badge by
+entering your five letter code into the box below:</p>
+<form action="." method="post">
+    {% csrf_token %}
+    <p><b>Click here &rightarrow;</b>
+    <input type="submit" value="Bebadge me!"/>
+    </p>
+</form>
+<p>{% if key.expires %}This page will self-destruct on {{ key.expires }}.</p>{% endif %} 
+{% endblock content %}
