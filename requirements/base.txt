@@ -1,7 +1,7 @@
 Django==1.6.6
 Interlinears
 psycopg2
-django-taggit==0.12
+django-taggit==0.12.1
 django-voting
 pygal
 python-memcached
