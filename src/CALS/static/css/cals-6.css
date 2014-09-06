@@ -258,10 +258,14 @@ a.ext {
     margin: 1ex;
 }
 
-#header h1 a { 
+#header h1 a, #header h1 a:visited {
     border: none;
-    color: #ffde28;
+    color: #1e2f1b;
     background: inherit;
+}
+
+#header h1#logo a, #header h1#logo a:visited  {
+    color: #ffde28;
 }
 
 #footer {

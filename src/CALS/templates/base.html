@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=8" />
     <link rel="shortcut icon" href="{% static "img/favicon.ico" %}" type="image/vnd.microsoft.icon" />
-    <link rel="stylesheet" type="text/css" href="{% static "css/cals-5.css" %}" />
+    <link rel="stylesheet" type="text/css" href="{% static "css/cals-6.css" %}" />
     <title>CALS: {% block title %}Conlang Atlas of Language Structure{% endblock title %}</title>
 {% block head %}
 {% endblock head %}
@@ -15,7 +15,7 @@
 {% block header %}
     <table>
         <tr>
-            <th><h1><a href="/">CALS<sub>β</sub></a></h1></th><td><h1>Conlang Atlas of Language Structures</h1></td>
+            <th><h1 id="logo"><a href="/">CALS<sub>β</sub></a></h1></th><td><h1><a href="/">Conlang Atlas of Language Structures</a></h1></td>
             <td id="login" class="right">
                 {% if not user.is_authenticated %}
                 <a class="right" href="/account/login/?next={{ request.get_full_path }}">Log&nbsp;in</a> |
