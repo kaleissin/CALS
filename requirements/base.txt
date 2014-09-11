@@ -1,4 +1,4 @@
-Django==1.6.5
+Django==1.7
 Interlinears
 psycopg2
 django-taggit==0.12.1
@@ -7,7 +7,8 @@ pygal
 python-memcached
 ipython
 django-tag-tools
-django-activity-stream==0.5.0
+django-activity-stream==0.5.1
 python-social-auth==0.1.26
 nano==0.7.3
 unidecode
+pytz
