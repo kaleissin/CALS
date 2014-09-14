@@ -17,15 +17,13 @@ from nano.comments.models import Comment
 
 from cals.people.models import user_unlurked
 
-Profile = get_profile_model()
-User = get_user_model()
-
 def batchbadge(badge, models):
     for model in models:
         if badge not in model.badges.all():
             model.badges.add(badge)
 
 def unlurk():
+    Profile = get_profile_model()
     brs = Badge.objects.get_all_recipients().filter(profile__is_lurker=True)
     unlurked = Profile.objects.filter(user__in=brs)
     exlurker_count = unlurked.count()
@@ -37,12 +35,14 @@ def unlurk():
 
 def developers():
     # Cannot use signal
+    User = get_user_model()
     badge = Badge.objects.get(name='Developer')
     developers = User.objects.filter(id__in=(1, 2))
     batchbadge(badge, developers)
 
 def early_birds():
     # Pointless to use signal
+    User = get_user_model()
     magic_date = '2008-06-08T00:00:00+00:00'
     badge = Badge.objects.get(name='Early bird')
     early_birds = User.objects.filter(date_joined__lt=magic_date)
@@ -52,6 +52,7 @@ def conlangers():
     """Mark conlangers as just that.
 
     Redundant, done by signal in cals.models"""
+    User = get_user_model()
     badge = Badge.objects.get(name='Conlanger')
     editors = User.objects.filter(edits__isnull=False)
     batchbadge(badge, editors)
@@ -59,11 +60,13 @@ def conlangers():
     batchbadge(badge, managers)
 
 def nudgers():
+    User = get_user_model()
     badge = Badge.objects.get(name='Nudger')
     nudgers = [u for u in User.objects.all() if u.pms_sent.count()]
     batchbadge(badge, nudgers)
 
 def connoiseurs():
+    User = get_user_model()
     badge = Badge.objects.get(name='Connoisseur')
     connoiseurs = [u for u in User.objects.all() 
             if u.marks.filter(marktype__slug__startswith='fav').count()]
@@ -72,6 +75,7 @@ def connoiseurs():
 # -- by date
 
 def _active_year_ago(years):
+    User = get_user_model()
     assert int(years)
     now = timezone.now()
     # averaged year
@@ -103,6 +107,7 @@ def regulars():
     batchbadge(badge, old_hands)
 
 def boomerangs():
+    User = get_user_model()
     badge = Badge.objects.get(name='Boomerang')
     week = timedelta(days=7)
     boomerangs = User.objects.filter(last_login__gt=F('date_joined')+week,
@@ -113,6 +118,7 @@ def boomerangs():
 
 def testbunnies():
     # Cannot use signal
+    User = get_user_model()
     badge = Badge.objects.get(name='Test Bunny')
     testbunny_ids = (2, 37)
     testbunnies = User.objects.filter(id__in=testbunny_ids)
@@ -120,6 +126,7 @@ def testbunnies():
 
 def bughunters():
     # Cannot use signal
+    User = get_user_model()
     badge = Badge.objects.get(name='Bughunter')
     bughunter_ids = (
             2, 3, 30, 32, 195, 
@@ -132,6 +139,7 @@ def bughunters():
 
 def dreamers():
     # Cannot use signal
+    User = get_user_model()
     badge = Badge.objects.get(name='Dreamer')
     dreamer_ids = (
             2, 3, 27, 30, 37,
@@ -142,6 +150,8 @@ def dreamers():
     batchbadge(badge, dreamers)
 
 def autobiographers():
+    User = get_user_model()
+    Profile = get_profile_model()
     badge = Badge.objects.get(name='Autobiographer')
     autobiographer_profiles = Profile.objects.autobiographers()
     autobiographers = User.objects.filter(id__in=[p.user_id for p in autobiographer_profiles])
@@ -157,6 +167,7 @@ def translators():
     batchbadge(badge, translators)
 
 def civ4fans():
+    User = get_user_model()
     badge = Badge.objects.get(name='CIV IV-fan')
     num_civ_exercises = TranslationExercise.objects.filter(category=4).count()
     translators = [u for u in User.objects.filter(translations__exercise__category=4).distinct() 
@@ -196,6 +207,7 @@ def critics():
 
 # -- tech
 def timetravellers():
+    Profile = get_profile_model()
     badge = Badge.objects.get(name='Timetraveller')
     timetravellers = [profile.user for profile in Profile.objects.all()
             if profile.seen_ipv6] 
