@@ -31,21 +31,21 @@ class LangtypeQuerySet(QuerySet):
         return self.filter(natlang=True)
 
 class DefaultLanguageManager(models.Manager):
-    def get_query_set(self):
+    def get_queryset(self):
         return LangtypeQuerySet(self.model).filter(visible=True)
 
     def conlangs(self):
-        return self.get_query_set().conlangs()
+        return self.get_queryset().conlangs()
 
     def natlangs(self):
-        return self.get_query_set().natlangs()
+        return self.get_queryset().natlangs()
 
     def get_by_natural_key(self, slug):
         return self.get(slug=slug)
 
 class NaturalLanguageManager(models.Manager):
-    def get_query_set(self):
-        return super(NaturalLanguageManager, self).get_query_set().filter(natlang=True)
+    def get_queryset(self):
+        return super(NaturalLanguageManager, self).get_queryset().filter(natlang=True)
 
 class UnorderedTreeMixin(models.Model):
     part_of = models.ForeignKey('self', blank=True, null=True, default=None)
@@ -315,11 +315,11 @@ class SearchManager(models.Manager):
 
     def find_prefix(self, q):
         q = uslugify(q)
-        return self.get_query_set().filter(slug__istartswith=q)
+        return self.get_queryset().filter(slug__istartswith=q)
 
     def find_anywhere(self, q):
         q = uslugify(q)
-        return self.get_query_set().filter(slug__icontains=q)
+        return self.get_queryset().filter(slug__icontains=q)
 
     def find(self, q, anywhere=False):
         if anywhere:

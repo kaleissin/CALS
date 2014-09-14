@@ -31,20 +31,20 @@ class LanguageFeatureQuerySet(models.query.QuerySet):
 class LanguageFeatureManager(models.Manager):
     use_for_related_fields = True
 
-    def get_query_set(self):
+    def get_queryset(self):
         return LanguageFeatureQuerySet(self.model)
 
     def for_natlangs(self):
-        return self.get_query_set().for_natlangs()
+        return self.get_queryset().for_natlangs()
 
     def for_conlangs(self):
-        return self.get_query_set().for_conlangs()
+        return self.get_queryset().for_conlangs()
 
     def count_all(self):
-        return self.get_query_set().count_all()
+        return self.get_queryset().count_all()
 
     def count_both(self):
-        return self.get_query_set().count_both()
+        return self.get_queryset().count_both()
 
 class LanguageFeature(models.Model, DescriptionMixin):
     language = models.ForeignKey(Language, related_name='features')

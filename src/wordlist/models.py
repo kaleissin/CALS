@@ -24,15 +24,15 @@ class BuckCategory(models.Model):
 class SenseManager(models.Manager):
     def yakholman(self):
         return super(SenseManager,
-                self).get_query_set().filter(yakhontov=True,
+                self).get_queryset().filter(yakhontov=True,
                 holman_list=True)
     def all_buck(self):
         return super(SenseManager,
-               self).get_query_set().filter(buck_category__isnull=False)
+               self).get_queryset().filter(buck_category__isnull=False)
 
     def most_common_buck(self):
         return super(SenseManager,
-                self).get_query_set().filter(buck=True, ids=True,
+                self).get_queryset().filter(buck=True, ids=True,
                 wold=True)
 
 class Sense(models.Model):

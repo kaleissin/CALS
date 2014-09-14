@@ -13,7 +13,7 @@ user_unlurked = django.dispatch.Signal(providing_args=["user"])
 
 class ProfileManager(models.Manager):
     def autobiographers(self):
-        return self.get_query_set().exclude(
+        return self.get_queryset().exclude(
                 country__isnull=True, 
                 homepage_title__isnull=True,
                 latitude__isnull=True, 

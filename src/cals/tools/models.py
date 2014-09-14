@@ -110,8 +110,8 @@ class Freetext(models.Model):
         return freetext_xhtml
 
 class DescriptionManager(models.Manager):
-    def get_query_set(self):
-        return super(DescriptionManager, self).get_query_set().filter(current=True)
+    def get_queryset(self):
+        return super(DescriptionManager, self).get_queryset().filter(current=True)
 
 class Description(Freetext):
     last_modified = models.DateTimeField(default=datetime.now, editable=False)
@@ -194,11 +194,11 @@ class SearchManager(models.Manager):
 
     def find_prefix(self, q):
         q = uslugify(q)
-        return self.get_query_set().filter(slug__istartswith=q)
+        return self.get_queryset().filter(slug__istartswith=q)
 
     def find_anywhere(self, q):
         q = uslugify(q)
-        return self.get_query_set().filter(slug__icontains=q)
+        return self.get_queryset().filter(slug__icontains=q)
 
     def find(self, q, anywhere=False):
         if anywhere:

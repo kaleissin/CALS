@@ -67,35 +67,35 @@ class SoundDataPointQuerySet(models.query.QuerySet):
         return without_args(self, 'sound__features__name', *features)
 
 class SoundDataPointManager(models.Manager):
-    def get_query_set(self):
+    def get_queryset(self):
         return SoundDataPointQuerySet(self.model)
 
 #     def all_dental(self):
-#         return self.get_query_set().all_dental()
+#         return self.get_queryset().all_dental()
 # 
 #     def all_alveolar(self):
-#         return self.get_query_set().all_alveolar()
+#         return self.get_queryset().all_alveolar()
 # 
     def vowels(self):
-        return self.get_query_set().vowels()
+        return self.get_queryset().vowels()
 
     def consonants(self):
-        return self.get_query_set().vowels()
+        return self.get_queryset().vowels()
 
     def with_features(self, *features):
-        return self.get_query_set().with_features(*features)
+        return self.get_queryset().with_features(*features)
 
     def without_features(self, *features):
-        return self.get_query_set().without_features(*features)
+        return self.get_queryset().without_features(*features)
 
 class VowelDataPointManager(SoundDataPointManager):
 
-    def get_query_set(self):
+    def get_queryset(self):
         return SoundDataPointQuerySet(self.model).vowels()
 
 class ConsonantDataPointManager(SoundDataPointManager):
 
-    def get_query_set(self):
+    def get_queryset(self):
         return SoundDataPointQuerySet(self.model).consonants()
 
 class SoundDataPoint(models.Model):

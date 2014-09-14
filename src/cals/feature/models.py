@@ -30,30 +30,30 @@ class ActiveQuerySet(QuerySet):
 
 class ActivePassiveManager(models.Manager):
     "Needed to use the custom queryset"
-    def get_query_set(self):
+    def get_queryset(self):
         return ActiveQuerySet(self.model)
 
     def active(self):
-        return self.get_query_set().active()
+        return self.get_queryset().active()
 
     def passive(self):
-        return self.get_query_set().passive()
+        return self.get_queryset().passive()
 
 class ActiveManager(models.Manager):
     "Needed to use the custom queryset"
-    def get_query_set(self):
+    def get_queryset(self):
         return ActiveQuerySet(self.model)
 
     def active(self):
-        return self.get_query_set().active()
+        return self.get_queryset().active()
 
 class PassiveManager(models.Manager):
     "Needed to use the custom queryset"
-    def get_query_set(self):
+    def get_queryset(self):
         return ActiveQuerySet(self.model)
 
     def passive(self):
-        return self.get_query_set().passive()
+        return self.get_queryset().passive()
 
 class CategoryManager(ActivePassiveManager):
 
