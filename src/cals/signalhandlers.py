@@ -58,7 +58,7 @@ def new_user_anywhere(sender, **kwargs):
 
         # Make sure there is a profile
         try:
-            profile = new_user.get_profile()
+            profile = new_user.profile
         except Profile.DoesNotExist:
             profile = Profile(user=new_user, display_name=new_user.username)
             profile.save()

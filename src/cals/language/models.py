@@ -269,7 +269,7 @@ class Language(models.Model):
 
     def can_change(self, profile):
         if isinstance(profile, User):
-            profile = profile.get_profile()
+            profile = profile.profile
         if self.manager == profile.user:
             return True
         if len(self.editors.filter(id=profile.user.id)):

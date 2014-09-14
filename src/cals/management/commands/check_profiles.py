@@ -7,7 +7,7 @@ class Command(NoArgsCommand):
     def handle_noargs(self, **kwargs):
         for u in User.objects.all():
             try:
-                p = u.get_profile()
+                p = u.profile
             except Profile.DoesNotExist:
                 Profile.objects.create(user=u)
                 print 'Created profile for:', u

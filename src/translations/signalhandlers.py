@@ -14,6 +14,6 @@ def new_translation(sender, **kwargs):
 
         # Blog
         if trans.exercise.id != 1:
-            title = u'New translation of "%s" into %s by %s' % (trans.exercise.name, trans.language, trans.translator.get_profile().display_name)
+            title = u'New translation of "%s" into %s by %s' % (trans.exercise.name, trans.language, trans.translator.profile.display_name)
             add_entry_to_blog(trans, title, 'translations/new_trans_blogentry.html', date_field='added')
 

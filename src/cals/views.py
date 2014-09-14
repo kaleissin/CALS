@@ -81,7 +81,7 @@ def langs_for_user(user):
         user = user.user
     else: 
         user = user
-        profile = user.get_profile()
+        profile = user.profile
     return Language.objects.filter(Q(public=True) | Q(manager=user) | Q(editors=user))
 
 # language
@@ -295,7 +295,7 @@ def create_language(request, lang=None, fvlist=None, clone=False, *args, **kwarg
 
     cloned_from_lang = None
     if clone:
-        author = request.user.get_profile().display_name
+        author = request.user.profile.display_name
         name = 'Clone'
         if lang:
             name = 'Clone of %s' % lang
@@ -427,7 +427,7 @@ def change_language(request, *args, **kwargs):
 
     langform = LanguageForm(instance=lang)
     #moreinfoformset = ExternalInfoFormSet(queryset=lang.externalinfo.all())
-    #profile = user.get_profile()
+    #profile = user.profile
     manager = lang.manager
     if is_manager:
         editorform = EditorForm(instance=lang)

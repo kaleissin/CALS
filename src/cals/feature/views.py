@@ -113,7 +113,7 @@ def revert_description(user, descriptions, revert_to):
         try:
             description = descriptions.get(id=int(revert_to))
         except Description.DoesNotExist:
-            error = 'Invalid version. This revert-attempt by %s has been logged.' % user.get_profile()
+            error = 'Invalid version. This revert-attempt by %s has been logged.' % user.profile
             return error
         else:
             description.current = True

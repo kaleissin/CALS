@@ -84,7 +84,7 @@ def show_profile(request, *args, **kwargs):
     profile = None
     whereami = request.META.get('PATH_INFO', None)
     try:
-        profile = user.get_profile()
+        profile = user.profile
     except Profile.DoesNotExist:
         return HttpResponseNotFound()
 
@@ -155,7 +155,7 @@ def change_profile(request, *args, **kwargs):
         return HttpResponseNotFound()
     profile = None
     try:
-        profile = user.get_profile()
+        profile = user.profile
     except Profile.DoesNotExist:
         return HttpResponseNotFound()
 
@@ -203,7 +203,7 @@ def auth_login(request, *args, **kwargs):
                 _LOG.debug('Form valid')
                 try:
                     user = User.objects.get(username=username)
-                    profile = user.get_profile()
+                    profile = user.profile
                 except User.DoesNotExist:
                     try:
                         userslug = uslugify(username)
@@ -234,7 +234,7 @@ def auth_login(request, *args, **kwargs):
             # /2
         else:
             messages.info(request, 'You are already logged in')
-            nexthop = request.user.get_profile().get_absolute_url()
+            nexthop = request.user.profile.get_absolute_url()
             return HttpResponseRedirect(nexthop)
         # /1
     data = {'me': me, nextfield: nexthop}

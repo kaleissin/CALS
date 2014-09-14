@@ -11,7 +11,7 @@ def may_edit_lang(user, language):
 
     # Must have a profile
     try:
-        profile = user.get_profile()
+        profile = user.profile
     except AttributeError:
         return error_return
 

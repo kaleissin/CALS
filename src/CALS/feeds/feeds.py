@@ -91,7 +91,7 @@ class RecentCommentsFeed(AbstractFeed):
         return self.base_id(item) + '/%s-%s' % (uslugify(unicode(item.content_object)), item.user.id)
 
     def item_title(self, item):
-        return 'New comment by %s on %s' % (item.user.get_profile().display_name, item.content_object)
+        return 'New comment by %s on %s' % (item.user.profile.display_name, item.content_object)
 
     def item_author_name(self, item):
         return unicode(item.user)
@@ -117,7 +117,7 @@ class UpdatedLanguagesFeed(AbstractFeed):
         return 'Changed language: %s' % item.name
 
     def item_author_name(self, item):
-        return unicode(item.added_by.get_profile().display_name)
+        return unicode(item.added_by.profile.display_name)
 
     def item_pubdate(self, item):
         return item.created
@@ -140,7 +140,7 @@ class NewestLanguagesFeed(AbstractFeed):
         return 'New language: %s' % item.name
 
     def item_author_name(self, item):
-        return unicode(item.added_by.get_profile().display_name)
+        return unicode(item.added_by.profile.display_name)
 
     def item_pubdate(self, item):
         return item.created
@@ -240,4 +240,4 @@ class NewTranslationFeed(AbstractFeed):
         return item.added
 
     def item_link(self, item):
-        return '/translation/%s/language/%s/%s/' % (item.exercise.slug, item.language.slug, item.translator.get_profile().slug)
+        return '/translation/%s/language/%s/%s/' % (item.exercise.slug, item.language.slug, item.translator.profile.slug)

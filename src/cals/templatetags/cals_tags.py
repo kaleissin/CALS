@@ -51,7 +51,7 @@ def _get_display_name(user):
     """Given an id (int), a user-object or a user-name, returns
     preferred name to display and user-object.""" 
     try:
-        dispay_name = user.get_profile().display_name.strip()
+        dispay_name = user.profile.display_name.strip()
         return dispay_name, user
     except AttributeError:
         if type(user) == type(Profile()):
@@ -64,7 +64,7 @@ def _get_display_name(user):
             except:
                 raise template.TemplateSyntaxError, 'wrong argument type: %s' % type(user)
         # implicit fallback: User()
-        display_name = user.get_profile().display_name.strip()
+        display_name = user.profile.display_name.strip()
         return display_name, user
     except:
         raise
