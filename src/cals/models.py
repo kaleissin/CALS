@@ -13,6 +13,8 @@ from django.db.models.query import QuerySet
 
 from cals import markup_as_restructuredtext
 
+from cals.language.models import ExternalInfo
+
 from cals.people.models import Profile
 
 from cals.language.models import Language
@@ -129,22 +131,6 @@ class UTC(dt.tzinfo):
         return self.ZERO
 
 # TODO: Generalize. move out to own module. in nano?
-
-class ExternalInfo(models.Model):
-    EXTERNALINFO_TYPES = (
-            ('homepage', 'Homepage'),
-            ('dictionary', 'Dictionary'),
-    )
-
-    language = models.ForeignKey(Language, related_name='externalinfo')
-    category = models.CharField(max_length=20,
-            choices=EXTERNALINFO_TYPES)
-    on_request = models.BooleanField(default=False)
-    link = models.URLField(blank=True, null=True)
-
-    def __unicode__(self):
-        return u"%s %s: on request: %s, link: %s" % (self.language,
-                self.category, self.on_request, self.link or 'No')
 
 # --- Signals
 from django.db.models.signals import post_save

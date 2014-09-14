@@ -17,7 +17,7 @@ from cals.people.models import Profile
 from cals.tools.models import Description
 from cals.language.models import Language
 from cals.languagefeature.models import LanguageFeature
-from cals.models import ExternalInfo
+from cals.language.models import ExternalInfo
 
 def asciify(string):
     return unicodedata.normalize(string, 'NFKD').encode('ascii', 'ignore')
