@@ -171,7 +171,6 @@ DJANGO_APPS = (
 
 THIRD_PARTY_APPS = (
     'taggit',
-    'voting',
     'actstream',
     'social.apps.django_app.default',
 )
