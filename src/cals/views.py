@@ -12,7 +12,7 @@ from django.http import (HttpResponseRedirect,
         HttpResponseNotFound,
         HttpResponseForbidden,
         Http404)
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
 from django.template.loader import render_to_string
 from django.views.generic import ListView
 from django.db.models import Q
@@ -34,6 +34,7 @@ from cals.forms import FeatureValueForm, CategoryForm, FeatureForm, \
 from cals.tools import description_diff, compare_features
 from cals.modeltools import compare_languages, \
         get_averageness_for_lang, LANGTYPES
+from cals.language.utils import random_conlang
 
 from cals.people.views import auth_login
 
@@ -495,21 +496,33 @@ def change_language(request, *args, **kwargs):
             'state': state,}
     return render(request, 'language_form.html', data)
 
+def list_natlangs(request, *args, **kwargs):
+    return language_list(request, natlang=True, *args, **kwargs)
+
+def list_conlangs(request, *args, **kwargs):
+    return language_list(request, natlang=False, *args, **kwargs)
+
+def show_random_conlang(request, *args, **kwargs):
+    random = random_conlang()
+    return redirect('/language/%s/' % random, *args, **kwargs)
+
 def list_languages(request, *args, **kwargs):
     """Select and dispatch to a view of the list of languages"""
 
     me = 'language'
 
-    if in_kwargs_or_get(request, kwargs, 'action', 'cloud'):
-        return language_cloud(request, *args, **kwargs)
-    for value in ('jrk', 'jrklist'):
-        if in_kwargs_or_get(request, kwargs, 'action', value):
-            return language_jrklist(request, *args, **kwargs)
-    if in_kwargs_or_get(request, kwargs, 'action', 'natlang'):
-        return language_list(request, natlang=True, *args, **kwargs)
-    if in_kwargs_or_get(request, kwargs, 'action', 'conlang'):
-        return language_list(request, *args, **kwargs)
-    #if not kwargs or kwargs.get('action', None) is None:
+    mapping = {
+        'cloud': language_cloud,
+        'jrk': language_jrklist,
+        'jrklist': language_jrklist,
+        'natlang': list_natlangs,
+        'conlang': list_conlangs,
+        'random': show_random_conlang,
+    }
+
+    action = in_kwargs_or_get2(request, kwargs, 'action', *mapping.keys())
+    if action:
+        return mapping[action](request, *args, **kwargs)
     form = SearchForm()
     data = {'me': me, 'searchform': form }
     return render(request, 'cals/language_index.html', data)
@@ -573,12 +586,28 @@ def page_in_kwargs_or_get(request, kwargs):
             page = False
     return page
 
+def in_kwargs_or_get2(request, kwargs, key, *values):
+    assert values and values[0], 'At least one non-falsey value needed'
+    value = kwargs.get(key, '')
+    if value in values:
+        return value
+    if key in request.GET:
+        value = request.GET[key]
+        if value in values:
+            return value
+    for query in request.GET.keys():
+        if query in values:
+            return query
+    return False
+
 def in_kwargs_or_get(request, kwargs, key, value):
     """If an url has the key-value-pair key=<value> in kwargs or
     the key <value> in GET, return the value, else return False."""
     assert value, '"value" cannot be empty/false'
-    if kwargs.get(key, '') == value or value in request.GET:
-        return True
+    if kwargs.get(key, '') == value:
+        return value
+    if value in request.GET:
+        return value
     return False
 
 def test(request, *args, **kwargs):
