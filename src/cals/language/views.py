@@ -3,12 +3,10 @@ _LOG = logging.getLogger(__name__)
 
 from django.views.generic import ListView, DetailView
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.forms.models import modelformset_factory
 
 from taggit.models import Tag
-
-from nano.tools import render_page
 
 from cals.language.models import LanguageName, Language, LanguageFamily
 
@@ -35,7 +33,7 @@ def change_languagenames(request, *args, **kwargs):
         #assert False, dir(formset)
     data = {'me': 'language',
             'formset': formset }
-    return render_page(request, 'cals/language/name_form.html', data)
+    return render(request, 'cals/language/name_form.html', data)
 
 
 class LanguageMixin(object):
