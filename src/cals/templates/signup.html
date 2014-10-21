@@ -3,22 +3,22 @@
 {% block content %}
 {% if not request.user.is_authenticated %}
 <div id="content">
-        <fieldset>
-            <legend>Connect with a remote user</legend>
-            <a class="button" href="{% url "social:begin" "twitter" %}"><img src="{{ STATIC_URL }}img/bird_blue_16.png" /> Connect with Twitter</a>
-            <a class="button" href="{% url "social:begin" "github" %}"><img src="{{ STATIC_URL }}img/blacktocat-16.png" /> Connect with Github</a>
-            <form action="{% url "social:begin" "openid" %}" method="post">{% csrf_token %}
-          <div>
+    <fieldset>
+        <legend>Connect with a remote user</legend>
+        <a class="button" href="{% url "social:begin" "twitter" %}"><img src="{{ STATIC_URL }}img/bird_blue_16.png" /> Connect with Twitter</a>
+        <a class="button" href="{% url "social:begin" "github" %}"><img src="{{ STATIC_URL }}img/blacktocat-16.png" /> Connect with Github</a>
+        <form action="{% url "social:begin" "openid" %}" method="post">{% csrf_token %}
+            <div>
             <label for="openid_identifier">OpenId provider</label>
             <input id="openid_identifier" type="text" value="" name="openid_identifier" />
             <input type="submit" value="Login" />
-          </div>
+            </div>
         </form>
-        </fieldset>
-    <form id="signup" action="" method="post">
+    </fieldset>
+    <form id="signup" action="." method="post">
         <fieldset class="loginbox">
+            <legend>Sign up with password</legend>
             {% csrf_token %}
-            <legend>Log in</legend>
             <table>
                 {% for field in form %}
                 <tr id="row_{{ field.html_name }}">
