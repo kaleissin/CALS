@@ -7,7 +7,7 @@ class LanguageAdmin(admin.ModelAdmin):
     ordering = ('name',)
     list_display = ('name', 'added_by', 'from_earth', 'family', 'last_modified')
     list_filter = ('from_earth', 'natlang', 'added_by',)
-    search_fields = ('name', 'internal_name', 'added_by',)
+    search_fields = ('name', 'internal_name')
     actions = ['make_invisible']
 
     #radio_fields = {'from_earth': admin.VERTICAL }
