@@ -1,5 +1,11 @@
+bin
+include
+lib
+share
+local
 *.bash
 *.pyc
+*.pyo
 *.swp
 *~
 *.conf

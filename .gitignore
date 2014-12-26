@@ -3,11 +3,14 @@ include
 lib
 share
 local
+*.bash
 *.pyc
 *.pyo
+*.swp
 *~
+.tox
+.coverage
+htmlcov
 src/env
 src/CALS/templates/robots.txt
 src/static
-.tox
-.coverage
