@@ -7,7 +7,7 @@ from math import modf, floor, ceil
 import os.path
 
 from django import template
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.contrib.sessions.models import Session
 from django.conf import settings
 from django.core.cache import cache
@@ -54,6 +54,7 @@ def _get_display_name(user):
         dispay_name = user.profile.display_name.strip()
         return dispay_name, user
     except AttributeError:
+        User = get_user_model()
         if type(user) == type(Profile()):
             user = user.user
         elif type(user) == type(5):
@@ -182,6 +183,7 @@ def showuser(user):
     if type(user) == type(Profile()):
         user = user.user
     elif type(user) == type(5):
+        User = get_user_model()
         user = User.objects.get(id=user)
     badges = show_badges(user)
     if badges:
@@ -339,6 +341,7 @@ def gravatar(obj, size=32, fallback='identicon'):
     try:
         string = obj + u''
     except TypeError:
+        User = get_user_model()
         if isinstance(obj, User):
             string = obj.email or u'%s %s' % (obj.id, obj.date_joined)
         else:

@@ -1,5 +1,4 @@
-
-from django.contrib.auth.models import User
+from django.conf import settings
 from django.db import models
 from django.db.models.query import QuerySet
 
@@ -92,7 +91,7 @@ class Feature(models.Model, DescriptionMixin):
     wals = models.BooleanField(default=False, editable=False)
     overrides = models.ForeignKey('self', blank=True, null=True)
     active = models.BooleanField(default=False, editable=False)
-    added_by = models.ForeignKey(User, editable=False, null=True)
+    added_by = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False, null=True)
 
     objects = FeatureManager()
     active_objects = ActiveManager()

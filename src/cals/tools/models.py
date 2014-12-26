@@ -1,7 +1,7 @@
 from datetime import datetime
 
 
-from django.contrib.auth.models import User
+from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from django.db import models
@@ -115,7 +115,7 @@ class DescriptionManager(models.Manager):
 
 class Description(Freetext):
     last_modified = models.DateTimeField(default=datetime.now, editable=False)
-    last_modified_by = models.ForeignKey(User, editable=False, blank=True, null=True, related_name='descriptions')
+    last_modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False, blank=True, null=True, related_name='descriptions')
     current = models.BooleanField(default=True)
 
     content_type = models.ForeignKey(ContentType)

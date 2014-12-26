@@ -7,7 +7,7 @@ import logging
 _LOG = logging.getLogger(__name__)
 
 import django.dispatch
-from django.contrib.auth.models import User
+from django.conf import settings
 from django.db import models
 from django.db.models.query import QuerySet
 from django.utils.encoding import smart_unicode
@@ -20,6 +20,8 @@ from cals.tools import uslugify, asciify
 from cals.tools.models import FREETEXT_TYPES, DescriptionMixin
 
 from cals.feature.models import Feature, FeatureValue
+
+from cals.people.models import Profile
 
 language_hidden = django.dispatch.Signal(providing_args=["languages"])
 
@@ -168,20 +170,28 @@ class Language(models.Model):
     public = models.BooleanField('Editable by all', default=True,
             help_text="""If yes/on, all logged in may edit. If no/off, only the
             manager and editors may edit.""")
-    added_by = models.ForeignKey(User,editable=False, blank=True, null=True, related_name='languages')
-    manager = models.ForeignKey(User,
+    added_by = models.ForeignKey(settings.AUTH_USER_MODEL,
+            editable=False,
+            blank=True,
+            null=True,
+            related_name='languages')
+    manager = models.ForeignKey(settings.AUTH_USER_MODEL,
             blank=True,
             null=True,
             related_name='manages',
             help_text=u"""The person who controls who gets to
             change the description of this language. This makes 
             it possible to hand a language over to another person.""")
-    editors = models.ManyToManyField(User, blank=True, null=True, 
+    editors = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, null=True, 
             related_name='edits',
             help_text=u"""People who get to change the description of this language.""")
     created = models.DateTimeField(default=datetime.now)
     last_modified = models.DateTimeField(blank=True, null=True, editable=False, default=datetime.now)
-    last_modified_by = models.ForeignKey(User, editable=False, blank=True, null=True, related_name='languages_modified')
+    last_modified_by = models.ForeignKey(settings.AUTH_USER_MODEL,
+            editable=False,
+            blank=True,
+            null=True,
+            related_name='languages_modified')
 
     try:
         from nano.blog.models import Entry
@@ -229,7 +239,7 @@ class Language(models.Model):
         super(Language, self).save(*args, **kwargs)
 
         self.save_langnames(now=now)
-    
+
     def natural_key(self):
         return self.slug
 
@@ -257,7 +267,7 @@ class Language(models.Model):
         prev_names = names.exclude(name=self.internal_name).exclude(name=self.name).exclude(alternate=True).exclude(previous=True)
         if prev_names:
             prev_names.update(previous=True)
-                
+
     def set_average_score(self):
         if not self.num_features:
             self.average_score = 0
@@ -268,7 +278,7 @@ class Language(models.Model):
         self.num_features = LanguageFeature.objects.filter(language=self).count()
 
     def can_change(self, profile):
-        if isinstance(profile, User):
+        if not isinstance(profile, Profile):
             profile = profile.profile
         if self.manager == profile.user:
             return True

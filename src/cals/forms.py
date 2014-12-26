@@ -3,7 +3,7 @@ _LOG = logging.getLogger(__name__)
 
 import unicodedata
 
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django import forms
 from django.forms.formsets import formset_factory
 from django.forms.models import modelformset_factory, BaseModelFormSet
@@ -46,7 +46,7 @@ class EditorForm(forms.ModelForm):
 
     def clean_editors(self):
         editors = self.cleaned_data['editors']
-        self.cleaned_data['editors'] = User.objects.filter(id__in=[e.user_id for e in editors])
+        self.cleaned_data['editors'] = get_user_model().objects.filter(id__in=[e.user_id for e in editors])
         return self.cleaned_data['editors']
 
     def save(self, commit=True, user=None):
@@ -87,7 +87,7 @@ class LanguageForm(forms.ModelForm):
     def save(self, commit=True, user=None):
         new_manager = self.cleaned_data.get('manager', None)
         if new_manager:
-            manager = User.objects.get(id=new_manager.pk)
+            manager = get_user_model().objects.get(id=new_manager.pk)
             self.cleaned_data['manager'] = manager
 #         if user:
 #             _LOG.info('CALS new language #1: %s', self.cleaned_data)
@@ -147,7 +147,7 @@ class UserForm(forms.ModelForm):
             )
 
     class Meta:
-        model = User
+        model = get_user_model()
         fields = ('username', 'first_name', 'email')
 
 class ProfileForm(forms.ModelForm):

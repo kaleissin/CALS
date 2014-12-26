@@ -17,7 +17,7 @@ from actstream import action as streamaction
 
 from django.contrib import auth, messages #.authenticate, auth.login
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.http import HttpResponseRedirect, HttpResponseNotFound
 from django.shortcuts import get_object_or_404, render
 from django.utils.encoding import smart_unicode
@@ -39,16 +39,16 @@ class CALSUserExistsError(CALSError):
     pass
 
 def _get_profile(*args, **kwargs):
-    return get_object_or_404(User, id=kwargs.get('object_id', None))
+    return get_object_or_404(get_user_model(), id=kwargs.get('object_id', None))
 
 def show_people_map(request, *args, **kwargs):
-    people = User.objects.filter(is_active=True)
+    people = get_user_model().objects.filter(is_active=True)
 
 def all_people_map(request, *args, **kwargs):
-    people = User.objects.filter(is_active=True)
+    people = get_user_model().objects.filter(is_active=True)
 
 class ListPeopleView(ListView):
-    queryset = User.objects.filter(profile__is_lurker=False, profile__is_visible=True)
+    queryset = get_user_model().objects.filter(profile__is_lurker=False, profile__is_visible=True)
     template_name = 'cals/profile_list.html'
     http_method_names = [u'get', u'head', u'options', u'trace']
 
@@ -202,9 +202,9 @@ def auth_login(request, *args, **kwargs):
             if username and password:
                 _LOG.debug('Form valid')
                 try:
-                    user = User.objects.get(username=username)
+                    user = get_user_model().objects.get(username=username)
                     profile = user.profile
-                except User.DoesNotExist:
+                except get_user_model().DoesNotExist:
                     try:
                         userslug = uslugify(username)
                         profile = Profile.objects.get(slug=userslug)

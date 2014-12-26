@@ -4,10 +4,11 @@ _LOG.info(__name__)
 
 from actstream import action as streamaction
 
+from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.contrib import messages #.authenticate, auth.login
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.http import (HttpResponseRedirect,
         HttpResponseNotFound,
         HttpResponseForbidden,
@@ -65,7 +66,7 @@ def _get_lang(all=False, *args, **kwargs):
     return get_object_or_404(Language, slug=kwargs.get('lang', None))
 
 def _get_user(*args, **kwargs):
-    return get_object_or_404(User, username=kwargs.get('user', None))
+    return get_object_or_404(settings.AUTH_USER_MODEL, username=kwargs.get('user', None))
 
 def _get_url_pieces(name='slug', **kwargs):
     _LOG.debug('Url-pieces: %s', kwargs)
@@ -625,6 +626,7 @@ def home(request, *args, **kwargs):
     greeting = None
     nexthop = ''
     nextfield = u'next'
+    User = get_user_model()
     langs = Language.objects.exclude(slug__startswith='testarossa')
     langs_newest = langs.order_by('-created')[:5]
     langs_modified = langs.order_by('-last_modified')[:5]

@@ -3,6 +3,7 @@ import operator
 import logging
 
 from django.db import models
+from django.conf import settings
 
 from cals.tools import uslugify
 
@@ -55,7 +56,7 @@ class Sense(models.Model):
     uld2 = models.CharField(max_length=3, blank=True, null=True)
     see_also = models.ManyToManyField('self', blank=True, null=True)
     added = models.DateTimeField(auto_now_add=True)
-    suggested_by = models.ForeignKey('auth.User', default=1)
+    suggested_by = models.ForeignKey(settings.AUTH_USER_MODEL, default=1)
 
     objects = SenseManager()
 
@@ -111,9 +112,9 @@ class Word(models.Model):
     not_applicable = models.NullBooleanField(default=False)
     see_also = models.ManyToManyField('self', blank=True, null=True)
     added = models.DateTimeField(auto_now_add=True)
-    added_by = models.ForeignKey('auth.User', related_name='words_added')
+    added_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='words_added')
     last_modified = models.DateTimeField(auto_now=True)
-    last_modified_by = models.ForeignKey('auth.User', 
+    last_modified_by = models.ForeignKey(settings.AUTH_USER_MODEL,
             related_name='words_modified')
 
     def __unicode__(self):
@@ -129,7 +130,7 @@ class SkippedWord(models.Model):
     sense = models.ForeignKey(Sense, related_name='skipped_words')
     language = models.ForeignKey('cals.language', related_name='skipped_words')
     added = models.DateTimeField(auto_now_add=True)
-    added_by = models.ForeignKey('auth.User',
+    added_by = models.ForeignKey(settings.AUTH_USER_MODEL,
             related_name='skipped_words')
 
     def __unicode__(self):

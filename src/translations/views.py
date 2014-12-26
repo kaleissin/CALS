@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, Http404
 from django.core.exceptions import PermissionDenied
@@ -9,7 +10,7 @@ import logging
 _LOG = logging.getLogger(__name__)
 
 from cals.views import langs_for_user
-from cals.models import Language, User
+from cals.models import Language
 
 from translations.models import Translation, TranslationExercise
 from translations.forms import TranslationForm
@@ -22,7 +23,7 @@ def get_language(**kwargs):
     return get_model_for_kwarg(Language, 'language', 'slug', **kwargs)
 
 def get_user(**kwargs):
-    return get_model_for_kwarg(User, 'translator', 'username', **kwargs)
+    return get_model_for_kwarg(settings.AUTH_USER_MODEL, 'translator', 'username', **kwargs)
 
 
 class ListLanguageTranslationView(ListView):

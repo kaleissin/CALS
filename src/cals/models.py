@@ -7,7 +7,7 @@ from datetime import datetime
 import logging
 _LOG = logging.getLogger(__name__)
 
-from django.contrib.auth.models import User
+from django.conf import settings
 from django.db import models
 from django.db.models.query import QuerySet
 
@@ -102,7 +102,7 @@ class SoundDataPoint(models.Model):
     language = models.ForeignKey(Language)
     sound = models.ForeignKey(Sound)
     changed = models.DateTimeField(default=datetime.now)
-    changed_by = models.ForeignKey(User)
+    changed_by = models.ForeignKey(settings.AUTH_USER_MODEL)
 
     objects = SoundDataPointManager()
     vowels = VowelDataPointManager()
@@ -140,5 +140,5 @@ from cals.people.models import user_unlurked
 from signalhandlers import new_or_changed_language, new_user_anywhere, user_now_active
 
 user_unlurked.connect(user_now_active, sender=Profile)
-post_save.connect(new_user_anywhere, sender=User)
+post_save.connect(new_user_anywhere, sender=settings.AUTH_USER_MODEL)
 #post_save.connect(new_or_changed_language, sender=Language)

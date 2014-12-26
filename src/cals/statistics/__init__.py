@@ -11,7 +11,7 @@ from django.db import connection
 from django.http import HttpResponseNotFound, HttpResponseForbidden
 from django.shortcuts import render_to_response, get_object_or_404
 from django.db.models import Q, Count, Avg, Max, Min
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 
 import pygal
 from pygal.style import LightGreenStyle, Style
@@ -77,6 +77,7 @@ def unused_featurevalues():
 
 def timeline():
     "Statistics over which days/weeks/months are most visited/update etc."
+    User = get_user_model()
     joined = User.objects.dates('date_joined', 'day')
     login = User.objects.dates('last_login', 'day')
     created = Language.objects.dates('created', 'day')
@@ -151,7 +152,7 @@ def vocab_size():
             'upper_bound': MAXSIZE}
 
 def get_all_lurkers():
-    users = User.objects.filter(is_active=True, profile__is_visible=True)
+    users = get_user_model().objects.filter(is_active=True, profile__is_visible=True)
     lurkers = users.filter(edits__isnull=True,
             manages__isnull=True,
             translations__isnull=True,
@@ -236,6 +237,7 @@ def generate_averageness_stats():
 
 def generate_milestone_stats():
     conlangs = Language.objects.conlangs()
+    User = get_user_model()
     user100 = User.objects.get(id=139)
     user150 = User.objects.get(id=200)
     user200 = User.objects.get(id=284)

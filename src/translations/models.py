@@ -5,7 +5,7 @@ from datetime import datetime
 import logging
 _LOG = logging.getLogger(__name__)
 
-from django.contrib.auth.models import User
+from django.conf import settings
 from django.db import models
 from django.utils.html import escape
 
@@ -69,7 +69,10 @@ class TranslationExercise(models.Model):
     comment = models.TextField(blank=True, null=True)
     category = models.ForeignKey(TranslationExerciseCategory,
             related_name='exercises')
-    added_by = models.ForeignKey(User, related_name='translation_exercises')
+    added_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name='translation_exercises'
+    )
     added = models.DateTimeField(default=datetime.now, editable=False)
 
     class Meta:
@@ -92,7 +95,10 @@ class Translation(Interlinear):
     translation = models.TextField()
     exercise = models.ForeignKey(TranslationExercise, related_name='translations')
     language = models.ForeignKey(Language, related_name='translations')
-    translator = models.ForeignKey(User, related_name='translations')
+    translator = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name='translations'
+    )
     slug = models.SlugField(max_length=255, editable=False, blank=True)
     added = models.DateTimeField(default=datetime.now, editable=False)
     last_modified = models.DateTimeField(default=datetime.now, editable=False)

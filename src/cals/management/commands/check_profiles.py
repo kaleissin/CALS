@@ -1,10 +1,11 @@
 from django.core.management.base import NoArgsCommand
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 
 from cals.models import *
 
 class Command(NoArgsCommand):
     def handle_noargs(self, **kwargs):
+        User = get_user_model()
         for u in User.objects.all():
             try:
                 p = u.profile

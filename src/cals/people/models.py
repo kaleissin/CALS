@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+from django.conf import settings
 from django.db import models
 from django.db.models import Q
 
@@ -29,8 +29,8 @@ class Profile(models.Model):
 #             ('Y-m-d H:i O', CHOICE_DATE.),
 #             ('r', ''),
 #             )
-    user = models.OneToOneField(User, related_name='profile', primary_key=True)
-    #user = models.ForeignKey(User, unique=True, related_name='profile', primary_key=True)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='profile', primary_key=True)
+    #user = models.ForeignKey(settings.AUTH_USER_MODEL, unique=True, related_name='profile', primary_key=True)
     # Denormalization of django.contrib.auth.models.User - allows public
     # backup of database without exposing passwords and email-addresses
     username = models.CharField(max_length=30, unique=True, editable=False)
