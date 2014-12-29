@@ -1,6 +1,8 @@
 import logging
 from django.conf import settings
 
+default_app_config = 'cals.apps.CalsConfig'
+
 def markup_as_restructuredtext(value):
     try:
         from django.utils.encoding import smart_str, force_unicode

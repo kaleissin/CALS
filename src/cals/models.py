@@ -130,15 +130,3 @@ class UTC(dt.tzinfo):
     def dst(self, dt):
         return self.ZERO
 
-# TODO: Generalize. move out to own module. in nano?
-
-# --- Signals
-from django.db.models.signals import post_save
-from nano.user import new_user_created
-
-from cals.people.models import user_unlurked
-from signalhandlers import new_or_changed_language, new_user_anywhere, user_now_active
-
-user_unlurked.connect(user_now_active, sender=Profile)
-post_save.connect(new_user_anywhere, sender=settings.AUTH_USER_MODEL)
-#post_save.connect(new_or_changed_language, sender=Language)
