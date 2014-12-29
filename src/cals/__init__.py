@@ -1,5 +1,5 @@
 import logging
-from CALS import settings
+from django.conf import settings
 
 def markup_as_restructuredtext(value):
     try:
