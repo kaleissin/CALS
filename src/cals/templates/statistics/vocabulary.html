@@ -1,0 +1,62 @@
+{% extends "statistics/base.html" %}
+{% load cals_tags %}
+{% load stats_tags %}
+{% block title %}Statistics{% endblock title %}
+{% block content %}
+
+<h1><a name="vocab"></a>Vocabulary</h1>
+
+<h2>Sizes:</h2>
+
+<p>Limited to vocabularies with {{ vocabulary.upper_bound }} entries or less.</p>
+
+<table class="statistics">
+    <tr>
+        <td>Smallest vocab</td>
+        <td class="integer">{{ vocabulary.min }}</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Biggest vocab</td>
+        <td class="integer">{{ vocabulary.max }}</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Mean</td>
+        <td class="integer">{{ vocabulary.average|integer }}</td>
+        <td class="fraction">.{{ vocabulary.average|fraction }}</td>
+    </tr>
+    <tr>
+        <td>Median</td>
+        <td class="integer">{{ vocabulary.median }}</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Mode</td>
+        <td class="integer">{{ vocabulary.mode }}</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Std. Dev.</td>
+        <td class="integer">{{ vocabulary.stddev|integer }}</td>
+        <td class="fraction">.{{ vocabulary.stddev|fraction }}</td>
+    </tr>
+</table>
+
+<div style="max-width: 66em">
+{{ vocabulary.chart_svg|safe }}
+</div>
+
+<h2>Most common:</h2>
+<ul>{% for mode in vocabulary.common %}
+<li>{{ mode.1 }}</li>
+{% endfor %}</ul>
+
+<h2>More than {{ vocabulary.upper_bound }} words:</h2>
+<ul>
+{% for outlier in vocabulary.outliers %}
+<li>{{ outlier.name }}: {{ outlier.vocabulary_size }}</li>
+{% endfor %}
+</ul>
+
+{% endblock content %}

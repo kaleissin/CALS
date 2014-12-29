@@ -1,0 +1,37 @@
+{% extends "statistics/base.html" %}
+{% load cals_tags %}
+{% load stats_tags %}
+{% block title %}Statistics{% endblock title %}
+{% block content %}
+
+<h1>Language Names</h1>
+
+<h2><a name="letterfreq"></a>Most popular first letters</h2>
+<h3>By frequency</h3>
+<table>
+    <tr>
+        <td>
+            <h3>Conlangs</h3>
+            {% firstletter_stats name.first_letters.conlangs.letters %}
+        </td>
+        <td>
+            <h3>Natlangs</h3>
+            {% firstletter_stats name.first_letters.natlangs.letters %}
+        </td>
+    </tr>
+</table>
+<h3>Alphabetically</h3>
+<table>
+    <tr>
+        <td>
+            <h3>Conlangs</h3>
+            {% firstletter_stats name.alpha_letters.conlangs.letters %}
+        </td>
+        <td>
+            <h3>Natlangs</h3>
+            {% firstletter_stats name.alpha_letters.natlangs.letters %}
+        </td>
+    </tr>
+</table>
+
+{% endblock content %}

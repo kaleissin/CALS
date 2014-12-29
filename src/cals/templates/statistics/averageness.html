@@ -1,0 +1,43 @@
+{% extends "statistics/base.html" %}
+{% load cals_tags %}
+{% load stats_tags %}
+{% block title %}Statistics{% endblock title %}
+{% block content %}
+
+<h2><a name="averageness"></a>Averageness</h2>
+<p>Each language is compared to a set of the most popular values for each feature.</p>
+<p>0 is least average, 100 is completely average</p>
+
+<h3>Conlangs</h3>
+<ol class="statistics">
+{% for lang in averageness.most_average %}
+<li>
+    <span>{{ lang.average_score }}</span>
+    <span><a href="/language/{{ lang.slug }}/">{{ lang }}</a>
+        ({{ lang.num_avg_features }} of {{ lang.num_features }} feature{{ lang.num_features|pluralize }})</span>
+</li>
+{% endfor %}
+</ol>
+<p style="margin-left: 2em">&#x22ee;</p>
+<ol class="statistics" start="{{ averageness.lma }}">
+{% for lang in averageness.least_average %}
+<li>
+    <span>{{ lang.average_score }}</span>
+    <span><a href="/language/{{ lang.slug }}/">{{ lang }}</a>
+        ({{ lang.num_avg_features }} of {{ lang.num_features }} feature{{ lang.num_features|pluralize }})</span>
+</li>
+{% endfor %}
+</ol>
+
+<h3>Natlangs</h3>
+<ol class="statistics">
+{% for lang in averageness.most_average_natlangs %}
+<li>
+    <span>{{ lang.average_score }}</span>
+    <span><a href="/language/{{ lang.slug }}/">{{ lang }}</a>
+        ({{ lang.num_avg_features }} of {{ lang.num_features }} feature{{ lang.num_features|pluralize }})</span>
+</li>
+{% endfor %}
+</ol>
+
+{% endblock content %}

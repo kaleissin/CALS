@@ -1,0 +1,37 @@
+{% extends "statistics/base.html" %}
+{% load cals_tags %}
+{% load stats_tags %}
+{% block title %}Statistics{% endblock title %}
+{% block content %}
+
+<h1><a name="milestones"></a>Milestones</h1>
+
+    <dl>
+        <dt>{{ milestones.lang100.created|date:"Y-m-d h:iO" }}</dt>
+        <dd>100 languages, number 100 is {% show_lang milestones.lang100 %} 
+        added by {% showuser milestones.lang100.added_by %}!</dd>
+        <dt>{{ milestones.user100.date_joined|date:"Y-m-d h:iO" }}</dt>
+        <dd>100 conlangers, number 100 is {% showuser milestones.user100 %}!</dd>
+        <dt>{{ milestones.lang150.created|date:"Y-m-d h:iO" }}</dt>
+        <dd>150 languages, number 150 is {% show_lang milestones.lang150 %} 
+        added by {% showuser milestones.lang150.added_by %}!</dd>
+        <dt>{{ milestones.user150.date_joined|date:"Y-m-d h:iO" }}</dt>
+        <dd>150 conlangers, number 150 is {% showuser milestones.user150 %}!</dd>
+        <dt>{{ milestones.lang200.created|date:"Y-m-d h:iO" }}</dt>
+        <dd>200 languages, number 200 is {% show_lang milestones.lang200 %} 
+        added by {% showuser milestones.lang200.added_by %}!</dd>
+        <dt>{{ milestones.user200.date_joined|date:"Y-m-d h:iO" }}</dt>
+        <dd>200 conlangers, number 200 is {% showuser milestones.user200 %}!</dd>
+        <dt>{{ milestones.lang250.created|date:"Y-m-d h:iO" }}</dt>
+        <dd>250 languages, number 250 is {% show_lang milestones.lang250 %} 
+        added by {% showuser milestones.lang250.added_by %}!</dd>
+        <dt>{{ milestones.user250.date_joined|date:"Y-m-d h:iO" }}</dt>
+        <dd>250 conlangers, number 250 is {% showuser milestones.user250 %}!</dd>
+        <dt>{{ milestones.lang500.created|date:"Y-m-d h:iO" }}</dt>
+        <dd>500 languages, number 500 is {% show_lang milestones.lang500 %} 
+        added by {% showuser milestones.lang500.added_by %}!</dd>
+        <dt>{{ milestones.user500.date_joined|date:"Y-m-d h:iO" }}</dt>
+        <dd>500 conlangers, number 500 is {% showuser milestones.user500 %}!</dd>
+    </dl>
+
+{% endblock content %}
