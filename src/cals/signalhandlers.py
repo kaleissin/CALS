@@ -37,6 +37,8 @@ def blog_unlurked_user(unlurked_user):
         add_entry_to_blog(unlurked_user, '%s just unlurked' %
                 unlurked_user.username, blog_template, date_field='date_joined')
 
+# signals
+
 def user_now_active(sender, **kwargs):
     _LOG.info('blogging unlurking')
     user = kwargs.get(u'user')
