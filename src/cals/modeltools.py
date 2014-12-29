@@ -159,13 +159,13 @@ def feature_usage(langtype=LANGTYPES.ALL, limit=0):
     ls = Language.objects
     if langtype == LANGTYPES.NATLANG:
         ls = ls.natlangs()
-        fvs = fvs.filter(languagefeature__language__natlang=True)
+        fvs = fvs.filter(languages__language__natlang=True)
     elif langtype == LANGTYPES.CONLANG:
         ls = ls.conlangs()
-        fvs = fvs.filter(languagefeature__language__natlang=False)
+        fvs = fvs.filter(languages__language__natlang=False)
 
     num_langs = ls.count()
-    fvs = fvs.annotate(count=Count('languagefeature')).order_by('-count')
+    fvs = fvs.annotate(count=Count('languages')).order_by('-count')
 
     if limit:
         fvs = fvs[:limit]

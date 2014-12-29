@@ -63,8 +63,8 @@ def unused_featurevalues():
     """
 
     fvs = FeatureValue.objects.filter(feature__active=True)
-    unused_fvs = fvs.filter(languagefeature__isnull=True)
-    natlang_only_fvs = fvs.filter(languagefeature__language__natlang=True).exclude(languagefeature__language__natlang=False)
+    unused_fvs = fvs.filter(languages__isnull=True)
+    natlang_only_fvs = fvs.filter(languages__language__natlang=True).exclude(languages__language__natlang=False)
 
     if not natlang_only_fvs:
         # Natlangs had no unique features so return early

@@ -194,8 +194,8 @@ def graph_feature(feature):
     nat = []
     label  =[]
     for value in feature.values.all():
-        con.append(value.languagefeature_set.filter(language__natlang=False).count())
-        nat.append(value.languagefeature_set.filter(language__natlang=True).count())
+        con.append(value.languages.filter(language__natlang=False).count())
+        nat.append(value.languages.filter(language__natlang=True).count())
         label.append(value.name)
 
     chart = pygal.Bar(style=LightGreenStyle)
@@ -332,9 +332,9 @@ def show_featurevalue(request, *args, **kwargs):
     featurevalue = _get_featurevalue(*args, **kwargs)
     data = {}
     data['object'] = featurevalue
-    data['conlangs'] = featurevalue.languagefeature_set.for_conlangs()
+    data['conlangs'] = featurevalue.languages.for_conlangs()
     #filter(language__natlang=False)
-    data['natlangs'] = featurevalue.languagefeature_set.for_natlangs()
+    data['natlangs'] = featurevalue.languages.for_natlangs()
     #filter(language__natlang=True)
 
     return render(request, template, data)

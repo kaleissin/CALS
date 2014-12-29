@@ -139,7 +139,7 @@ def feature_graph(feature, ltype):
     values = []
     max_count = 0
     for value in feature.values.all():
-        count = value.languagefeature_set.filter(language__natlang=natlang).count()
+        count = value.languages.filter(language__natlang=natlang).count()
         values.append(count)
         if count > max_count:
             max_count = count
