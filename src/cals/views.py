@@ -342,9 +342,9 @@ def create_language(request, lang=None, fvlist=None, clone=False, *args, **kwarg
             # Final save
             lang.save(user=user)
             if cloned_from_lang:
-                streamaction.send(request.user, verb='added the language', action_object=lang)
-            else:
                 streamaction.send(request.user, verb='cloned the language', action_object=cloned_from_lang, target=lang)
+            else:
+                streamaction.send(request.user, verb='added the language', action_object=lang)
             messages.info(request, u'You successfully added the language %s to CALS' % lang.name)
             return HttpResponseRedirect('/language/%s/' % lang.slug)
         else:
