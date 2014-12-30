@@ -12,3 +12,7 @@ def random_conlang():
         .values_list('slug', flat=True)
     )
     return random.choice(conlangs)
+
+def conlangs_with_homes():
+    conlangs = Language.objects.conlangs().exclude(homepage='')
+    return conlangs

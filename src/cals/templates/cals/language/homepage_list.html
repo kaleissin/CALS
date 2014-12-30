@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load paginator %}
+{% block submenu %}
+<ul>
+    <li><a href="/language/">Overview</a></li>
+    <li><a href="/language/search">Search</a></li>
+    {% if not natlang %}
+    <li><b>Alphabetic</b></li>
+    {% else %}
+    <li><a href="/language/?conlang">Alphabetic</a></li>
+    {% endif %}
+    <li><a href="/language/?jrk">Kennaway-list</a></li>
+    <li><a href="/language/?cloud">Cloud</a></li>
+    <li><a href="/language/?homepage">Homepages</a></li>
+    {% if natlang %}
+    <li><b>Natlangs</b></li>
+    {% else %}
+    <li><a href="/language/?natlang">Natlangs</a></li>
+    {% endif %}
+    {% if user.is_authenticated %}
+    <li><a href="/language/new">Add</a></li>
+    {% endif %}
+</ul>
+{% endblock submenu %}
+{% block content %}
+    <h2>The following {{ object_list.count }} conlangs have their own homepages:</h2>
+    {% paginator %}
+    {% for object in object_list %}
+    <div class="listitem {% cycle odd,even %}">
+        <h3><a href="/language/{{ object.slug }}/">{{ object }}</a></h3>
+        <ul>
+            <li>By {{ object.author }}</li>
+            <li><a href="{{ object.homepage }}">{{ object.homepage }}</a></li>
+        </ul>
+    </div>
+    {% endfor %}
+    {# if page_obj.page_range > 20... #}
+    {% paginator %}
+
+{% endblock content %}

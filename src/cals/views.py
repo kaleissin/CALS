@@ -39,7 +39,7 @@ from cals.forms import FeatureValueForm, CategoryForm, FeatureForm, \
 from cals.tools import description_diff, compare_features
 from cals.modeltools import compare_languages, \
         get_averageness_for_lang, LANGTYPES
-from cals.tools.language import random_conlang
+from cals.tools.language import random_conlang, conlangs_with_homes
 
 from cals.people.views import auth_login
 from cals.language.views import show_language
@@ -102,6 +102,14 @@ def _check_langslugs(langslugs):
             continue
         langs.append(lang)
     return langs
+
+class LanguageViewMixin(object):
+    queryset = Language.objects.conlangs().order_by('name')
+
+    def get_context_data(self, **kwargs):
+        context = super(LanguageViewMixin, self).get_context_data(**kwargs)
+        context['me'] = 'language'
+        return context
 
 def dispatch_langslugs(request, func_one, func_many, *args, **kwargs):
     """Returns a tuple of (True, payload) if the func is to
@@ -448,6 +456,15 @@ def show_random_conlang(request, *args, **kwargs):
     random = random_conlang()
     return redirect('/language/%s/' % random, *args, **kwargs)
 
+class LanguageList(LanguageViewMixin, ListView):
+    template_name = 'cals/language_list.html'
+langauge_list_test = LanguageList.as_view()
+
+class LanguageHomepageList(LanguageList):
+    queryset = conlangs_with_homes()
+    template_name = 'cals/language/homepage_list.html'
+list_conlang_homepages = LanguageHomepageList.as_view()
+
 def list_languages(request, *args, **kwargs):
     """Select and dispatch to a view of the list of languages"""
 
@@ -460,6 +477,7 @@ def list_languages(request, *args, **kwargs):
         'natlang': list_natlangs,
         'conlang': list_conlangs,
         'random': show_random_conlang,
+        'homepage': list_conlang_homepages,
     }
 
     action = in_kwargs_or_get2(request, kwargs, 'action', *mapping.keys())
