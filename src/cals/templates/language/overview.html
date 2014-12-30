@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% load cals_tags %}
+{% load nano_mark_tags %}
+{% load comments_tags %}
+{% block title %}Language: {{ object.name }}{% endblock title %}
+{% block submenu %}
+<ul>
+    <li><a href="../">All</a></li>
+    {% if user.is_authenticated %}
+    <li><a href="../new">Add</a></li>
+    <li><a href="./clone">Clone</a></li>
+    {% if not object.natlang %}
+        {% if object.public %}
+    <li><a href="./change">Change</a></li>
+        {% else %}
+            {% ifequal user object.manager %}
+    <li><a href="./change">Change</a></li>
+            {% endifequal %}
+        {% endif %}
+    {% endif %}
+    {% endif %}
+    <li><a href="#comments">Comments</a></li>
+</ul>
+<hr />
+<form action="" method="post">
+    {% csrf_token %}
+    <div>{{ cform.lang2 }}</div>
+    <div><button type="submit">Compare</button></div>
+    <table>
+        <tr>
+            <td><input id="compare_all" type="radio" name="compare" value="all" checked="checked" /></td>
+            <td><label for="compare_all">All</label></td>
+        </tr>
+        <tr>
+            <td><input id="compare_same" type="radio" name="compare" value="same" /></td>
+            <td><label for="compare_same">Same</label></td>
+        </tr>
+        <tr>
+            <td><input id="compare_different" type="radio" name="compare" value="different" /></td>
+            <td><label for="compare_different">Different</label></td>
+        </tr>
+    </table>
+</form>
+<hr />
+<h4><a href="/translation/language/{{ object.slug }}/">Translations</a></h4>
+<h4><a href="/translation/language/{{ object.slug }}/">Features</a></h4>
+<h4>Features</h4>
+{% endblock submenu %}
+
+{% block content %}
+
+<h1>{{ object.name }}</h1>
+
+{% if object.natlang %}
+<p>This language is cloned from <a href="{{ object.homepage }}">WALS</a>. If
+you need to cite or disagree with any data on this language, you will
+have to do so at WALS, not here.</p>
+{% endif %}
+
+<table>
+<tr>
+    <td style="vertical-align: middle; font-weight: bold">{% mark_faved object %}</td>
+    <td>{% shareicon %}</td>
+</tr>
+</table>
+
+<form action="" method="post">
+{% csrf_token %}
+<table>
+    {% ifnotequal object.internal_name object.name %}
+    <tr><th>Internal name:</th><td>{{ object.internal_name }}</td></tr>
+    {% endifnotequal %}
+    {% if not object.natlang %}
+    {% if may_edit %}
+    <tr>
+        <th>Former names:</th>
+        <td>{{ object.previous_names|join:", " }}
+        <a href="./names/change">{% if object.previous_names %}Change{% else %}Add{% endif %} alternate names</a></td>
+    </tr>
+    {% else %}
+    {% if object.previous_names %}
+    <tr><th>Former names:</th><td>{{ object.previous_names|join:", " }}</td>
+    {% endif %}
+    {% endif %}
+    <tr><th>Author(s):</th><td>{{ object.author }}</td></tr>
+    {% endif %}
+    {% if object.natlang and object.previous_names %}
+    <tr>
+        <th>Also known as:</th>
+        <td>{{ object.previous_names|join:", " }}</td>
+    </tr>
+    {% endif %}
+    <tr><th>Homepage:</th><td>{% if object.homepage %}<a class="ext" href="{{ object.homepage }}">{{ object.homepage }}</a>{% else %}–{% endif %}</td></tr>
+    {% if not object.natlang %}
+    <tr><th>Background:</th><td>{{ object.background }}</td></tr>
+    <tr><th>Greeting:</th><td>{{ object.greeting|default:"" }}</td></tr>
+    <tr><th>Vocabulary size:</th><td>{{ object.vocabulary_size|default:"NA" }}</td></tr>
+    <tr><th>From earth:</th><td>{{ object.from_earth|yesno:"yes,no,unknown" }}</td></tr>
+    {% else %}
+    <tr><th>Natlang:</th><td>yes</td>
+    {% endif %}
+    {% if object.family %}
+    <tr><th>Family:</th><td>{% show_family_path object %}</td></tr>
+    {% endif %}
+    <tr><th>Permalink:</th><td><a href=".">{{ request.path }}</td></tr>
+    <tr><th>Averageness:</th><td>{{ object.average_score }}/100,
+            {{ object.num_avg_features }} of {{ object.num_features }}</td></tr>
+    <tr><th>Number of features:</th><td>{{ object.num_features }}</td></tr>
+    <tr><th>Tags:</th><td>{% show_language_tags object %}</td></tr>
+    <tr><th>Editable by all:</th><td>{{ object.public|yesno:"yes,no" }}</td></tr>
+    {% if object.added_by %}
+    <tr><th>Added by:</th><td>{% showuser object.added_by %}</td></tr>
+    {% endif %}
+    {% if object.manager %}
+    <tr><th>Managed by:</th><td>{% showuser object.manager %}</td></tr>
+    {% endif %}
+    {% if object.editors.count %}
+    <tr><th>Editors:</th>
+        <td>
+            <ul>{% for editor in object.editors.all %}
+                <li>{% showuser editor %}</li>
+                {% endfor %}</ul>
+        </td>
+    </tr>
+    {% endif %}
+    <tr><th>Added:</th><td>{{ object.created|date:"Y-m-d H:i" }}</td></tr>
+    <tr><th>Last change:</th><td>{{ object.last_modified|date:"Y-m-d H:i"}}</td></tr>
+</table>
+<h2 id="comments">Comments:</h2>
+<div class="comments">
+{% show_comments_tree object %}
+{% include 'nano/comments/comment_form_frag.html' %}
+</div>
+{% load_shareicon_library %}
+{% endblock content %}

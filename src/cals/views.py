@@ -38,6 +38,7 @@ from cals.modeltools import compare_languages, \
 from cals.language.utils import random_conlang
 
 from cals.people.views import auth_login
+from cals.language.views import show_language
 
 from cals.feature.views import (show_feature,
     make_feature_list_for_lang,
@@ -232,35 +233,6 @@ def search_languages(request, *args, **kwargs):
             u'paginator': paginator,
             u'is_paginated': True}
     return render(request, 'cals/languagenames_search.html', data)
-
-def show_language(request, *args, **kwargs):
-    me = 'language'
-    lang = _get_lang(all=True, *args, **kwargs)
-    may_edit, (is_admin, is_manager) = may_edit_lang(request.user, lang)
-    categories = Category.objects.all().select_related().order_by('id')
-    cats = []
-    for category in categories:
-        try:
-            lf = LanguageFeature.objects.filter(language=lang, feature__category=category).order_by('feature__id')
-        except LanguageFeature.DoesNotExist:
-            continue
-        if lf:
-            cats.append({'name': category.name, 'features': lf})
-
-    # Nav for comparisons
-    cform = CompareTwoForm()
-    if request.method == 'POST':
-        cform = CompareTwoForm(data=request.POST)
-        if cform.is_valid():
-            return _compare(request, (lang.slug,))
-
-    data = {'object': lang, 
-            'categories': cats, 
-            'me': me, 
-            'cform': cform,
-            'may_edit': may_edit,
-    }
-    return render(request, 'language_detail.html', data)
 
 def denormalize_lang(lang):
     freq = get_averageness_for_lang(lang, scale=100, langtype=LANGTYPES.CONLANG)
