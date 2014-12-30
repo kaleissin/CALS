@@ -56,7 +56,7 @@ from nano.blog.tools import get_nano_blog_entries
 from tagtools import set_tags_for_model, get_tagcloud_for_model
 
 _error_forbidden_msg = "You don't have the necessary permissions to edit here."
-error_forbidden = render_to_string('error.html', 
+error_forbidden = render_to_string('error.html',
         {'error_message': _error_forbidden_msg })
 
 class CALSError(Exception):
@@ -86,7 +86,7 @@ def langs_for_user(user):
     if isinstance(user, Profile):
         profile = user
         user = user.user
-    else: 
+    else:
         user = user
         profile = user.profile
     return Language.objects.filter(Q(public=True) | Q(manager=user) | Q(editors=user))
@@ -165,7 +165,7 @@ def compare_language(request, *args, **kwargs):
     comparison = compare_languages(langs, same=same, different=different)
     _LOG.debug('Last: Features compared: %s (%s)', (len(comparison), comparison_type))
     data = {
-            'comparison': comparison, 
+            'comparison': comparison,
             'me': me,
             'cform': cform,
             'langs': langs,
@@ -200,8 +200,8 @@ def search_languages(request, *args, **kwargs):
         page = paginator.page(paginator.num_pages)
 
     form = SearchForm(initial={'q': raw_q, 'anywhere': anywhere, 'limit': limit})
-    data = {u'me': me, 
-            u'q': raw_q, 
+    data = {u'me': me,
+            u'q': raw_q,
             u'anywhere': anywhere,
             u'limit': limit,
             u'searchform': form,
@@ -254,9 +254,9 @@ def create_language(request, lang=None, fvlist=None, clone=False, *args, **kwarg
             name = 'Clone of %i features' % len(fvlist)
         background = name
         langform = LanguageForm(initial={
-                'name': name, 
+                'name': name,
                 'background': background,
-                'author': author}) 
+                'author': author})
         cloned_from_lang = lang
     else:
         langform = LanguageForm()
@@ -298,14 +298,14 @@ def create_language(request, lang=None, fvlist=None, clone=False, *args, **kwarg
             return HttpResponseRedirect('/language/%s/' % lang.slug)
         else:
             if not clone:
-                error = "Couldn't store language-description: " + str(langform.errors) 
+                error = "Couldn't store language-description: " + str(langform.errors)
                 messages.error(request, error)
             else:
                 help = "Remember to fill out the name and author of the language"
                 messages.warn(request, help)
-    data = {'form': langform, 
-            'categories': cats, 
-            'me': me, 
+    data = {'form': langform,
+            'categories': cats,
+            'me': me,
             'editorform': editorform,
             'state': state,
             'clone': clone,
@@ -400,7 +400,7 @@ def change_language(request, *args, **kwargs):
                 lang.last_modified_by = user
 
                 # break out in separate function
-                # greeting 
+                # greeting
                 greetingexercise = TranslationExercise.objects.get(id=1)
                 new_greeting = lang.greeting
                 try:
@@ -424,7 +424,7 @@ def change_language(request, *args, **kwargs):
     #             if moreinfoformset.is_valid():
     #                 moreinfo = moreinfoformset.save()
     #                 assert False, moreinfo
-    # 
+    #
                 # values
                 lang = set_featurevalues_for_lang(lang, request.POST.getlist(u'value'))
 
@@ -438,11 +438,11 @@ def change_language(request, *args, **kwargs):
                 messages.error(request, error)
         except ValueError:
             assert False, langform
-    data = {'form': langform, 
-            'categories': cats, 
-            'editorform': editorform, 
+    data = {'form': langform,
+            'categories': cats,
+            'editorform': editorform,
             #'moreinfoformset': moreinfoformset,
-            'me': me, 
+            'me': me,
             'state': state,}
     return render(request, 'language_form.html', data)
 
@@ -572,9 +572,9 @@ def in_kwargs_or_get(request, kwargs, key, value):
 
 def test(request, *args, **kwargs):
     template = 'test.html'
-    data = { 
+    data = {
             'testarossa': Language.objects.get(id=80),
-            'langs': Language.objects.all(), 
+            'langs': Language.objects.all(),
             'features': Feature.objects.all(),
             'news': Entry.objects.latest('pub_date')
             }
