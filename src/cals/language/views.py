@@ -17,11 +17,13 @@ from cals.languagefeature.models import LanguageFeature
 from cals.feature.models import Category
 
 
-def _get_lang(*args, **kwargs):
+def _get_lang(all=False, *args, **kwargs):
+    if all:
+        return get_object_or_404(Language.all_langs, slug=kwargs.get('lang', None))
     return get_object_or_404(Language, slug=kwargs.get('lang', None))
 
 def change_languagenames(request, *args, **kwargs):
-    lang = _get_lang(*args, **kwargs)
+    lang = _get_lang(all=False, *args, **kwargs)
     queryset = LanguageName.objects.filter(
             language=lang).exclude(
             name=lang.name).exclude(
