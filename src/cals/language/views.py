@@ -88,7 +88,7 @@ def show_language(request, *args, **kwargs):
             'cform': cform,
             'may_edit': may_edit,
     }
-    return render(request, 'language/overview.html', data)
+    return render(request, 'cals/language/overview.html', data)
 
 def show_features_for_language(request, *args, **kwargs):
     me = 'language'
@@ -117,4 +117,4 @@ def show_features_for_language(request, *args, **kwargs):
             'cform': cform,
             'may_edit': may_edit,
     }
-    return render(request, 'language_detail.html', data)
+    return render(request, 'cals/language/features_overview.html', data)

@@ -8,6 +8,7 @@
     <li><a href="../">All</a></li>
     {% if user.is_authenticated %}
     <li><a href="../new">Add</a></li>
+    <li><b>View</b></li>
     <li><a href="./clone">Clone</a></li>
     {% if not object.natlang %}
         {% if object.public %}
@@ -43,8 +44,7 @@
 </form>
 <hr />
 <h4><a href="/translation/language/{{ object.slug }}/">Translations</a></h4>
-<h4><a href="/translation/language/{{ object.slug }}/">Features</a></h4>
-<h4>Features</h4>
+<h4><a href="/language/{{ object.slug }}/feature/">Features</a></h4>
 {% endblock submenu %}
 
 {% block content %}

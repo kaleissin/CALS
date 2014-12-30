@@ -52,6 +52,14 @@ language_by_date = {
         'extra_context': { 'me': 'language' },
         }
 
+urlpatterns += patterns('cals.language.views',
+        (LANG_RE+r'feature/$',              'show_features_for_language'),
+        (r'^tag/$',                         'list_languagetags'),
+        (LANG_NAMES_RE+r'change$',          'change_languagenames'),
+        (r'^family/$',                      'list_languagefamilies'),
+        (r'^family/'+SLUG_RE+r'$',          'show_languagefamilies'),
+)
+
 urlpatterns += patterns('cals.views',
         (r'^search$',                         'search_languages'),
         (r'^([?](?P<action>[a-z]+))?$',       'list_languages'),
@@ -60,14 +68,10 @@ urlpatterns += patterns('cals.views',
         (r'^new$',                            'create_language'),
         (LANG_RE+r'$',                        'show_language'),
         (LANG_RE+r'change$',                  'change_language'),
-        (r'^',                  include('cals.languagefeature.urls')),
         (MULTISLUGS_RE+r'clone$',             'clone_language'),
         (MULTISLUGS_RE+r'(?P<opt>[^/]*?)/?$', 'compare_language'),
 )
 
-urlpatterns += patterns('cals.language.views',
-        (r'^tag/$',                         'list_languagetags'),
-        (LANG_NAMES_RE+r'change$',          'change_languagenames'),
-        (r'^family/$',                      'list_languagefamilies'),
-        (r'^family/'+SLUG_RE+r'$',          'show_languagefamilies'),
+urlpatterns += patterns('',
+        (r'^',                  include('cals.languagefeature.urls')),
 )
