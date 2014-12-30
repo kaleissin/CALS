@@ -68,7 +68,7 @@ Comparing: {{ langs|join:", " }}
     <tr><th>Averageness of features:</th>{% for lang in langs %}<td>{{ lang.average_score }}/100, 
             {{ lang.num_avg_features }} of {{ lang.num_features }}</td>{% endfor %}</tr>
     <tr><th>Number of features:</th>{% for lang in langs %}<td>{{ lang.num_features }}</td>{% endfor %}</tr>
-    <tr><th>Tags:</th>{% for lang in langs %}<td>{{ lang.tags }}</td>{% endfor %}</tr>
+    <tr><th>Tags:</th>{% for lang in langs %}<td>{{ lang.tags.all|join:", " }}</td>{% endfor %}</tr>
     <tr><th>Editable by all:</th>{% for lang in langs %}<td>{{ lang.public|yesno:"yes,no" }}</td>{% endfor %}</tr>
     {% if lang.added_by %}
     <tr><th>Added by:</th>{% for lang in langs %}<td>{% showuser lang.added_by %}</td>{% endfor %}</tr>
