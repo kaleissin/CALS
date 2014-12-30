@@ -2,17 +2,7 @@
 {% load cals_tags %}
 {% load paginator %}
 {% block submenu %}
-<ul>
-    <li><a href="/language/">Overview</a></li>
-    <li><b>Search</b></li>
-    <li><a href="/language/?conlang">Conlangs</a></li>
-    <li><a href="/language/?jrk">Kennaway-style</a></li>
-    <li><a href="/language/?cloud">Cloud</a></li>
-    <li><a href="/language/?natlang">Natlangs</a></li>
-    {% if user.is_authenticated %}
-    <li><a href="/language/new">Add</a></li>
-    {% endif %}
-</ul>
+{% include "cals/language/_submenu.html" %}
 {% endblock submenu %}
 {% block content %}
     <form class="search" action="./search" method="get">

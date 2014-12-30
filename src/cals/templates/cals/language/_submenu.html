@@ -1,0 +1,13 @@
+<ul>
+    <li>{% if submenu = 'overview'%}<b>Overview</b>{% else %}<a href="/language/">Overview</a>{% endif %}</li>
+    <li>{% if submenu = 'search'%}<b>Search</b>{% else %}<a href="/language/search">Search</a>{% endif %}</li>
+    <li>{% if submenu = 'random'%}<b>Random</b>{% else %}<a href="/language/?random">Random</a>{% endif %}</li>
+    <li>{% if submenu = 'alphabetic'%}<b>Alphabetic</b>{% else %}<a href="/language/?conlang">Alphabetic</a>{% endif %}</li>
+    <li>{% if submenu = 'jrk'%}<b>Kennaway-list</b>{% else %}<a href="/language/?jrk">Kennaway-list</a>{% endif %}</li>
+    <li>{% if submenu = 'cloud'%}<b>Cloud</b>{% else %}<a href="/language/?cloud">Cloud</a>{% endif %}</li>
+    <li>{% if submenu = 'homepage'%}<b>Homepages</b>{% else %}<a href="/language/?homepage">Homepages</a>{% endif %}</li>
+    <li>{% if submenu = 'natlang'%}<b>Natlangs</b>{% else %}<a href="/language/?natlang">Natlangs</a>{% endif %}</li>
+    {% if user.is_authenticated %}
+    <li><a href="/language/new">Add</a></li>
+    {% endif %}
+</ul>

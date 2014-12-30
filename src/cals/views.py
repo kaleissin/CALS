@@ -109,6 +109,8 @@ class LanguageViewMixin(object):
     def get_context_data(self, **kwargs):
         context = super(LanguageViewMixin, self).get_context_data(**kwargs)
         context['me'] = 'language'
+        if self.submenu:
+            context['submenu'] = self.submenu
         return context
 
 def dispatch_langslugs(request, func_one, func_many, *args, **kwargs):
@@ -201,6 +203,7 @@ def search_languages(request, *args, **kwargs):
 
     form = SearchForm(initial={'q': raw_q, 'anywhere': anywhere, 'limit': limit})
     data = {u'me': me,
+            u'submenu': 'search',
             u'q': raw_q,
             u'anywhere': anywhere,
             u'limit': limit,
@@ -463,6 +466,7 @@ langauge_list_test = LanguageList.as_view()
 class LanguageHomepageList(LanguageList):
     queryset = conlangs_with_homes()
     template_name = 'cals/language/homepage_list.html'
+    submenu = 'homepage'
 list_conlang_homepages = LanguageHomepageList.as_view()
 
 def list_languages(request, *args, **kwargs):
@@ -484,12 +488,17 @@ def list_languages(request, *args, **kwargs):
     if action:
         return mapping[action](request, *args, **kwargs)
     form = SearchForm()
-    data = {'me': me, 'searchform': form }
+    data = {
+        'me': me,
+        'submenu': 'overview',
+        'searchform': form
+    }
     return render(request, 'cals/language_index.html', data)
 
 class LanguageCloud(LanguageViewMixin, ListView):
-    template_name = 'cals/language_cloud.html'
+    template_name = 'cals/language/cloud.html'
     queryset = Language.objects.conlangs().order_by('name')
+    submenu = 'cloud'
 
     def get_context_data(self, **kwargs):
         context = super(LanguageCloud, self).get_context_data(**kwargs)
@@ -505,7 +514,8 @@ language_cloud = LanguageCloud.as_view()
 
 class ListJRKLanguageView(LanguageViewMixin, ListView):
     queryset = LanguageName.objects.filter(language__natlang=False).exclude(language__background='').order_by('name')
-    template_name = 'jrklist.html'
+    template_name = 'cals/language/jrklist.html'
+    submenu = 'jrk'
 language_jrklist = ListJRKLanguageView.as_view()
 
 def language_list(request, natlang=False, *args, **kwargs):
@@ -522,7 +532,9 @@ def language_list(request, natlang=False, *args, **kwargs):
     except (InvalidPage):
         page = paginator.page(paginator.num_pages)
 
+    submenu = 'alphabetic' if not natlang else 'natlang'
     data = {u'me': u'language',
+            u'submenu': submenu,
             u'object_list': page.object_list,
             u'natlang': natlang,
             u'page_obj': page,

@@ -1,17 +1,7 @@
 {% extends "base.html" %}
 {% load cals_tags %}
 {% block submenu %}
-<ul>
-    <li><a href="/language/">Overview</a></li>
-    <li><a href="/language/search">Search</a></li>
-    <li><a href="/language/?conlang">Alphabetic</a></li>
-    <li><b>Kennaway-list</b></li>
-    <li><a href="/language/?cloud">Cloud</a></li>
-    <li><a href="/language/?natlang">Natlangs</a></li>
-    {% if user.is_authenticated %}
-    <li><a href="/language/new">Add</a></li>
-    {% endif %}
-</ul>
+{% include "cals/language/_submenu.html" %}
 {% endblock submenu %}
 {% block content %}
     {% for langname in object_list %}
