@@ -39,7 +39,7 @@ from cals.forms import FeatureValueForm, CategoryForm, FeatureForm, \
 from cals.tools import description_diff, compare_features
 from cals.modeltools import compare_languages, \
         get_averageness_for_lang, LANGTYPES
-from cals.language.utils import random_conlang
+from cals.tools.language import random_conlang
 
 from cals.people.views import auth_login
 from cals.language.views import show_language
