@@ -5,10 +5,10 @@
 {% block title %}Language: {{ object.name }}{% endblock title %}
 {% block submenu %}
 <ul>
+    <li><b>{{ object.name }}</b></li>
     <li><a href="../">All</a></li>
     {% if user.is_authenticated %}
     <li><a href="../new">Add</a></li>
-    <li><b>View</b></li>
     <li><a href="./clone">Clone</a></li>
     {% if not object.natlang %}
         {% if object.public %}
