@@ -487,30 +487,26 @@ def list_languages(request, *args, **kwargs):
     data = {'me': me, 'searchform': form }
     return render(request, 'cals/language_index.html', data)
 
-def language_cloud(request, *args, **kwargs):
-    me = 'language'
+class LanguageCloud(LanguageViewMixin, ListView):
+    template_name = 'cals/language_cloud.html'
     queryset = Language.objects.conlangs().order_by('name')
-    langs = []
-    for lang in queryset:
-        langs.append({'slug': lang.slug,
-                'size': int(round(lang.get_infodensity() * 6)) + 1,
-                'name': lang.name,
-        })
-    data = {'me': me, 'langs': langs}
-    return render(request, 'cals/language_cloud.html',
-            data)
-
-
-class ListJRKLanguageView(ListView):
-    queryset = LanguageName.objects.filter(language__natlang=False).exclude(language__background='').order_by('name')
-    template_name = 'jrklist.html'
 
     def get_context_data(self, **kwargs):
-        context = super(ListJRKLanguageView, self).get_context_data(**kwargs)
-        context['me'] = 'language'
+        context = super(LanguageCloud, self).get_context_data(**kwargs)
+        langs = []
+        for lang in self.get_queryset():
+            langs.append({'slug': lang.slug,
+                    'size': int(round(lang.get_infodensity() * 6)) + 1,
+                    'name': lang.name,
+            })
+        context['langs'] = langs
         return context
-language_jrklist = ListJRKLanguageView.as_view()
+language_cloud = LanguageCloud.as_view()
 
+class ListJRKLanguageView(LanguageViewMixin, ListView):
+    queryset = LanguageName.objects.filter(language__natlang=False).exclude(language__background='').order_by('name')
+    template_name = 'jrklist.html'
+language_jrklist = ListJRKLanguageView.as_view()
 
 def language_list(request, natlang=False, *args, **kwargs):
     if natlang or in_kwargs_or_get(request, kwargs, 'action', 'natlang'):
