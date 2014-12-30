@@ -1,3 +1,10 @@
+import logging
+_LOG = logging.getLogger(__name__)
+
+from django.http import HttpResponseRedirect
+
+from cals.forms import CompareTwoForm, CompareTwoFeaturesForm
+
 def _generate_comparison_type(comparison_type):
     same = None
     different = None
