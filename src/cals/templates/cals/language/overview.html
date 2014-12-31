@@ -43,6 +43,7 @@
     </table>
 </form>
 <hr />
+{% if object.family %}<h4><a href="/language/family/{{ object.family.slug }}/">Family: {{ object.family }}</a></h4>{% endif %}
 <h4><a href="/translation/language/{{ object.slug }}/">Translations</a></h4>
 <h4><a href="/language/{{ object.slug }}/feature/">Features</a></h4>
 {% endblock submenu %}

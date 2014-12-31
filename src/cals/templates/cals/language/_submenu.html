@@ -7,6 +7,7 @@
     <li>{% if submenu = 'cloud'%}<b>Cloud</b>{% else %}<a href="/language/?cloud">Cloud</a>{% endif %}</li>
     <li>{% if submenu = 'homepage'%}<b>Homepages</b>{% else %}<a href="/language/?homepage">Homepages</a>{% endif %}</li>
     <li>{% if submenu = 'natlang'%}<b>Natlangs</b>{% else %}<a href="/language/?natlang">Natlangs</a>{% endif %}</li>
+    <li><a href="/language/family/">Language Families</a></li>
     {% if user.is_authenticated %}
     <li><a href="/language/new">Add</a></li>
     {% endif %}
