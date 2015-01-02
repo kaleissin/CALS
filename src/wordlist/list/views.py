@@ -98,7 +98,7 @@ class SpecificListView(WordlistMixin, TemplateView):
         return context
 
     def csv(self, queryset, fields, filename):
-        response = HttpResponse(mimetype='text/csv')
+        response = HttpResponse(content_type=='text/csv')
         response['Content-Disposition'] = 'attachment; filename=%s' % filename
         CSV = csv.writer(response, quoting=csv.QUOTE_NONNUMERIC)
         CSV.writerow(fields)
