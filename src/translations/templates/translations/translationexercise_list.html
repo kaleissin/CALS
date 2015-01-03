@@ -33,7 +33,7 @@
                 {% endifequal %}
             </td>
             <td>{% if object.interlinear %}Yes{% else %}No{% endif %}</td>
-            <td>{% showuser object.translator.get_profile %}</td>
+            <td>{% showuser object.translator.profile %}</td>
         </tr>
         {% endfor %}
 </table>
