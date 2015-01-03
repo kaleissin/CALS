@@ -43,70 +43,37 @@
 
 {% if favorite_langs %}
 <h2>Your favorite languages</h2>
-<table>
-{% for langrow in favorite_langs|partition:6 %}
-<tr>
-{% for lang in langrow %}
-{% if lang %}
-<td><a href="/translation/{{ exercise.slug }}/language/{{ lang.slug }}/new">{{ lang }}</a></td>
-{% else %}
-<td></td>
+<div style="-moz-columns: 18em; columns: 18em; -webkit-columns: 18em">
+{% for lang in favorite_langs %}{% if lang %}
+<div style="margin-bottom: 1ex"><a href="/translation/{{ exercise.slug }}/language/{{ lang.slug }}/new">{{ lang }}</a></div>
 {% endif %}
 {% endfor %}
-</tr>
-{% endfor %}
-</tr>
-</table>
+</div>
 {% endif %}
 
 <h2>Conlangs you may edit</h2>
-<table>
-{% for langrow in own_conlangs|partition:6 %}
-<tr>
-{% for lang in langrow %}
-{% if lang %}
-<td><a href="/translation/{{ exercise.slug }}/language/{{ lang.slug }}/new">{{ lang }}</a></td>
-{% else %}
-<td></td>
+<div style="-moz-columns: 18em; columns: 18em; -webkit-columns: 18em">
+{% for lang in own_conlangs %}{% if lang %}
+<div style="margin-bottom: 1ex"><a href="/translation/{{ exercise.slug }}/language/{{ lang.slug }}/new">{{ lang }}</a></div>
 {% endif %}
 {% endfor %}
-</tr>
-{% endfor %}
-</tr>
-</table>
+</div>
 
 <h2>Other conlangs</h2>
-<table>
-{% for langrow in other_conlangs|partition:6 %}
-<tr>
-{% for lang in langrow %}
-{% if lang %}
-<td><a href="/translation/{{ exercise.slug }}/language/{{ lang.slug }}/new">{{ lang }}</a></td>
-{% else %}
-<td></td>
+<div style="-moz-columns: 18em; columns: 18em; -webkit-columns: 18em">
+{% for lang in other_conlangs %}{% if lang %}
+<div style="margin-bottom: 1ex"><a href="/translation/{{ exercise.slug }}/language/{{ lang.slug }}/new">{{ lang }}</a></div>
 {% endif %}
 {% endfor %}
-</tr>
-{% endfor %}
-</tr>
-</table>
+</div>
 
 <h2>Natlangs</h2>
-<table>
-{% for langrow in natlangs|partition:6 %}
-<tr>
-{% for lang in langrow %}
-{% if lang %}
-<td><a href="/translation/{{ exercise.slug }}/language/{{ lang.slug }}/new">{{ lang }}</a></td>
-{% else %}
-<td></td>
+<div style="-moz-columns: 18em; columns: 18em; -webkit-columns: 18em">
+{% for lang in natlangs %}{% if lang %}
+<div style="margin-bottom: 1ex"><a href="/translation/{{ exercise.slug }}/language/{{ lang.slug }}/new">{{ lang }}</a></div>
 {% endif %}
 {% endfor %}
-</tr>
-{% endfor %}
-</tr>
-</table>
-
+</div>
 
 {% endif %}
 {% endblock content %}
