@@ -14,7 +14,7 @@ from cals.models import Language
 
 from translations.models import Translation, TranslationExercise
 from translations.forms import TranslationForm
-from translations import get_model_for_kwarg
+from translations.tools import get_model_for_kwarg
 
 def get_translationexercise(**kwargs):
     return get_model_for_kwarg(TranslationExercise, 'exercise', 'slug', **kwargs)
