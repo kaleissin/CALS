@@ -28,7 +28,7 @@ def get_user(**kwargs):
 
 class ListLanguageTranslationView(ListView):
     """List all translations for a specific language.
-    
+
     Specific translations is reached by show_translation_for_language().
     """
     template_name = 'translations/languagetranslation_list.html'
@@ -49,12 +49,12 @@ class ListLanguageTranslationView(ListView):
         context['lang'] = self.lang
         context['exercises'] = self.exercises
         return context
-show_languagetranslations = ListLanguageTranslationView.as_view()    
+show_languagetranslations = ListLanguageTranslationView.as_view()
 
 
 def list_translation_for_language(request, *args, **kwargs):
     """List all translations of a specific exercise for a specific language.
-    
+
     Specific translations is reached by show_translation_for_language().
     """
 
@@ -122,7 +122,7 @@ def add_languagetranslations(request, *args, **kwargs):
             error = 'Form not valid'
     trans = lang.translations.exclude(translation__isnull=True).exclude(translation='')
     data = {'form': form,
-            'exercise': exercise, 
+            'exercise': exercise,
             'help_message': help_message,
             'me': me}
     return render(request, template, data)
@@ -186,7 +186,7 @@ class ListTranslationsForExercise(ListView):
         user = self.request.user
         if user.is_authenticated():
             ctl = ContentType.objects.get_for_model(Language)
-            favelangs = [m.content_object 
+            favelangs = [m.content_object
                     for m in user.marks.filter(marktype__slug='fave', content_type=ctl)]
             natlangs = Language.objects.natlangs()
             conlangs = Language.objects.conlangs()
@@ -213,7 +213,7 @@ class DeleteTranslationForLanguageView(DeleteView):
         return context
 
     def get_success_url(self):
-        success_url = "/translation/language/%s/" % self.lang.slug 
+        success_url = "/translation/language/%s/" % self.lang.slug
         return success_url
 
     def get_object(self, queryset=None):
