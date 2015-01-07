@@ -6,6 +6,7 @@ from random import choice
 
 from django import template
 from django.conf import settings
+from django.utils.timezone import now as tznow
 
 import logging
 _LOG = logging.getLogger(__name__)
@@ -35,7 +36,7 @@ def happy_new_year():
 
 @register.filter
 def special_date(special):
-    now = datetime.utcnow()
+    now = tznow()
 
     christmas_start = datetime(now.year, 12, 24, 0,0,0)
     christmas_end = christmas_start + timedelta(days=13)

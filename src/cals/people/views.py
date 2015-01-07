@@ -7,7 +7,6 @@ __all__ = [
 ]
 
 from pprint import pformat
-from datetime import datetime
 
 import logging
 _LOG = logging.getLogger(__name__)
@@ -21,6 +20,7 @@ from django.contrib.auth import get_user_model
 from django.http import HttpResponseRedirect, HttpResponseNotFound
 from django.shortcuts import get_object_or_404, render
 from django.utils.encoding import smart_unicode
+from django.utils.timezone import now as tznow
 from django.db.models import Count
 from django.views.generic import ListView
 
@@ -182,7 +182,7 @@ def change_profile(request, *args, **kwargs):
 def check_for_ipv6(request, profile):
     if ':' in request.META.get('REMOTE_ADDR'):
         if not profile.seen_ipv6:
-            profile.seen_ipv6 = datetime.now()
+            profile.seen_ipv6 = tznow()
             messages.success(request, "Welcome, oh fellow user of IPv6! A badge is on the way.")
             profile.save()
     else:

@@ -1,9 +1,10 @@
 import logging
 _LOG = logging.getLogger(__name__)
 
-from datetime import timedelta, datetime
+from datetime import timedelta
 
 from django.conf import settings
+from django.utils.timezone import now as tznow
 
 from nano.blog.tools import add_entry_to_blog
 from nano.blog.models import Entry
@@ -97,7 +98,7 @@ def new_or_changed_language(sender, **kwargs):
                 entry.tags = 'changed_language'
                 entry.save()
         else:
-            latest.pub_date = datetime.now()
+            latest.pub_date = tznow()
             latest.save()
 
 def hidden_language(sender, **kwargs):

@@ -1,8 +1,6 @@
 
 # -*- coding: UTF-8 -*-
 
-from datetime import datetime
-
 import logging
 _LOG = logging.getLogger(__name__)
 
@@ -11,6 +9,7 @@ from django.conf import settings
 from django.db import models
 from django.db.models.query import QuerySet
 from django.utils.encoding import smart_unicode
+from django.utils.timezone import now as tznow
 
 from taggit.managers import TaggableManager
 
@@ -185,8 +184,8 @@ class Language(models.Model):
     editors = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, null=True, 
             related_name='edits',
             help_text=u"""People who get to change the description of this language.""")
-    created = models.DateTimeField(default=datetime.now)
-    last_modified = models.DateTimeField(blank=True, null=True, editable=False, default=datetime.now)
+    created = models.DateTimeField(default=tznow)
+    last_modified = models.DateTimeField(blank=True, null=True, editable=False, default=tznow)
     last_modified_by = models.ForeignKey(settings.AUTH_USER_MODEL,
             editable=False,
             blank=True,
@@ -216,7 +215,7 @@ class Language(models.Model):
         return self.name
 
     def save(self, user=None, solo=True, *args, **kwargs):
-        now = datetime.utcnow()
+        now = tznow()
         # New lang
         if not self.id and user:
             self.added_by = user
@@ -254,7 +253,7 @@ class Language(models.Model):
         """
         assert self.id, 'Language not saved'
         if not now:
-            now = datetime.utcnow()
+            now = tznow()
         names = LanguageName.objects.filter(language=self)
         if not names.filter(name=self.name):
             l = LanguageName(language=self, name=self.name, added=now)
@@ -357,7 +356,7 @@ class LanguageName(models.Model):
     def save(self, *args, **kwargs):
         self.slug = uslugify(smart_unicode(self.name))
         if not self.added:
-            self.added = datetime.utcnow()
+            self.added = tznow()
         super(LanguageName, self).save(*args, **kwargs)
 
     def __unicode__(self):

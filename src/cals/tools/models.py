@@ -1,6 +1,3 @@
-from datetime import datetime
-
-
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
@@ -8,6 +5,7 @@ from django.db import models
 from django.db.models import Q
 from django.db.models.query import QuerySet
 from django.utils.html import strip_tags
+from django.utils.timezone import now as tznow
 
 from interlinears import leipzig
 from cals import markup_as_restructuredtext
@@ -114,7 +112,7 @@ class DescriptionManager(models.Manager):
         return super(DescriptionManager, self).get_queryset().filter(current=True)
 
 class Description(Freetext):
-    last_modified = models.DateTimeField(default=datetime.now, editable=False)
+    last_modified = models.DateTimeField(default=tznow, editable=False)
     last_modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False, blank=True, null=True, related_name='descriptions')
     current = models.BooleanField(default=True)
 
@@ -139,7 +137,7 @@ class Description(Freetext):
             desc_obj = Description.objects
         if not batch:
             self.id = next_id(self.__class__)
-            self.last_modified = datetime.now()
+            self.last_modified = tznow()
             if user:
                 self.last_modified_by = user
             desc_obj.filter(object_id=self.object_id).update(current=False)

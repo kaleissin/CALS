@@ -1,13 +1,12 @@
 # -*- coding: UTF-8 -*-
 
-from datetime import datetime
-
 import logging
 _LOG = logging.getLogger(__name__)
 
 from django.conf import settings
 from django.db import models
 from django.utils.html import escape
+from django.utils.timezone import now as tznow
 
 from cals.tools import uslugify
 
@@ -73,7 +72,7 @@ class TranslationExercise(models.Model):
         settings.AUTH_USER_MODEL,
         related_name='translation_exercises'
     )
-    added = models.DateTimeField(default=datetime.now, editable=False)
+    added = models.DateTimeField(default=tznow, editable=False)
 
     class Meta:
         db_table = 'cals_translationexercise'
@@ -88,7 +87,7 @@ class TranslationExercise(models.Model):
             self.slug = uslugify(self.name)
             if user:
                 self.added_by = user
-            self.added = datetime.now()
+            self.added = tznow()
         super(TranslationExercise, self).save(*args, **kwargs)
 
 class Translation(Interlinear):
@@ -100,8 +99,8 @@ class Translation(Interlinear):
         related_name='translations'
     )
     slug = models.SlugField(max_length=255, editable=False, blank=True)
-    added = models.DateTimeField(default=datetime.now, editable=False)
-    last_modified = models.DateTimeField(default=datetime.now, editable=False)
+    added = models.DateTimeField(default=tznow, editable=False)
+    last_modified = models.DateTimeField(default=tznow, editable=False)
 
     RE = r'[-_\w]+/language/[-\w]+/[-\w]+/'
 
@@ -125,7 +124,7 @@ class Translation(Interlinear):
         if not self.id and user:
             self.translator = user
         if not batch:
-            self.last_modified = datetime.now()
+            self.last_modified = tznow()
         self._set_slug()
         super(Translation, self).save(*args, **kwargs)
 

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # vim: set fileencoding=utf-8 :
 
-from datetime import datetime
 from random import choice
 from math import modf, floor, ceil
 import os.path
@@ -13,6 +12,7 @@ from django.conf import settings
 from django.core.cache import cache
 from django.utils.encoding import smart_str, force_unicode
 from django.utils.safestring import mark_safe
+from django.utils.timezone import now as tznow
 
 import pygal
 
@@ -111,7 +111,7 @@ def cals_tags_status(verbose=False):
 
 @register.simple_tag
 def currently_logged_in():
-    now = datetime.now()
+    now = tznow()
     sessions = Session.objects.filter(expire_date__gt=now)
     uids = []
     for s in sessions:

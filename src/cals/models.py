@@ -1,15 +1,13 @@
 
 # -*- coding: UTF-8 -*-
 
-import datetime as dt
-from datetime import datetime
-
 import logging
 _LOG = logging.getLogger(__name__)
 
 from django.conf import settings
 from django.db import models
 from django.db.models.query import QuerySet
+from django.utils.timezone import now as tznow
 
 from cals import markup_as_restructuredtext
 
@@ -101,7 +99,7 @@ class ConsonantDataPointManager(SoundDataPointManager):
 class SoundDataPoint(models.Model):
     language = models.ForeignKey(Language)
     sound = models.ForeignKey(Sound)
-    changed = models.DateTimeField(default=datetime.now)
+    changed = models.DateTimeField(default=tznow)
     changed_by = models.ForeignKey(settings.AUTH_USER_MODEL)
 
     objects = SoundDataPointManager()
@@ -112,21 +110,9 @@ class SoundDataPoint(models.Model):
         app_label = "cals"
 
     def save(self, *args, **kwargs):
-        self.changed = datetime.now()
+        self.changed = tznow()
         return super(SoundDataPoint, self).save(self, *args, **kwargs)
 
     def __unicode__(self):
         return u"%s %s" % (self.sound, self.language)
-
-# TODO: Generalize. move out to own module. in nano?
-
-class UTC(dt.tzinfo):
-    ZERO = dt.timedelta(0)
-    """UTC"""
-    def tzname(self, dt):
-        return "UTC"
-    def utcoffset(self, dt):
-        return self.ZERO
-    def dst(self, dt):
-        return self.ZERO
 
