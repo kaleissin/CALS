@@ -1,5 +1,6 @@
-from __future__ import unicode_literals
 # -*- coding: utf8 -*-
+
+from __future__ import unicode_literals
 
 import unicodedata
 import re
