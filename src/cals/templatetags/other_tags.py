@@ -43,14 +43,14 @@ def special_date(special):
 
     new_years_eve_start = datetime(now.year, 12, 31, 18,0,0)
     new_years_eve_end = datetime(now.year, 12, 31, 23,59,59)
-    
+
     new_years_start = datetime(2010, 1, 1, 0,0,0)
     new_years_end = datetime(2010, 1, 1, 23,59,59)
-    
+
     special_dates = {
-        (christmas_start, christmas_end): 'christmas', 
-        (new_years_eve_start, new_years_eve_end): 'new_years_eve', 
-        (new_years_start, new_years_end): 'new_year', 
+        (christmas_start, christmas_end): 'christmas',
+        (new_years_eve_start, new_years_eve_end): 'new_years_eve',
+        (new_years_start, new_years_end): 'new_year',
     }
     outdates = []
     for begin, end in sorted(special_dates.keys()):
