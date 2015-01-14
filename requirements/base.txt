@@ -1,11 +1,11 @@
-Django==1.7.1
+Django==1.7.3
 Interlinears
 Unidecode
 django-activity-stream==0.5.1
 django-tag-tools
 django-taggit==0.12.2
 ipython
-nano==0.8.1
+nano==0.9.1
 psycopg2
 pygal
 python-memcached
