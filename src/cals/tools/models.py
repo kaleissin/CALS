@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.db import models
 from django.db.models import Q
 from django.db.models.query import QuerySet
@@ -118,7 +118,7 @@ class Description(Freetext):
 
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField()
-    content_object = generic.GenericForeignKey()
+    content_object = GenericForeignKey()
 
     #objects = DescriptionManager()
     objects = models.Manager()
@@ -178,7 +178,7 @@ class Description(Freetext):
 
 class DescriptionMixin(object):
 
-    descriptions = generic.GenericRelation(Description)
+    descriptions = GenericRelation(Description)
 
     @property
     def description(self):
