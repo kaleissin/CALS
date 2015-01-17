@@ -8,7 +8,7 @@ from django.contrib.auth import get_user_model
 
 from cals.models import *
 from translations.models import *
-from relay.models import *
+from RelayMuseum.relay.models import *
 from phonemes.models import Sound
 from nano.badge.models import Badge
 from nano.tools import get_profile_model
