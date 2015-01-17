@@ -141,6 +141,17 @@ def bughunters():
     bughunters = User.objects.filter(id__in=bughunter_ids)
     batchbadge(badge, bughunters)
 
+def ghostbusters():
+    # Cannot use signal
+    User = get_user_model()
+    badge = Badge.objects.get(name='Ghostbuster')
+    ghostbuster_ids = (
+        556,
+    )
+    ghostbusters = User.objects.filter(id__in=ghostbuster_ids)
+    batchbadge(badge, ghostbusters)
+
+
 def dreamers():
     # Cannot use signal
     User = get_user_model()
