@@ -46,8 +46,8 @@
                     {% for value in object.values.all %}
                     <tr class="{% cycle odd,even %}">
                         <td><a href="/value/{{ value.id }}">{{ value.name }}</a> 
-                            ({{ value.languagefeature_set.for_conlangs.count }} 
-                            language{{ value.languagefeature_set.for_conlangs.count|pluralize }})</td>
+                            ({{ value.languages.for_conlangs.count }} 
+                            language{{ value.languages.for_conlangs.count|pluralize }})</td>
                     </tr>
                     {% endfor %}
                 </table>
@@ -60,8 +60,8 @@
                     {% for value in object.values.all %}
                     <tr class="{% cycle odd,even %}">
                         <td><a href="/value/{{ value.id }}">{{ value.name }}</a> 
-                            ({{ value.languagefeature_set.for_natlangs.count }} 
-                            language{{ value.languagefeature_set.for_natlangs.count|pluralize }})</td>
+                            ({{ value.languages.for_natlangs.count }} 
+                            language{{ value.languages.for_natlangs.count|pluralize }})</td>
                     </tr>
                     {% endfor %}
                 </table>
