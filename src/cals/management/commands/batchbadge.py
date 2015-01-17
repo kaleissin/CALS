@@ -132,10 +132,11 @@ def bughunters():
     User = get_user_model()
     badge = Badge.objects.get(name='Bughunter')
     bughunter_ids = (
-            2, 3, 30, 32, 195, 
-            87, 52, 90, 82, 86, 
+            2, 3, 30, 32, 195,
+            87, 52, 90, 82, 86,
             280, 326, 350, 147, 416,
-            463, 314, 493, 184, 253
+            463, 314, 493, 184, 253,
+            750
     )
     bughunters = User.objects.filter(id__in=bughunter_ids)
     batchbadge(badge, bughunters)
