@@ -15,21 +15,21 @@ suggested_features_dict = {
 }
 
 urlpatterns = patterns('',
-        (r'^$',                            RedirectView.as_view(**{'url': '/feature/p1/'})),
-#         (r'^suggested/$',                   'list_detail.object_list', suggested_features_dict),
+        url(r'^$',                            RedirectView.as_view(**{'url': '/feature/p1/'})),
+#         url(r'^suggested/$',                   'list_detail.object_list', suggested_features_dict),
 )
 
 urlpatterns += patterns('cals.feature.views',
-        (r'^p(?P<page>[0-9]+)/$',          'list_feature'),
-        (r'^'+FEATURE_RE+r'$',             'show_feature'),
-        (r'^(?P<objects>[+0-9]+)/$',       'compare_feature'), 
-        (r'^'+FEATURE_RE+r'change$',       'change_feature_description'),
-        (r'^'+FEATURE_RE+r'use$',          'revert_feature_description'),
-        (FEATURE_HISTORY_RE+r'$',          'show_feature_history'),
-        (FEATURE_HISTORY_RE+r'compare$',   'compare_feature_history'),
-#         (SUGGESTED_RE+r'new$',             'add_feature'),
-#         (SUGGESTED_FEATURE_RE+r'$',        'show_suggested_feature'),
-#         (SUGGESTED_FEATURE_RE+r'change$',  'change_feature'),
+        url(r'^p(?P<page>[0-9]+)/$',          'list_feature'),
+        url(r'^'+FEATURE_RE+r'$',             'show_feature'),
+        url(r'^(?P<objects>[+0-9]+)/$',       'compare_feature'), 
+        url(r'^'+FEATURE_RE+r'change$',       'change_feature_description'),
+        url(r'^'+FEATURE_RE+r'use$',          'revert_feature_description'),
+        url(FEATURE_HISTORY_RE+r'$',          'show_feature_history'),
+        url(FEATURE_HISTORY_RE+r'compare$',   'compare_feature_history'),
+#         url(SUGGESTED_RE+r'new$',             'add_feature'),
+#         url(SUGGESTED_FEATURE_RE+r'$',        'show_suggested_feature'),
+#         url(SUGGESTED_FEATURE_RE+r'change$',  'change_feature'),
 )
 
 # ## voting
@@ -41,8 +41,8 @@ urlpatterns += patterns('cals.feature.views',
 # }
 # 
 # urlpatterns += patterns('',
-#         (SUGGESTED_FEATURE_RE+'(?P<direction>up|down|clear)vote/?$', vote_on_object, vote_on_feature_dict),
-#         (SUGGESTED_FEATURE_RE+r'comment/', include('nano.comments.urls', app_name='feature'), 
+#         url(SUGGESTED_FEATURE_RE+'(?P<direction>up|down|clear)vote/?$', vote_on_object, vote_on_feature_dict),
+#         url(SUGGESTED_FEATURE_RE+r'comment/', include('nano.comments.urls', app_name='feature'), 
 #                 {'model': Feature, 
 #                 'object_arg': 'object_id',
 #                 'extra_context': {'me': 'feature'}}),

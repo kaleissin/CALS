@@ -1,8 +1,13 @@
 from django.conf.urls import *
 from django.conf import settings
 from django.views.generic import RedirectView
+from django.shortcuts import render
+from django.contrib.auth.views import logout_then_login
 
-from CALS.feeds.feeds import *
+from nano.user import views as nanouserviews
+
+from CALS.feeds import feeds
+from cals.people.views import auth_login as cals_auth_login
 
 from django.contrib import admin
 admin.autodiscover()
@@ -32,15 +37,15 @@ login_params = {
     'dictionary': { 'me': 'home', },
 }
 
-urlpatterns = patterns('django.contrib.syndication.views',
-    (r'^feeds/translations/exercises/$',    NewTranslationExerciseFeed()),
-    (r'^feeds/translations/new/$',          NewTranslationFeed()),
-    (r'^feeds/languages/last_modified/$',   UpdatedLanguagesFeed()),
-    (r'^feeds/languages/newest/$',          NewestLanguagesFeed()),
-    (r'^feeds/people/recent/$',             RecentlyJoinedFeed()),
-    (r'^feeds/people/all/$',                AllPeopleFeed()),
-    (r'^feeds/comments/$',                  RecentCommentsFeed()),
-    (r'^feeds/all/$',                       AllFeed()),
+urlpatterns = patterns('',
+    url(r'^feeds/translations/exercises/$',  feeds.NewTranslationExerciseFeed()),
+    url(r'^feeds/translations/new/$',        feeds.NewTranslationFeed()),
+    url(r'^feeds/languages/last_modified/$', feeds.UpdatedLanguagesFeed()),
+    url(r'^feeds/languages/newest/$',        feeds.NewestLanguagesFeed()),
+    url(r'^feeds/people/recent/$',           feeds.RecentlyJoinedFeed()),
+    url(r'^feeds/people/all/$',              feeds.AllPeopleFeed()),
+    url(r'^feeds/comments/$',                feeds.RecentCommentsFeed()),
+    url(r'^feeds/all/$',                     feeds.AllFeed()),
 )
 
 if settings.DEBUG:
@@ -49,40 +54,40 @@ if settings.DEBUG:
 
 urlpatterns += patterns('',
     # red tape
-    (r'^favicon\.ico$',         RedirectView.as_view(
-                                        **{'url': '/static/img/favicon.ico'})),
-    (r'^robots\.txt$',          'django.shortcuts.render', robots_txt_params),
- 
-    (r'^thankyou$',             'django.shortcuts.render', thankyou_params),
-    (r'^help/rst_quickref$',    'django.shortcuts.render', help_rst_quickref_params),
-    (r'^help/',                 'django.shortcuts.render', help_params),
+    url(r'^favicon\.ico$',      RedirectView.as_view(**{'url': '/static/img/favicon.ico'})),
+    url(r'^robots\.txt$',       render, robots_txt_params),
+
+    url(r'^thankyou$',          render, thankyou_params),
+    url(r'^help/rst_quickref$', render, help_rst_quickref_params),
+    url(r'^help/',              render, help_params),
 )
 
 urlpatterns += patterns('',
-    (r'^admin/doc/',            include('django.contrib.admindocs.urls')),
-    (r'^admin/',                include(admin.site.urls)),
+    url(r'^admin/doc/',         include('django.contrib.admindocs.urls')),
+    url(r'^admin/',             include(admin.site.urls)),
 
-    (r'^logged_in$',            'django.shortcuts.render', login_params),
-    (r'^logout$',               'django.contrib.auth.views.logout_then_login'),
+    url(r'^logged_in$',         render, login_params),
+    url(r'^logout$',            logout_then_login),
 
-    url(r'account/social/',    include('social.apps.django_app.urls', namespace='social')),
-    (r'account/login/$',        'cals.people.views.auth_login'),
-    (r'^account/',              include('nano.user.urls')),
+    url(r'account/social/',     include('social.apps.django_app.urls', namespace='social')),
+    url(r'account/login/$',     cals_auth_login),
+    url(r'^account/',           include('nano.user.urls')),
+
     # redirect the three links below into account/...
-    (r'^signup/$',              'nano.user.views.signup'),
-    (r'^password/reset/$',      'nano.user.views.password_reset', {'project_name': 'CALS'}),
-    (r'^password/change/$',     'nano.user.views.password_change'),
-    (r'^news/',                 include('nano.blog.urls')),
+    url(r'^signup/$',           nanouserviews.signup),
+    url(r'^password/reset/$',   nanouserviews.password_reset, {'project_name': 'CALS'}),
+    url(r'^password/change/$',  nanouserviews.password_change),
 
-    (r'^word/list/',            include('wordlist.list.urls')),
-    (r'^word/$',                RedirectView.as_view(**{'url': '/word/list/'})),
-    (r'^translation/',          include('translations.urls')),
-    (r'^badge/',                include('nano.badge.urls')),
-    (r'^faq/',                  include('nano.faq.urls')),
-    (r'^mark/',                 include('nano.mark.urls')),
+    url(r'^news/',              include('nano.blog.urls')),
 
-    (r'meetups/',               include('meetups.urls')),
+    url(r'^word/list/',         include('wordlist.list.urls')),
+    url(r'^word/$',             RedirectView.as_view(**{'url': '/word/list/'})),
+    url(r'^translation/',       include('translations.urls')),
+    url(r'^badge/',             include('nano.badge.urls')),
+    url(r'^faq/',               include('nano.faq.urls')),
+    url(r'^mark/',              include('nano.mark.urls')),
 
-    (r'^',                      include('cals.urls')),
+    url(r'meetups/',            include('meetups.urls')),
+
+    url(r'^',                   include('cals.urls')),
 )
-

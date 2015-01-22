@@ -7,8 +7,8 @@ from wordlist.views import LanguageWordListView, WordlistView, \
 PK_RE = r'(?P<pk>\d+)'
 
 urlpatterns = patterns('',
-        (r'^lists/',         include('wordlist.list.urls')),
-        (r'^language/',      include('wordlist.language.urls')),
+        url(r'^lists/',         include('wordlist.list.urls')),
+        url(r'^language/',      include('wordlist.language.urls')),
 )
 
 urlpatterns += patterns('',

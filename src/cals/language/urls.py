@@ -17,17 +17,17 @@ tags_language_dict = {
 }
 
 urlpatterns = patterns('tagtools.views',
-        (r'^tag/(?P<tag>[-\w\d]+)/$', 'tagged_object_list', tags_language_dict),
+        url(r'^tag/(?P<tag>[-\w\d]+)/$', 'tagged_object_list', tags_language_dict),
 )
 
 #urlpatterns += patterns('django.views.generic',
-# #        (r'^latest/$', 'date_based.archive_index', language_by_date),
-# #        (r'^(?P<year>\d{4})/$',            'date_based.archive_year', language_by_year),
+# #        url(r'^latest/$', 'date_based.archive_index', language_by_date),
+# #        url(r'^(?P<year>\d{4})/$',            'date_based.archive_year', language_by_year),
         #(r'^(?P<year>\d{4})/w(?P<week>[a-z]{3})/$', 'date_based.archive_week', language_by_week),
 #)
 
 urlpatterns += patterns('',
-        (LANG_RE+r'comment/', include('nano.comments.urls', app_name='language'),
+        url(LANG_RE+r'comment/', include('nano.comments.urls', app_name='language'),
                 {'model': Language, 
                 'object_arg': 'lang',
                 'object_field': 'slug',
@@ -53,25 +53,25 @@ language_by_date = {
         }
 
 urlpatterns += patterns('cals.language.views',
-        (LANG_RE+r'feature/$',              'show_features_for_language'),
-        (r'^tag/$',                         'list_languagetags'),
-        (LANG_NAMES_RE+r'change$',          'change_languagenames'),
-        (r'^family/$',                      'list_languagefamilies'),
-        (r'^family/'+SLUG_RE+r'$',          'show_languagefamilies'),
+        url(LANG_RE+r'feature/$',              'show_features_for_language'),
+        url(r'^tag/$',                         'list_languagetags'),
+        url(LANG_NAMES_RE+r'change$',          'change_languagenames'),
+        url(r'^family/$',                      'list_languagefamilies'),
+        url(r'^family/'+SLUG_RE+r'$',          'show_languagefamilies'),
 )
 
 urlpatterns += patterns('cals.views',
-        (r'^search$',                         'search_languages'),
-        (r'^([?](?P<action>[a-z]+))?$',       'list_languages'),
-        (r'^jrklist/$',                       'language_jrklist'),
-        (r'^p(?P<page>[0-9]+)/$',             'language_list'),
-        (r'^new$',                            'create_language'),
-        (LANG_RE+r'$',                        'show_language'),
-        (LANG_RE+r'change$',                  'change_language'),
-        (MULTISLUGS_RE+r'clone$',             'clone_language'),
-        (MULTISLUGS_RE+r'(?P<opt>[^/]*?)/?$', 'compare_language'),
+        url(r'^search$',                         'search_languages'),
+        url(r'^([?](?P<action>[a-z]+))?$',       'list_languages'),
+        url(r'^jrklist/$',                       'language_jrklist'),
+        url(r'^p(?P<page>[0-9]+)/$',             'language_list'),
+        url(r'^new$',                            'create_language'),
+        url(LANG_RE+r'$',                        'show_language'),
+        url(LANG_RE+r'change$',                  'change_language'),
+        url(MULTISLUGS_RE+r'clone$',             'clone_language'),
+        url(MULTISLUGS_RE+r'(?P<opt>[^/]*?)/?$', 'compare_language'),
 )
 
 urlpatterns += patterns('',
-        (r'^',                  include('cals.languagefeature.urls')),
+        url(r'^',                  include('cals.languagefeature.urls')),
 )
