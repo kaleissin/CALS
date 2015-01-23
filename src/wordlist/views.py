@@ -29,17 +29,20 @@ from wordlist import may_edit
 
 LOG = logging.getLogger(__name__)
 
-class CreateUpdateView(SingleObjectTemplateResponseMixin, ModelFormMixin,
-        ProcessFormView):
+
+class CreateUpdateView(SingleObjectTemplateResponseMixin, ModelFormMixin, ProcessFormView):
     pass
+
 
 class WordlistView(WordlistMixin, TemplateView):
     template_name = "wordlist/index.html"
 
 # Wordlist views
 
+
 class ListAllWordlistView(WordlistMixin, TemplateView):
     template_name = "wordlist/list_all.html"
+
 
 class SpecificListView(WordlistMixin, TemplateView):
     """Base class for all list views
@@ -58,21 +61,22 @@ class SpecificListView(WordlistMixin, TemplateView):
     template_name = 'wordlist/unnumbered_list.html'
 
     _unnumbered_fields = (
-            'swadesh_100',
-            'holman_list',
-            'yakhontov',
-            'buck',
-            'ids',
-            'wold')
+        'swadesh_100',
+        'holman_list',
+        'yakhontov',
+        'buck',
+        'ids',
+        'wold'
+    )
     _numbered_fields = (
-            'swadesh_207',
-            'holman_rank',
-            'buck_number',
-            'ids_number',
-            'wold_number',
-            'buck_category',
-            'id',
-            )
+        'swadesh_207',
+        'holman_rank',
+        'buck_number',
+        'ids_number',
+        'wold_number',
+        'buck_category',
+        'id',
+    )
     fields = ()
     info = ''
     more_info = ''
@@ -99,7 +103,7 @@ class SpecificListView(WordlistMixin, TemplateView):
         """Check and prep ordering"""
         self._ordering = []
         for k in getattr(self, 'ordering', ()):
-            if k in self._unnumbered_fields+self._numbered_fields:
+            if k in self._unnumbered_fields + self._numbered_fields:
                 self._ordering.append(k)
 
     def __init__(self, *args, **kwargs):
@@ -132,22 +136,27 @@ class SpecificListView(WordlistMixin, TemplateView):
         context['more_info'] = self.more_info
         return context
 
+
 class Swadesh100View(SpecificListView):
     title = 'The Swadesh 100 list'
     fields = ('swadesh_100',)
+
 
 class HolmanListView(SpecificListView):
     title = 'The Holman list'
     fields = ('holman_list',)
 
+
 class YakhontovListView(SpecificListView):
     title = 'The Yakhontov list'
     fields = ('yakhontov',)
+
 
 class HolmanAndYakhontovView(SpecificListView):
     template_name = 'wordlist/holman-yakhontovlist.html'
     title = 'Words Holman and Yakhontov have in common'
     fields = ('yakhontov', 'holman_list',)
+
 
 class Swadesh207View(SpecificListView):
     template_name = 'wordlist/swadesh207.html'
@@ -155,12 +164,14 @@ class Swadesh207View(SpecificListView):
     fields = ('swadesh_207',)
     ordering = ('swadesh_207',)
 
+
 class SwadeshNotBuckView(SpecificListView):
     template_name = 'wordlist/swadesh-notbuck.html'
     title = 'Swadesh minus Buck'
     fields = ('swadesh_207',)
-    exclude = ('buck','ids', 'wold')
+    exclude = ('buck', 'ids', 'wold')
     ordering = ('id',)
+
 
 class Swadesh207Not100View(SpecificListView):
     title = 'Swadesh 207 minus Swadesh 100'
@@ -168,11 +179,13 @@ class Swadesh207Not100View(SpecificListView):
     exclude = ('swadesh_100',)
     ordering = ('id',)
 
+
 class BuckView(SpecificListView):
     template_name = 'wordlist/buck.html'
     title = 'Buck (combined)'
     fields = ('buck_category',)
     ordering = ('buck_category', 'buck_number', 'ids_number', 'wold_number')
+
 
 class CommonBuckView(SpecificListView):
     template_name = 'wordlist/buck.html'
@@ -180,11 +193,13 @@ class CommonBuckView(SpecificListView):
     fields = ('buck', 'ids', 'wold',)
     ordering = ('buck_category', 'buck_number', 'ids_number', 'wold_number')
 
+
 class BuckIDSView(SpecificListView):
     template_name = 'wordlist/buck.html'
     title = 'Buck (IDS)'
     fields = ('ids_number',)
     ordering = ('buck_category', 'ids_number',)
+
 
 class Buck1949View(SpecificListView):
     template_name = 'wordlist/buck.html'
@@ -192,11 +207,13 @@ class Buck1949View(SpecificListView):
     fields = ('buck_number',)
     ordering = ('buck_category', 'buck_number',)
 
+
 class BuckWOLDView(SpecificListView):
     template_name = 'wordlist/buck.html'
     title = 'Buck (WOLD)'
     fields = ('wold_number',)
     ordering = ('buck_category', 'wold_number',)
+
 
 class OnlyBuck1949View(SpecificListView):
     template_name = 'wordlist/buck.html'
@@ -205,6 +222,7 @@ class OnlyBuck1949View(SpecificListView):
     exclude = ('ids_number', 'wold_number',)
     ordering = ('buck_category', 'buck_number',)
 
+
 class OnlyBuckIDSView(SpecificListView):
     template_name = 'wordlist/buck.html'
     title = 'Buck (IDS)'
@@ -212,12 +230,14 @@ class OnlyBuckIDSView(SpecificListView):
     exclude = ('buck_number', 'wold_number',)
     ordering = ('buck_category', 'ids_number',)
 
+
 class OnlyBuckWOLDView(SpecificListView):
     template_name = 'wordlist/buck.html'
     title = 'Buck, unique to WOLD'
     fields = ('wold_number',)
     exclude = ('buck_number', 'ids_number',)
     ordering = ('buck_category', 'wold_number',)
+
 
 class OnlyBuckIDSWOLDView(SpecificListView):
     template_name = 'wordlist/buck.html'
@@ -228,14 +248,16 @@ class OnlyBuckIDSWOLDView(SpecificListView):
     ordering = ('buck_category', 'ids_number', 'wold_number',)
 
     def generate_queryset(self):
-        senses = Sense.objects.filter(Q(ids_number__isnull=False)
-                |Q(wold_number__isnull=False)).distinct()
+        senses = Sense.objects.filter(
+            Q(ids_number__isnull=False)
+            | Q(wold_number__isnull=False)).distinct()
         return self.clean_queryset(senses)
+
 
 class NotOnAnyListView(SpecificListView):
     title = 'Not on any list'
     info = "The following senses are CALS originals and can not be " \
-            "found in any of the other lists."
+        "found in any of the other lists."
     exclude = ('buck', 'ids', 'wold', 'swadesh_207', 'swadesh_100', 'uld2')
 
     def generate_queryset(self):
@@ -244,15 +266,17 @@ class NotOnAnyListView(SpecificListView):
 
 # Complex views
 
+
 class LanguageListView(WordlistMixin, ListView):
     template_name = 'wordlist/language_list.html'
     model = Language
-    context_object_name='languages'
+    context_object_name = 'languages'
 
     def get_context_data(self, **kwargs):
         context = super(LanguageListView, self).get_context_data(**kwargs)
         context['languages'] = Language.objects.filter(words__isnull=False).distinct()
         return context
+
 
 class LanguageWordListView(WordlistMixin, ListView):
     template_name = 'wordlist/language_word_list.html'
@@ -273,6 +297,7 @@ class LanguageWordListView(WordlistMixin, ListView):
         context['skipped_words'] = SkippedWord.objects.filter(language=self.language)
         context['may_edit'] = may_edit(self.language, self.user)
         return context
+
 
 class AddWordForLanguageView(WordlistMixin, TemplateResponseMixin, View):
     template_name = 'wordlist/language_add_word.html'
@@ -301,8 +326,8 @@ class AddWordForLanguageView(WordlistMixin, TemplateResponseMixin, View):
 
     def get_initial(self):
         initial = {
-                'language': self.language,
-                'sense': self.sense.pk,
+            'language': self.language,
+            'sense': self.sense.pk,
         }
         if self.word_id:
             self.object = get_object_or_404(Word, pk=self.word_id, language=self.language)
@@ -377,6 +402,7 @@ class AddWordForLanguageView(WordlistMixin, TemplateResponseMixin, View):
         self.context['form'] = form
         return self.render_to_response(self.get_context_data(**self.context))
 
+
 class SenseDetailView(WordlistMixin, DetailView):
     template_name = 'wordlist/sense_detail.html'
     model = Sense
@@ -393,6 +419,7 @@ class SenseDetailView(WordlistMixin, DetailView):
         context['sense'] = self.sense
         context['words'] = Word.objects.filter(senses=self.sense)
         return context
+
 
 class LanguageSenseDetailView(WordlistMixin, DetailView):
     template_name = 'wordlist/language_sense_detail.html'
@@ -412,4 +439,3 @@ class LanguageSenseDetailView(WordlistMixin, DetailView):
         context['sense'] = self.sense
         context['words'] = Word.objects.filter(senses=self.sense, language=self.language)
         return context
-
