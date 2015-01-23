@@ -1,5 +1,4 @@
 import logging
-import operator
 
 from django.views.generic import (TemplateView,
                                   DetailView,
@@ -15,18 +14,18 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.db import transaction
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404
 from django.core.urlresolvers import reverse as url_reverse
 
-from wordlist.models import BuckCategory, Sense, Word, SkippedWord
-from wordlist.forms import WordForm, NAWordForm
+from wordlist.models import Sense, Word, SkippedWord
+from wordlist.forms import WordForm
 
 from cals.language.models import Language
 
-from wordlist import WordlistMixin, get_object_or_slug_from_kwargs
-from wordlist import get_object_from_kwargs, get_field_from_kwargs
-from wordlist import get_language_from_kwargs, language_has_word
-from wordlist import language_has_sense, may_edit, save_word
+from wordlist import WordlistMixin
+from wordlist import get_field_from_kwargs
+from wordlist import get_language_from_kwargs
+from wordlist import may_edit
 
 LOG = logging.getLogger(__name__)
 
@@ -114,7 +113,6 @@ class SpecificListView(WordlistMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(SpecificListView, self).get_context_data(**kwargs)
-        senses = Sense.objects.filter(**self._fields)
         context['words'] = self.generate_queryset()
         context['title'] = self.title
         context['info'] = self.info
