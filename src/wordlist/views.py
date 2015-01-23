@@ -42,6 +42,19 @@ class ListAllWordlistView(WordlistMixin, TemplateView):
     template_name = "wordlist/list_all.html"
 
 class SpecificListView(WordlistMixin, TemplateView):
+    """Base class for all list views
+
+    Child classes *must* set:
+
+        * fields: which fields should be visible
+        * title:  title of the resulting page
+
+    They *may* set:
+
+        * template_name: if different from the default
+        * ordering:      which fields to sort on
+        * exclude:       if one of these field is set in the row, hide it
+    """
     template_name = 'wordlist/unnumbered_list.html'
 
     _unnumbered_fields = (
