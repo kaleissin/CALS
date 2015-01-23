@@ -65,28 +65,38 @@ class SpecificListView(WordlistMixin, TemplateView):
     info = ''
     more_info = ''
 
-    def __init__(self, *args, **kwargs):
-        assert self.title is not None
-        # Check and prep fields that should exist or be true
-        self._fields={}
+    def _set_fields(self):
+        """Check and prep fields that should exist or be true"""
+        self._fields = {}
         for k in self.fields:
             if k in self._unnumbered_fields:
                 self._fields[k] = True
             elif k in self._numbered_fields:
                 self._fields['%s__isnull' % k] = False
-        # Check and prep fields that should be null or false
-        self._exclude={}
+
+    def _set_exclude(self):
+        """Check and prep fields that should be null or false"""
+        self._exclude = {}
         for k in getattr(self, 'exclude', ()):
             if k in self._unnumbered_fields:
                 self._exclude[k] = False
             elif k in self._numbered_fields:
                 self._exclude['%s__isnull' % k] = True
-        # Check and prep ordering
+
+    def _set_ordering(self):
+        """Check and prep ordering"""
         self._ordering = []
         for k in getattr(self, 'ordering', ()):
             if k in self._unnumbered_fields+self._numbered_fields:
                 self._ordering.append(k)
+
+    def __init__(self, *args, **kwargs):
         super(SpecificListView, self).__init__(*args, **kwargs)
+        assert self.title is not None
+        assert self.fields is not None
+        self._set_fields()
+        self._set_exclude()
+        self._set_ordering()
 
     def clean_queryset(self, qs):
         if self._exclude:
