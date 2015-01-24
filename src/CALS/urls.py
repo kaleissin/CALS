@@ -3,14 +3,12 @@ from django.conf import settings
 from django.views.generic import RedirectView
 from django.shortcuts import render
 from django.contrib.auth.views import logout_then_login
+from django.contrib import admin
 
 from nano.user import views as nanouserviews
 
 from CALS.feeds import feeds
 from cals.people.views import auth_login as cals_auth_login
-
-from django.contrib import admin
-admin.autodiscover()
 
 thankyou_params = {
     'template_name': 'cals/thankyou.html', 
