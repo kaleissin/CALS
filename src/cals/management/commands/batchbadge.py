@@ -20,6 +20,32 @@ from meetups.settings import MEETUPS
 
 from cals.people.models import user_unlurked
 
+BUGHUNTERS = (
+    2, 3, 30, 32, 195,
+    87, 52, 90, 82, 86,
+    280, 326, 350, 147, 416,
+    463, 314, 493, 184, 253,
+    736, 750, 614, 472,
+)
+
+TESTBUNNIES = (
+    2, 37,
+)
+
+DREAMERS = (
+    2, 3, 27, 30, 37,
+    195, 123, 52, 90,
+    55, 93, 87, 425,
+)
+
+GHOSTBUSTERS = (
+    556,
+)
+
+FAQERS = (
+    513,    # Portuguese is not in CALS
+)
+
 def batchbadge(badge, models):
     for model in models:
         if badge not in model.badges.all():
@@ -123,7 +149,7 @@ def testbunnies():
     # Cannot use signal
     User = get_user_model()
     badge = Badge.objects.get(name='Test Bunny')
-    testbunny_ids = (2, 37)
+    testbunny_ids = TESTBUNNIES
     testbunnies = User.objects.filter(id__in=testbunny_ids)
     batchbadge(badge, testbunnies)
 
@@ -131,13 +157,7 @@ def bughunters():
     # Cannot use signal
     User = get_user_model()
     badge = Badge.objects.get(name='Bughunter')
-    bughunter_ids = (
-            2, 3, 30, 32, 195,
-            87, 52, 90, 82, 86,
-            280, 326, 350, 147, 416,
-            463, 314, 493, 184, 253,
-            736, 750, 614, 472,
-    )
+    bughunter_ids = BUGHUNTERS
     bughunters = User.objects.filter(id__in=bughunter_ids)
     batchbadge(badge, bughunters)
 
@@ -145,9 +165,7 @@ def ghostbusters():
     # Cannot use signal
     User = get_user_model()
     badge = Badge.objects.get(name='Ghostbuster')
-    ghostbuster_ids = (
-        556,
-    )
+    ghostbuster_ids = GHOSTBUSTERS
     ghostbusters = User.objects.filter(id__in=ghostbuster_ids)
     batchbadge(badge, ghostbusters)
 
@@ -156,11 +174,7 @@ def dreamers():
     # Cannot use signal
     User = get_user_model()
     badge = Badge.objects.get(name='Dreamer')
-    dreamer_ids = (
-            2, 3, 27, 30, 37,
-            195, 123, 52, 90, 
-            55, 93, 87, 425
-    )
+    dreamer_ids = DREAMERS
     dreamers = User.objects.filter(id__in=dreamer_ids)
     batchbadge(badge, dreamers)
 
