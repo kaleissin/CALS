@@ -66,7 +66,7 @@
     </div>
     {% endif %}
 
-    <h1>{% gravatar object 20 %} {{ profile.display_name|default:object.username }}</h1>
+    <h1>{% gravatar object 20 %} {% showuser user %}</h1>
 
     {% if private %}<h2>You</h2>{% endif %}
 
