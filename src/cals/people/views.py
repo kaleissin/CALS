@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 __all__ = [
         'show_people_map',
         'list_people',
@@ -17,12 +19,12 @@ from actstream import action as streamaction
 from django.contrib import auth, messages #.authenticate, auth.login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
-from django.http import HttpResponseRedirect, HttpResponseNotFound
+from django.http import HttpResponseRedirect, HttpResponseNotFound, Http404
 from django.shortcuts import get_object_or_404, render
 from django.utils.encoding import smart_unicode
 from django.utils.timezone import now as tznow
 from django.db.models import Count
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
 
 from cals.people.models import Profile
 from cals.language.models import Language
@@ -31,6 +33,19 @@ from cals.tools import asciify, uslugify
 from cals.forms import UserForm, ProfileForm
 
 from nano.privmsg.models import PM
+
+SOCIAL = {
+        'twitter': {
+                'link': 'http://twitter.com/account/redirect_by_id?id=%s',
+                'icon': 'img/bird_blue_16.png',
+                'provider': 'twitter',
+        },
+        'github': {
+                'link': 'https://github.com/%s',
+                'icon': 'img/blacktocat-16.png',
+                'provider': 'github',
+        }
+}
 
 class CALSError(Exception):
     pass
@@ -50,7 +65,7 @@ def all_people_map(request, *args, **kwargs):
 class ListPeopleView(ListView):
     queryset = get_user_model().objects.filter(profile__is_lurker=False, profile__is_visible=True)
     template_name = 'cals/profile_list.html'
-    http_method_names = [u'get', u'head', u'options', u'trace']
+    http_method_names = ['get', 'head', 'options', 'trace']
 
     def __init__(self, **kwargs):
         super(ListPeopleView, self).__init__(**kwargs)
@@ -78,74 +93,70 @@ class ListPeopleView(ListView):
         return context
 list_people = ListPeopleView.as_view()
 
-def show_profile(request, *args, **kwargs):
-    me = u'people'
-    user = _get_profile(*args, **kwargs)
-    profile = None
-    whereami = request.META.get('PATH_INFO', None)
-    try:
-        profile = user.profile
-    except Profile.DoesNotExist:
-        return HttpResponseNotFound()
+class DetailPeopleView(DetailView):
+    queryset = get_user_model().objects.all()
+    model = get_user_model()
+    context_object_name = 'user'
+    template_name = 'profile_detail.html'
 
-    social_connections = []
-    social_unconnected = []
-    social = {
-            u'twitter': {
-                    u'link': u'http://twitter.com/account/redirect_by_id?id=%s',
-                    u'icon': u'img/bird_blue_16.png',
-                    u'provider': u'twitter',
-            },
-            u'github': {
-                    u'link': u'https://github.com/%s',
-                    u'icon': u'img/blacktocat-16.png',
-                    u'provider': u'github',
-            }
-    }
-    unsocial = set(social.keys())
+    def get_object(self, queryset=None):
+        obj = super(DetailPeopleView, self).get_object(queryset)
+        try:
+            profile = obj.profile
+        except Profile.DoesNotExist:
+            raise Http404("No user found matching the query")
+        return obj
 
-    pms, pms_archived, pms_sent = (), (), ()
-
-    seen = None
-
-    looking_in_the_mirror = request.user == user
-    if looking_in_the_mirror:
-        seen = profile.seen_profile
+    def social(self):
+        user = self.get_object()
+        social_connections = []
+        social_unconnected = []
+        unsocial = set(SOCIAL.keys())
 
         # social
         for sa in user.social_auth.all():
             provider = sa.provider
-            if provider not in social:
+            if provider not in SOCIAL:
                 continue
-            out = social[provider]
-            out[u'connection'] = sa
+            out = SOCIAL[provider]
+            out['connection'] = sa
             social_connections.append(out)
             unsocial.discard(provider)
         for us in unsocial:
-            social_unconnected.append(social[us])
-    
-        # privmsg
-        pms = PM.objects.received(user)
-        pms_archived = PM.objects.archived(user)
-        pms_sent = PM.objects.sent(user)
+            social_unconnected.append(SOCIAL[us])
 
-    data = {'object': user, 
-            'profile': profile, 
-            'me': me, 
-            'seen': seen,
-
-            'private': looking_in_the_mirror,
-
-            'pms': pms,
-            'pms_archived': pms_archived,
-            'pms_sent': pms_sent,
-
+        return {
             'social_connections': social_connections,
             'potential_social_connections': social_unconnected,
-            
-            'whereami': whereami,
-            }
-    return render(request, 'profile_detail.html', data)
+        }
+
+    def pms(self):
+        user = self.get_object()
+        return {
+            'pms': PM.objects.received(user),
+            'pms_archived': PM.objects.archived(user),
+            'pms_sent': PM.objects.sent(user),
+        }
+
+    def get_context_data(self, **context):
+        context = super(DetailPeopleView, self).get_context_data(**context)
+        private = self.request.user == self.object
+        seen = self.object.profile.seen_profile
+        public_context = {
+            'me': 'people',
+            'whereami': self.request.META.get('PATH_INFO', None),
+            'seen': seen,
+            'profile': self.object.profile,
+            'private': private,
+        }
+        private_context = {}
+        if private:
+            private_context.update(self.pms())
+            private_context.update(self.social())
+        context.update(public_context)
+        context.update(private_context)
+        return context
+show_profile = DetailPeopleView.as_view()
 
 @login_required
 def change_profile(request, *args, **kwargs):
@@ -196,7 +207,7 @@ def auth_login(request, *args, **kwargs):
     if request.method == 'POST':
         # 1
         if not request.user.is_authenticated():
-            username = asciify(smart_unicode(request.POST[u'username'], errors='ignore').strip())
+            username = asciify(smart_unicode(request.POST['username'], errors='ignore').strip())
             password = request.POST['password'].strip()
             # 2
             if username and password:

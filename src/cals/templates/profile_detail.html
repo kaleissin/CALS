@@ -2,7 +2,7 @@
 {% load url from future %}
 {% load cals_tags %}
 {% load badge_tags %}
-{% block title %}{{ object.get_profile.display_name|default:object.username }}'s page{% endblock title %}
+{% block title %}{{ object.profile.display_name|default:object.username }}'s page{% endblock title %}
 {% block submenu %}
 <ul>
     <li><a href="../">All people</a></li>
@@ -66,13 +66,13 @@
     </div>
     {% endif %}
 
-    <h1>{% gravatar object 20 %} {% showuser user %}</h1>
+    <h1>{% gravatar object 20 %} {% showuser object %}</h1>
 
     {% if private %}<h2>You</h2>{% endif %}
 
     <table>
         <tr><th>Username:</th><td>{{ object.username }}</td></tr>
-        <tr><th>Link:</th><td><a href="{{ profile.get_absolute_url }}">{{ request.SITE }}{{ profile.get_absolute_url }}</a></td></tr>
+        <tr><th>Link:</th><td><a href="{{ request.build_absolute_uri }}/{{ profile.get_absolute_url }}">{{ request.SITE }}{{ profile.get_absolute_url }}</a></td></tr>
         {% ifequal user.username object.username %}
         <tr class="private"><th>Email:</th>
             <td>{% if object.email %}{{ object.email }}{% else %}None registered{% endif %}
