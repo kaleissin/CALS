@@ -136,7 +136,7 @@ def bughunters():
             87, 52, 90, 82, 86,
             280, 326, 350, 147, 416,
             463, 314, 493, 184, 253,
-            736, 750, 614,
+            736, 750, 614, 472,
     )
     bughunters = User.objects.filter(id__in=bughunter_ids)
     batchbadge(badge, bughunters)
