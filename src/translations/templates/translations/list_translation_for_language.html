@@ -25,7 +25,7 @@
         <div class="plaintext">{% ifequal object.translator request.user %}<a href="/translation/{{ object.exercise.slug }}/language/{{ object.language.slug }}/change">{{ object }}</a>{% else %}{{ object }}{% endifequal %}</div>
         {% if object.interlinear %}{{ object.il_xhtml|safe }}{% endif %}
         </td>
-        <td><a href="{{ object.translator.username }}/">{{ object.translator }}</a></td>
+        <td><a href="/translation/{{ object.slug }}">{{ object.translator }}</a></td>
     </tr>
     {% endfor %}
 </table>

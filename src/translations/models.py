@@ -104,12 +104,16 @@ class Translation(Interlinear):
 
     RE = r'[-_\w]+/language/[-\w]+/[-\w]+/'
 
+    def _generate_slug(self):
+        pattern = '%(exercise)s/language/%(language)s/%(translator)s/'
+        return pattern % {
+                'exercise': self.exercise.slug,
+                'language': self.language.id,
+                'translator': self.translator.id }
+
     def _set_slug(self):
         pattern = '%(exercise)s/language/%(language)s/%(translator)s/'
-        self.slug = pattern % {
-                'exercise': self.exercise.slug, 
-                'language': self.language.slug,
-                'translator': self.translator.profile.slug }
+        self.slug = self._generate_slug()
 
     class Meta:
         db_table = 'cals_translation'
