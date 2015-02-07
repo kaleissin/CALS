@@ -32,6 +32,7 @@ class LangtypeQuerySet(QuerySet):
         return self.filter(natlang=True)
 
 class DefaultLanguageManager(models.Manager):
+    use_for_related_fields = True
     def get_queryset(self):
         return LangtypeQuerySet(self.model).filter(visible=True)
 

@@ -95,7 +95,12 @@ class ListTranslationsForExercise(ListView):
 
     def get_queryset(self):
         self.exercise = get_translationexercise(**self.kwargs)
-        queryset = self.exercise.translations.exclude(translation__isnull=True).exclude(translation='').order_by('language')
+        queryset = (self.exercise.translations
+            .filter(language__visible=True)
+            .exclude(translation__isnull=True)
+            .exclude(translation='')
+            .order_by('language')
+        )
         return queryset
 
     def get_context_data(self, **kwargs):
