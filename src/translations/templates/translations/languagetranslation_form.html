@@ -2,7 +2,7 @@
 {% block title %}Changing {{ user }}{% endblock title %}
 {% block submenu %}
 <ul>
-    <li><a href="/translation/">All</a></li>
+    <li><a href="{% url 'translation-home' %}">All</a></li>
     <li><a href="./">Details</a></li>
     <li><b>Change</b></li>
     <li><a href="./delete">Delete</a></li>

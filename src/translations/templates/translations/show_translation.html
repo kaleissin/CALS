@@ -4,7 +4,7 @@
 {% block title %}Translation of "{{ translation.exercise.name }}" by {{ user }}{% endblock title %}
 {% block submenu %}
 <ul>
-    <li><a href="/translation/">All</a></li>
+    <li><a href="{% url 'translation-home' %}">All</a></li>
     <li><a href="/translation/{{ translation.exercise.slug }}/">All for <b>{{ translation.exercise }}</b></a></li>
     <li><a href="/translation/{{ translation.exercise.slug }}/language/{{ translation.language.slug }}/">All for <b>{{ translation.exercise }}</b> in <b>{{ translation.language }}</b></a></li>
     <li><b>Details</b></li>

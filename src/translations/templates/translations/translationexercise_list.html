@@ -2,7 +2,7 @@
 {% load cals_tags %}
 {% block submenu %}
 <ul>
-    <li><a href="/translation/">All</a></li>
+    <li><a href="{% url 'translation-home' %}">All</a></li>
     <li><b>{{ exercise }}</b></li>
     {% comment %}
     <li><b>All</b></li>

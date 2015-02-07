@@ -8,7 +8,7 @@ EXERCISE_LANG_RE = EXERCISE_RE + LANG_RE
 TRANSLATION_RE = r'^(?P<slug>'+Translation.RE+r')$'
 
 urlpatterns = patterns('translations.views',
-        url(r'^$',                       'list_all_translations'),
+        url(r'^$',                       'list_all_translations', name='translation-home'),
         url(EXERCISE_LANG_RE+r'$',       'list_translation_for_language'), 
         url(EXERCISE_LANG_RE+r'new$',    'add_languagetranslations'), 
         url(EXERCISE_LANG_RE+r'change$', 'change_languagetranslations'), 

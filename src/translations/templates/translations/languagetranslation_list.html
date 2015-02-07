@@ -2,7 +2,7 @@
 {% load cals_tags %}
 {% block submenu %}
 <ul>
-    <li><a href="/translation/">All translations</a></li>
+    <li><a href="{% url 'translation-home' %}">All translations</a></li>
     <li><a href="/language/">All languages</a></li>
     <li><a href="/language/{{ lang.slug }}/">Overview of {{ lang }}</a></li>
 </ul>
