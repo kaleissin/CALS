@@ -1,9 +1,12 @@
 # -*- coding: UTF-8 -*-
 
+from __future__ import unicode_literals
+
 import logging
 _LOG = logging.getLogger(__name__)
 
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.html import escape
 from django.utils.timezone import now as tznow
@@ -14,19 +17,19 @@ from cals.language.models import Language
 
 def get_interlinear(model):
     if not model.interlinear.strip():
-        return u''
+        return ''
     interlinear = model.interlinear
     format = model.il_format
-    if format == u'leipzig':
-        try:     
+    if format == 'leipzig':
+        try:
             from interlinears.leipzig import InterlinearText
         except ImportError, e:
             assert False, e
-            format = u'monospace'
+            format = 'monospace'
         else:
             il = InterlinearText()
             return il.do_text(interlinear)
-    return u'<pre>%s</pre>' % escape(interlinear)
+    return '<pre>%s</pre>' % escape(interlinear)
 
 class Interlinear(models.Model):
     INTERLINEAR_FORMATS = (
@@ -44,11 +47,10 @@ class Interlinear(models.Model):
     def get_interlinear(self):
         return get_interlinear(self)
 
-    def save(self, *args, **kwargs):
+    def save(self, **kwargs):
         new_il = self.get_interlinear()
-        if new_il:
-            self.il_xhtml = new_il
-        super(Interlinear, self).save(*args, **kwargs)
+        self.il_xhtml = new_il if new_il else ''
+        super(Interlinear, self).save(**kwargs)
 
 class TranslationExerciseCategory(models.Model):
     name = models.CharField(max_length=64, unique=True)
@@ -82,13 +84,13 @@ class TranslationExercise(models.Model):
     def __unicode__(self):
         return self.name
 
-    def save(self, user=None, *args, **kwargs):
+    def save(self, user=None, **kwargs):
         if not self.id:
             self.slug = uslugify(self.name)
             if user:
                 self.added_by = user
             self.added = tznow()
-        super(TranslationExercise, self).save(*args, **kwargs)
+        super(TranslationExercise, self).save(**kwargs)
 
 class Translation(Interlinear):
     translation = models.TextField()
@@ -104,17 +106,6 @@ class Translation(Interlinear):
 
     RE = r'[-_\w]+/language/[-\w]+/[-\w]+/'
 
-    def _generate_slug(self):
-        pattern = '%(exercise)s/language/%(language)s/%(translator)s/'
-        return pattern % {
-                'exercise': self.exercise.slug,
-                'language': self.language.id,
-                'translator': self.translator.id }
-
-    def _set_slug(self):
-        pattern = '%(exercise)s/language/%(language)s/%(translator)s/'
-        self.slug = self._generate_slug()
-
     class Meta:
         db_table = 'cals_translation'
         ordering = ('exercise', 'language', 'translator')
@@ -124,11 +115,26 @@ class Translation(Interlinear):
     def __unicode__(self):
         return self.translation
 
+    def get_url_kwargs(self):
+        return {
+            'exercise': self.exercise.slug,
+            'language': self.language.id,
+            'translator': self.translator.id
+        }
+
+    def get_absolute_url(self):
+        return reverse('translation-detail', kwargs=self.get_url_kwargs())
+
+    def get_update_url(self):
+        return reverse('translation-update', kwargs=self.get_url_kwargs())
+
+    def get_delete_url(self):
+        return reverse('translation-delete', kwargs=self.get_url_kwargs())
+
     def save(self, user=None, batch=False, *args, **kwargs):
         if not self.id and user:
             self.translator = user
         if not batch:
             self.last_modified = tznow()
-        self._set_slug()
         super(Translation, self).save(*args, **kwargs)
 

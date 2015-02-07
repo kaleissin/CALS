@@ -22,18 +22,18 @@
             <th>Interlinear?</th>
             <th>Translator</th>
         </tr>
-        {% for object in object_list %}
+        {% for translation in object_list %}
         <tr class="{% cycle odd,even %}">
-            <th><a href="/translation/{{ exercise.slug }}/language/{{ object.language.slug }}/">{{ object.language }}</a></th>
+            <th><a href="{{ translation.get_absolute_url }}">{{ translation.language }}</a></th>
             <td>
-                {% ifequal object.translator request.user %}
-                <a href="/translation/{{ exercise.slug }}/language/{{ object.language.slug }}/change">{{ object }}</a>
+                {% ifequal translation.translator request.user %}
+                <a href="{{ translation.get_update_url }}">{{ translation }}</a>
                 {% else %}
-                {{ object }}
+                {{ translation }}
                 {% endifequal %}
             </td>
-            <td>{% if object.interlinear %}Yes{% else %}No{% endif %}</td>
-            <td>{% showuser object.translator.profile %}</td>
+            <td>{% if translation.interlinear %}Yes{% else %}No{% endif %}</td>
+            <td>{% showuser translation.translator.profile %}</td>
         </tr>
         {% endfor %}
 </table>

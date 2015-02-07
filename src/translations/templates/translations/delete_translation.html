@@ -7,9 +7,9 @@
     <li><a href="{% url 'translation-home' %}">All</a></li>
     <li><a href="/translation/{{ translation.exercise.slug }}/">All for <b>{{ translation.exercise }}</b></a></li>
     <li><a href="/translation/{{ translation.exercise.slug }}/language/{{ translation.language.slug }}/">All for <b>{{ translation.exercise }}</b> in <b>{{ translation.language }}</b></a></li>
-    <li><a href="/translation/{{ translation.exercise.slug }}/language/{{ translation.language.slug }}/{{ user.slug }}/">Details</a></li>
+    <li><a href="{{ translation.get_absolute_url }}">Details</a></li>
     {% ifequal user translation.translator %}
-    <li><a href="../change">Change</a></li>
+    <li><a href="{{ translation.get_update_url }}">Change</a></li>
     <li><b>Delete</b></li>
     {% endifequal %}
 </ul>
@@ -36,7 +36,7 @@
 <form method="post" action="">
     {% csrf_token %}
     <input type="submit" value="Yes, delete it" />
-    <a href="/translation/{{ translation.exercise.slug }}/language/{{ translation.language.slug }}/{{ user.username }}/">No, keep it</a>
+    <a href="{{ translation.get_absolute_url }}">No, keep it</a>
 </form>
 
 {% endblock content %}

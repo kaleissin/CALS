@@ -3,9 +3,9 @@
 {% block submenu %}
 <ul>
     <li><a href="{% url 'translation-home' %}">All</a></li>
-    <li><a href="./">Details</a></li>
+    <li><a href="{{ translation.get_absolute_url }}">Details</a></li>
     <li><b>Change</b></li>
-    <li><a href="./delete">Delete</a></li>
+    <li><a href="{{ translation.get_delete_url }}">Delete</a></li>
 </ul>
 {% endblock submenu %}
 {% block content %}
@@ -14,7 +14,7 @@
 <div class="help">{{ exercise.comment|safe }}</div>
 {% endif %}
 
-<form action="" method="post">
+<form action="." method="post">
 {% csrf_token %}
 <table>
     <tr>

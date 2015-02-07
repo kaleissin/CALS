@@ -9,8 +9,8 @@
     <li><a href="/translation/{{ translation.exercise.slug }}/language/{{ translation.language.slug }}/">All for <b>{{ translation.exercise }}</b> in <b>{{ translation.language }}</b></a></li>
     <li><b>Details</b></li>
     {% ifequal user translation.translator %}
-    <li><a href="../change">Change</a></li>
-    <li><a href="../delete">Delete</a></li>
+    <li><a href="{{ translation.get_update_url }}">Change</a></li>
+    <li><a href="{{ translation.get_delete_url }}">Delete</a></li>
     {% endifequal %}
 </ul>
 {% endblock submenu %}

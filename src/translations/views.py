@@ -3,8 +3,10 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, Http404
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404, render
-from django.views.generic import ListView, DeleteView
+from django.views.generic import ListView, DetailView
+from django.views.generic import DeleteView, UpdateView, CreateView
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth import get_user_model
 
 import logging
 _LOG = logging.getLogger(__name__)
@@ -70,89 +72,6 @@ def list_translation_for_language(request, *args, **kwargs):
             'me': me,}
     return render(request, template, data)
 
-def show_translation_for_language(request, *args, **kwargs):
-    """Show a specific translation by a specific user for a specific
-    language."""
-
-    # TODO: Allow several translations per person?
-    me = 'translation'
-    template = 'translations/show_translation.html'
-    slug = kwargs['slug']
-    # Bizarro error. This line *should* return the same as the next, but
-    # it doesn't
-    #trans = get_object_or_404(Translation, language=lang, exercise=exercise, translator=user)
-    try:
-        trans = Translation.objects.get(slug=slug)
-    except Translation.DoesNotExist:
-        raise Http404
-    data = {'lang': trans.language,
-            'translation': trans,
-            'me': me,}
-    return render(request, template, data)
-
-@login_required
-def add_languagetranslations(request, *args, **kwargs):
-    """Add a specific translation by a specific user for a specific
-    language."""
-
-    me = 'translation'
-    template = 'translations/languagetranslation_form.html'
-    help_message = ''
-    lang = get_language(**kwargs)
-    exercise = get_translationexercise(**kwargs)
-    user = request.user
-    try:
-        Translation.objects.get(exercise=exercise, language=lang, translator=user)
-    except Translation.DoesNotExist:
-        pass
-    else:
-        return HttpResponseRedirect('/translation/%s/language/%s/change' % (exercise.slug, lang.slug))
-    form = TranslationForm()
-    if request.method == 'POST':
-        form = TranslationForm(request.POST)
-        if form.is_valid():
-            trans = form.save(commit=False)
-            trans.translator = user
-            trans.language = lang
-            trans.exercise = exercise
-            trans.save(user=request.user)
-            return HttpResponseRedirect('/translation/%s/language/%s/' %
-                    (trans.exercise.slug, lang.slug))
-        else:
-            error = 'Form not valid'
-    trans = lang.translations.exclude(translation__isnull=True).exclude(translation='')
-    data = {'form': form,
-            'exercise': exercise,
-            'help_message': help_message,
-            'me': me}
-    return render(request, template, data)
-
-@login_required
-def change_languagetranslations(request, *args, **kwargs):
-    """Change a specific translation by a specific user for a specific
-    language."""
-
-    me = 'translation'
-    template = 'translations/languagetranslation_form.html'
-    help_message = ''
-    lang = get_language(**kwargs)
-    exercise = get_translationexercise(**kwargs)
-    #trans = Translation.objects.get(language=lang, translator=request.user, exercise=exercise)
-    try:
-        trans = lang.translations.get(translator=request.user, exercise=exercise)
-    except Translation.DoesNotExist:
-        raise Http404
-    form = TranslationForm(instance=trans)
-    if request.method == 'POST':
-        form = TranslationForm(data=request.POST, instance=trans)
-        if form.is_valid():
-            trans = form.save()
-            return HttpResponseRedirect('./%s/' % request.user)
-    data = {'form': form,
-            'exercise': exercise, 'help_message': help_message,
-            'me': me}
-    return render(request, template, data)
-
 
 class ListAllTranslationView(ListView):
     """List all translations."""
@@ -201,32 +120,120 @@ class ListTranslationsForExercise(ListView):
 show_translationexercise = ListTranslationsForExercise.as_view()
 
 
-class DeleteTranslationForLanguageView(DeleteView):
+class CreateTranslationView(CreateView):
+    """Add a specific translation by a specific user for a specific
+    language."""
+    model = Translation
+    template_name = 'translations/languagetranslation_form.html'
+    form_class = TranslationForm
+
+    def get_success_url(self):
+        return self.object.get_absolute_url()
+
+    def get_context_data(self, **context):
+        context = super(CreateTranslationView, self).get_context_data(**context)
+        new_context = {
+            'me': 'translation',
+            'exercise': get_translationexercise(**self.kwargs),
+            'language': get_language(**self.kwargs),
+        }
+        context.update(new_context)
+        return context
+
+    def form_valid(self, form):
+        trans = form.save(commit=False)
+        trans.translator = self.request.user
+        exercise = self.kwargs['exercise']
+        trans.exercise = TranslationExercise.objects.get(slug=exercise)
+        language = self.kwargs['language']
+        trans.language = Language.objects.get(slug=language)
+        trans.save(user=self.request.user)
+        return HttpResponseRedirect(trans.get_absolute_url())
+add_languagetranslations = login_required(CreateTranslationView.as_view())
+
+
+class TranslationMixin(object):
+    model = Translation
+    slug_url_kwarg = 'exercise'
+    form_class = TranslationForm
+
+    def get_language(self):
+        language_id = self.kwargs['language']
+        return Language.objects.get(id=language_id)
+
+    def get_exercise(self):
+        exercise = self.kwargs['exercise']
+        return TranslationExercise.objects.get(slug=exercise)
+
+    def get_translator(self):
+        translator_id = self.kwargs['translator']
+        return get_user_model().objects.get(id=translator_id)
+
+    def get_queryset(self):
+        exercise = self.kwargs['exercise']
+        language_id = self.kwargs['language']
+        translator_id = self.kwargs['translator']
+        qs = self.model.objects.filter(
+            language__id=language_id,
+            exercise__slug=exercise,
+            translator__id=translator_id,
+        )
+        return qs
+
+    def get_object(self, queryset=None):
+        if queryset is None:
+            queryset = self.get_queryset()
+        if not queryset:
+            kwargs = {'verbose_name': queryset.model._meta.verbose_name}
+            raise Http404("No %(verbose_name)s found matching the query" % kwargs)
+        return queryset.get()
+
+    def get_context_data(self, **context):
+        context = super(TranslationMixin, self).get_context_data(**context)
+        new_context = {
+            'me': 'translation',
+            'exercise': self.get_exercise(),
+            'language': self.get_language(),
+            'translator': self.get_translator(),
+        }
+        context.update(new_context)
+        return context
+
+
+class DetailTranslationView(TranslationMixin, DetailView):
+    """Show a specific translation by a specific user for a specific
+    language."""
+    template_name = 'translations/show_translation.html'
+show_translation_for_language = DetailTranslationView.as_view()
+
+
+class ChangeTranslationMixin(TranslationMixin):
+
+    def get_queryset(self):
+        translator = self.get_translator()
+        if translator != self.request.user:
+            raise PermissionDenied
+        queryset = super(ChangeTranslationMixin, self).get_queryset()
+        return queryset.filter(translator=self.get_translator())
+
+
+class UpdateTranslationView(ChangeTranslationMixin, UpdateView):
+    """Change a specific translation by a specific user for a specific
+    language."""
+    template_name = 'translations/languagetranslation_form.html'
+
+    def get_success_url(self):
+        return self.object.get_absolute_url()
+change_languagetranslations = login_required(UpdateTranslationView.as_view())
+
+
+class DeleteTranslationForLanguageView(ChangeTranslationMixin, DeleteView):
     """Delete a specific translation for a specific language."""
 
     template_name = 'translations/delete_translation.html'
     context_object_name = 'translation'
 
-    def get_context_data(self, **kwargs):
-        context = super(DeleteTranslationForLanguageView, self).get_context_data(**kwargs)
-        context['me'] = 'translation'
-        return context
-
     def get_success_url(self):
-        success_url = "/translation/language/%s/" % self.lang.slug
+        success_url = "/translation/language/%s/" % self.get_language().slug
         return success_url
-
-    def get_object(self, queryset=None):
-        # XXX: While deciding on how to replace login_required()
-        if not self.request.user.is_authenticated():
-            raise PermissionDenied
-        self.lang = get_language(**self.kwargs)
-        exercise = get_translationexercise(**self.kwargs)
-        try:
-            trans = Translation.objects.get(language=self.lang, translator=self.request.user, exercise=exercise)
-        except Translation.DoesNotExist:
-            raise Http404("No %(verbose_name)s found matching the query" %
-                            {'verbose_name':
-                            Translation._meta.verbose_name})
-        return trans
 delete_languagetranslations = DeleteTranslationForLanguageView.as_view()

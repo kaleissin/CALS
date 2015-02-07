@@ -3,8 +3,8 @@
 {% block submenu %}
 <ul>
     <li><a href="/language/">All</a></li>
-    <li><a href="../../">Details</a></li>
-    <li><a href="./change">Change</a></li>
+    <li><a href="{{ object.get_absolute_url }}">Details</a></li>
+    <li><a href="{{ object.get_update_url }}">Change</a></li>
     <li><b>Delete</b></li>
 </ul>
 {% endblock submenu %}
@@ -25,7 +25,7 @@
         <td>
             <form action="" method="post"><input type="submit" value="Yes, I'm sure" />
             {% csrf_token %}
-            <a href="../">No, oops, changed my mind</a>
+            <a href="{{ object.get_absolute_url }}">No, oops, changed my mind</a>
             </form>
         </td>
     </tr>

@@ -9,29 +9,29 @@
 </ul>
 {% endblock submenu %}
 {% block content %}
-{% for object in object_list %}
+{% for exercise in object_list %}
 <dl>
-    <dt class="{% cycle 'odd' 'even' %}"><a href="/translation/{{ object.slug }}/">{{ object }}</a> 
-    ({{ object.translations.count }} translation{{ object.translations.count|pluralize }})
+    <dt class="{% cycle 'odd' 'even' %}"><a href="/translation/{{ exercise.slug }}/">{{ exercise }}</a> 
+    ({{ exercise.translations.count }} translation{{ exercise.translations.count|pluralize }})
     </dt>
-    {% if object.translations.count %}
+    {% if exercise.translations.count %}
     <dd>
         <table>
-            <tr> <th class="langname">English:</th><td class="plaintext">{{ object.exercise }}</td></tr>
+            <tr> <th class="langname">English:</th><td class="plaintext">{{ exercise.exercise }}</td></tr>
             <tr>
-            {% with object.translations.latest as translation %}
-                <th class="langname"><a href="{{ object.slug }}/language/{{ translation.language.slug }}/{{ translation.translator.profile.slug }}/">{{ translation.language }}</a>:</th>
-                <td class="plaintext">{% ifequal translation.translator user %}<a href="/translation/{{ translation.exercise.slug }}/language/{{ translation.language.slug }}/change">{{ translation }}</a>{% else %}{{ translation }}{% endifequal %}</td>
+            {% with exercise.translations.latest as translation %}
+                <th class="langname"><a href="{{ translation.get_absolute_url }}">{{ translation.language }}</a>:</th>
+                <td class="plaintext">{% ifequal translation.translator user %}<a href="{{ translation.get_update_url }}">{{ translation }}</a>{% else %}{{ translation }}{% endifequal %}</td>
             {% endwith %}
             </tr>
         </table>
     {% comment %}
         <table>
-        {% for translation in object.translations.all %}
+        {% for translation in exercise.translations.all %}
             <tr>
-                <td class="langname"><a href="{{ object.slug }}/language/{{ translation.language.slug }}/{{ translation.translator.profile.slug }}/">{{ translation.language }}</a>:</td>
+                <td class="langname"><a href="{{ exercise.slug }}/language/{{ translation.language.slug }}/{{ translation.translator.profile.slug }}/">{{ translation.language }}</a>:</td>
                 <td>
-<div class="plaintext">{% ifequal translation.translator user %}<a href="/translation/{{ translation.exercise.slug }}/language/{{ translation.language.slug }}/change">{{ translation }}</a>{% else %}{{ translation }}{% endifequal %}</div>
+<div class="plaintext">{% ifequal translation.translator user %}<a href="{{ translation.get_update_url}}">{{ translation }}</a>{% else %}{{ translation }}{% endifequal %}</div>
                 </td>
             </tr>
         {% endfor %}

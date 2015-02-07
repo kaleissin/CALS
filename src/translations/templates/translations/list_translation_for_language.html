@@ -19,13 +19,13 @@
         <th><h2>Translation</h2></th>
         <th><h2>Translator</h2></th>
     </tr>
-    {% for object in object_list %}
+    {% for translation in object_list %}
     <tr class="{% cycle odd,even %}">
         <td>
-        <div class="plaintext">{% ifequal object.translator request.user %}<a href="/translation/{{ object.exercise.slug }}/language/{{ object.language.slug }}/change">{{ object }}</a>{% else %}{{ object }}{% endifequal %}</div>
-        {% if object.interlinear %}{{ object.il_xhtml|safe }}{% endif %}
+        <div class="plaintext">{% ifequal translation.translator request.user %}<a href="{{ translation.get_update_url }}">{{ translation }}</a>{% else %}{{ translation }}{% endifequal %}</div>
+        {% if translation.interlinear %}{{ translation.il_xhtml|safe }}{% endif %}
         </td>
-        <td><a href="/translation/{{ object.slug }}">{{ object.translator }}</a></td>
+        <td><a href="{{ translation.get_absolute_url }}">{{ translation.translator }}</a></td>
     </tr>
     {% endfor %}
 </table>
