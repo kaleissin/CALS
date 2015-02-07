@@ -180,7 +180,6 @@ PROJECT_APPS = (
     'cals',
     'nano.countries',
 #    'languages',
-    'phonemes',
     'wordlist',
 
     'verification',

@@ -9,7 +9,6 @@ from django.contrib.auth import get_user_model
 from cals.models import *
 from translations.models import *
 from RelayMuseum.relay.models import *
-from phonemes.models import Sound
 from nano.badge.models import Badge
 from nano.tools import get_profile_model
 from nano.privmsg.models import PM
@@ -223,12 +222,6 @@ def ring_masters():
     batchbadge(badge, ring_masters)
 
 # -- comments
-def phoneticians():
-    badge = Badge.objects.get(name='Phonetician')
-    phoneticians = [comment.user for comment in Comment.objects.all()
-            if comment.content_type.model_class() == Sound] 
-    batchbadge(badge, phoneticians)
-
 def critics():
     badge = Badge.objects.get(name='Critic')
     critics = [comment.user for comment in Comment.objects.all()]
