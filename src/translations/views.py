@@ -38,7 +38,8 @@ class ListLanguageTranslationView(ListView):
     def get_queryset(self):
         lang = get_language(**self.kwargs)
         trans = lang.translations.exclude(translation__isnull=True).exclude(translation='')
-        exercises = TranslationExercise.objects.exclude(translations__language=lang)
+        exercises = TranslationExercise.objects.exclude(
+            translations__language=lang)
         if self.request.user.is_authenticated():
             exercises = exercises.exclude(translations__translator=self.request.user)
         self.exercises = exercises
@@ -64,7 +65,11 @@ def list_translation_for_language(request, *args, **kwargs):
     template = 'translations/list_translation_for_language.html'
     lang = get_language(**kwargs)
     exercise = get_translationexercise(**kwargs)
-    trans = Translation.objects.filter(language=lang, exercise=exercise)
+    trans = Translation.objects.filter(
+        language=lang,
+        language__visible=True,
+        exercise=exercise
+    )
     data = {'exercise': exercise,
             'lang': lang,
             'object_list': trans,
@@ -151,7 +156,7 @@ class CreateTranslationView(CreateView):
         exercise = self.kwargs['exercise']
         trans.exercise = TranslationExercise.objects.get(slug=exercise)
         language = self.kwargs['language']
-        trans.language = Language.objects.get(slug=language)
+        trans.language = get_object_or_404(Language, slug=language)
         trans.save(user=self.request.user)
         return HttpResponseRedirect(trans.get_absolute_url())
 add_languagetranslations = login_required(CreateTranslationView.as_view())
@@ -164,15 +169,15 @@ class TranslationMixin(object):
 
     def get_language(self):
         language_id = self.kwargs['language']
-        return Language.objects.get(id=language_id)
+        return get_object_or_404(Language, id=language_id)
 
     def get_exercise(self):
         exercise = self.kwargs['exercise']
-        return TranslationExercise.objects.get(slug=exercise)
+        return get_object_or_404(TranslationExercise, slug=exercise)
 
     def get_translator(self):
         translator_id = self.kwargs['translator']
-        return get_user_model().objects.get(id=translator_id)
+        return get_object_or_404(get_user_model(), id=translator_id)
 
     def get_queryset(self):
         exercise = self.kwargs['exercise']
