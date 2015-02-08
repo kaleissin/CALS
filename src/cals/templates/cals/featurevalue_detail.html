@@ -11,7 +11,7 @@
         <tr><th>Category:</th><td colspan="2">{{ object.feature.category }}</td></tr>
         <tr><th>Feature:</th><td colspan="2"><a href="/feature/{{ object.feature.id }}/">{{ object.feature }}</a> {% wals object.feature.id %}</td></tr>
         <tr><th>Name:</th><td colspan="2">{{ object }}</td></tr>
-        <tr><th>Languages ({{ object.languagefeature_set.count }}):</th>
+        <tr><th>Languages ({{ object.languages.count }}):</th>
             <td><br />
                 <table>
                     <tr><th colspan="2">Conlangs ({{ conlangs.count }}):</th></tr>
