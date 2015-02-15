@@ -92,6 +92,11 @@ class TranslationExercise(models.Model):
             self.added = tznow()
         super(TranslationExercise, self).save(**kwargs)
 
+class TranslationManager(models.Manager):
+    def get_queryset(self):
+        qs = super(TranslationManager, self).get_queryset()
+        return qs.select_related('language').filter(language__visible=True)
+
 class Translation(Interlinear):
     translation = models.TextField()
     exercise = models.ForeignKey(TranslationExercise, related_name='translations')
@@ -103,6 +108,11 @@ class Translation(Interlinear):
     slug = models.SlugField(max_length=255, editable=False, blank=True)
     added = models.DateTimeField(default=tznow, editable=False)
     last_modified = models.DateTimeField(default=tznow, editable=False)
+
+    _default_manager = TranslationManager()
+    _base_manager = _default_manager
+    objects = _default_manager
+    all_translations = models.Manager()
 
     RE = r'[-_\w]+/language/[-\w]+/[-\w]+/'
 

@@ -257,7 +257,12 @@ def greet(user, lang):
 def greetings(user):
     greetings = cache.get('greetings')
     if not greetings:
-        greetings = [greeting for greeting in Translation.objects.filter(exercise__id=1, translation__isnull=False)]
+        translations = Translation.objects.filter(
+            language__visible=True,
+            exercise__id=1,
+            translation__isnull=False,
+        )
+        greetings = [greeting for greeting in translations]
         cache.set('greetings', greetings, 60**2)
     tran = choice(tuple(greetings))
     greeting = _make_greet_link(tran, _make_userlink(user))
