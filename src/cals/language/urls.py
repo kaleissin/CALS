@@ -20,12 +20,6 @@ urlpatterns = patterns('tagtools.views',
         url(r'^tag/(?P<tag>[-\w\d]+)/$', 'tagged_object_list', tags_language_dict),
 )
 
-#urlpatterns += patterns('django.views.generic',
-# #        url(r'^latest/$', 'date_based.archive_index', language_by_date),
-# #        url(r'^(?P<year>\d{4})/$',            'date_based.archive_year', language_by_year),
-        #(r'^(?P<year>\d{4})/w(?P<week>[a-z]{3})/$', 'date_based.archive_week', language_by_week),
-#)
-
 urlpatterns += patterns('',
         url(LANG_RE+r'comment/', include('nano.comments.urls', app_name='language'),
                 {'model': Language, 
@@ -33,24 +27,6 @@ urlpatterns += patterns('',
                 'object_field': 'slug',
                 'extra_context': {'me': 'language'}}),
 )
-# language
-# language_detail_dict = {
-#         'queryset': Language.objects.all().select_related(),
-#         'extra_context': { 'me': 'language' },
-# }
-
-language_by_year = {
-        'queryset': Language.objects.all().order_by('-last_modified'),
-        'date_field': 'last_modified',
-        'make_object_list': True,
-        'extra_context': { 'me': 'language' },
-        }
-
-language_by_date = {
-        'queryset': Language.objects.all().order_by('-last_modified'),
-        'date_field': 'last_modified',
-        'extra_context': { 'me': 'language' },
-        }
 
 urlpatterns += patterns('cals.language.views',
         url(LANG_RE+r'feature/$',              'show_features_for_language'),
