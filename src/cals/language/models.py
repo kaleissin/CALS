@@ -232,7 +232,7 @@ class Language(models.Model):
         if not self.internal_name:
             self.internal_name = self.name
             self.name = asciify(self.name)
-        self.slug = uslugify(self.name)
+        self.slug = self.get_slug()
 
         if not self.manager:
             self.manager = self.added_by or user
@@ -287,6 +287,9 @@ class Language(models.Model):
         if len(self.editors.filter(id=profile.user.id)):
             return True
         return False
+
+    def get_slug(self):
+        return uslugify(self.name)
 
     def get_name(self):
         if self.internal_name:

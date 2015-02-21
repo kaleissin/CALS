@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 import logging
 _LOG = logging.getLogger(__name__)
 _LOG.info(__name__)
@@ -9,14 +11,16 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib import messages #.authenticate, auth.login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
+from django.db import transaction
+from django.db.models import Q
 from django.http import (HttpResponseRedirect,
         HttpResponseNotFound,
         HttpResponseForbidden,
         Http404)
 from django.shortcuts import get_object_or_404, render, redirect
 from django.template.loader import render_to_string
+from django.utils.html import escape
 from django.views.generic import ListView
-from django.db.models import Q
 
 from paginators.stringpaginator import SingleLetterPaginator, InvalidPage
 from paginators import Paginator
@@ -236,6 +240,13 @@ def set_featurevalues_for_lang(lang, valuelist):
 def set_tags_for_lang(tags, lang):
     return set_tags_for_model(tags, lang)
 
+def language_exists(name):
+    slug = uslugify(name)
+    langs = Language.all_langs.filter(slug=slug)
+    if not langs:
+        return False
+    return True
+
 @login_required
 def create_language(request, lang=None, fvlist=None, clone=False, *args, **kwargs):
     me = 'language'
@@ -267,38 +278,47 @@ def create_language(request, lang=None, fvlist=None, clone=False, *args, **kwarg
     if request.method == 'POST':
         langform = LanguageForm(data=request.POST, initial=request.POST)
         if langform.is_valid():
-            lang = langform.save(commit=False)
-            lang.added_by = user
-            lang.last_modified_by = user
-            if not lang.manager:
-                lang.manager = user
-            # Must save early since is foreign-key in many other tables
-            lang.save(user=user, solo=False)
-            # Save tags if any
-            lang, tags_changed = set_tags_for_lang(langform.cleaned_data['tags'], lang)
-            # Set editors
-            editorform = EditorForm(data=request.POST, instance=lang)
-            if editorform.is_valid():
-                editorform.save()
-            # greeting
-            if lang.greeting:
-                # use signal instead?
-                greetingexercise = TranslationExercise.objects.get(id=1)
-                trans = Translation(translation=lang.greeting, language=lang,
-                        translator=user, exercise=greetingexercise)
-                trans.save()
+            with transaction.atomic():
+                lang = langform.save(commit=False)
+                if language_exists(lang.name):
+                    url = '/language/%s/' % lang.get_slug()
+                    msg = '''A language named <a href="%s">%s</a> already
+                    exists, you should edit that one or change the name of
+                    this one''' % (url, escape(lang.name))
+                    messages.error(request, msg)
+                else:
+                    # Good, not a dupe
+                    lang.added_by = user
+                    lang.last_modified_by = user
+                    if not lang.manager:
+                        lang.manager = user
+                    # Must save early since is foreign-key in many other tables
+                    lang.save(user=user, solo=False)
+                    # Save tags if any
+                    lang, tags_changed = set_tags_for_lang(langform.cleaned_data['tags'], lang)
+                    # Set editors
+                    editorform = EditorForm(data=request.POST, instance=lang)
+                    if editorform.is_valid():
+                        editorform.save()
+                    # greeting
+                    if lang.greeting:
+                        # use signal instead?
+                        greetingexercise = TranslationExercise.objects.get(id=1)
+                        trans = Translation(translation=lang.greeting, language=lang,
+                                translator=user, exercise=greetingexercise)
+                        trans.save()
 
-            # values
-            lang = set_featurevalues_for_lang(lang, request.POST.getlist(u'value'))
+                    # values
+                    lang = set_featurevalues_for_lang(lang, request.POST.getlist(u'value'))
 
-            # Final save
-            lang.save(user=user)
-            if cloned_from_lang:
-                streamaction.send(request.user, verb='cloned the language', action_object=cloned_from_lang, target=lang)
-            else:
-                streamaction.send(request.user, verb='added the language', action_object=lang)
-            messages.info(request, u'You successfully added the language %s to CALS' % lang.name)
-            return HttpResponseRedirect('/language/%s/' % lang.slug)
+                    # Final save
+                    lang.save(user=user)
+                    if cloned_from_lang:
+                        streamaction.send(request.user, verb='cloned the language', action_object=cloned_from_lang, target=lang)
+                    else:
+                        streamaction.send(request.user, verb='added the language', action_object=lang)
+                    messages.info(request, u'You successfully added the language %s to CALS' % lang.name)
+                    return HttpResponseRedirect('/language/%s/' % lang.slug)
         else:
             if not clone:
                 error = "Couldn't store language-description: " + str(langform.errors)
@@ -332,6 +352,7 @@ def clone_language(request, *args, **kwargs):
     _, payload = dispatch_langslugs(request, single_lang, multi_lang, *args, **kwargs)
 
     return payload
+
 
 def _change_editors_managers(request, manager_then, lang, langform):
     # editors and managers
@@ -371,6 +392,7 @@ def change_language(request, *args, **kwargs):
     me = 'language'
     state = 'change'
     lang = _get_lang(*args, **kwargs)
+    old_name = lang.name
     user = request.user
 
     may_edit, (is_admin, is_manager) = may_edit_lang(user, lang)
@@ -395,47 +417,56 @@ def change_language(request, *args, **kwargs):
         langform = LanguageForm(data=request.POST, instance=lang, initial=request.POST)
         try:
             if langform.is_valid():
-                new_lang = langform.save(commit=False)
-                _LOG.info('Actually changing %s!', lang)
-
-                lang = _change_editors_managers(request, manager, new_lang, langform)
-
-                lang.last_modified_by = user
-
-                # break out in separate function
-                # greeting
-                greetingexercise = TranslationExercise.objects.get(id=1)
-                new_greeting = lang.greeting
-                try:
-                    greetingtrans = Translation.objects.get(language=lang, exercise=greetingexercise,
-                            translator=user)
-                except Translation.DoesNotExist:
-                    greetingtrans = None
-                if new_greeting:
-                    if greetingtrans:
-                        if new_greeting != greetingtrans.translation:
-                            greetingtrans.translation = new_greeting
+                with transaction.atomic():
+                    new_lang = langform.save(commit=False)
+                    new_name = new_lang.name
+                    if new_name != old_name and language_exists(new_name):
+                        new_name = escape(new_name)
+                        url = '/language/%s/' % lang.get_slug()
+                        msg = '''The name "%s" is taken,
+                        see <a href="%s">%s</a>''' % (new_name, url, new_name)
+                        messages.error(request, msg)
                     else:
-                        Translation.objects.create(language=lang,
-                                exercise=greetingexercise, translator=user,
-                                translation=new_greeting)
-                else:
-                    if greetingtrans:
-                        greetingtrans.delete()
-    #             # more info
-    #             moreinfoformset = ExternalInfoFormSet(request.POST)
-    #             if moreinfoformset.is_valid():
-    #                 moreinfo = moreinfoformset.save()
-    #                 assert False, moreinfo
-    #
-                # values
-                lang = set_featurevalues_for_lang(lang, request.POST.getlist(u'value'))
+                        _LOG.info('Actually changing %s!', lang)
 
-                # Final save
-                lang.save(user=user)
-                lang, tags_changed = set_tags_for_lang(langform.cleaned_data['tags'], lang)
-                streamaction.send(user, verb='updated', action_object=lang)
-                return HttpResponseRedirect('.')
+                        lang = _change_editors_managers(request, manager, new_lang, langform)
+
+                        lang.last_modified_by = user
+
+                        # break out in separate function
+                        # greeting
+                        greetingexercise = TranslationExercise.objects.get(id=1)
+                        new_greeting = lang.greeting
+                        try:
+                            greetingtrans = Translation.objects.get(language=lang, exercise=greetingexercise,
+                                    translator=user)
+                        except Translation.DoesNotExist:
+                            greetingtrans = None
+                        if new_greeting:
+                            if greetingtrans:
+                                if new_greeting != greetingtrans.translation:
+                                    greetingtrans.translation = new_greeting
+                            else:
+                                Translation.objects.create(language=lang,
+                                        exercise=greetingexercise, translator=user,
+                                        translation=new_greeting)
+                        else:
+                            if greetingtrans:
+                                greetingtrans.delete()
+            #             # more info
+            #             moreinfoformset = ExternalInfoFormSet(request.POST)
+            #             if moreinfoformset.is_valid():
+            #                 moreinfo = moreinfoformset.save()
+            #                 assert False, moreinfo
+            #
+                        # values
+                        lang = set_featurevalues_for_lang(lang, request.POST.getlist(u'value'))
+
+                        # Final save
+                        lang.save(user=user)
+                        lang, tags_changed = set_tags_for_lang(langform.cleaned_data['tags'], lang)
+                        streamaction.send(user, verb='updated', action_object=lang)
+                        return HttpResponseRedirect('.')
             else:
                 error = "Couldn't change language-description: " + str(langform.errors)
                 messages.error(request, error)
