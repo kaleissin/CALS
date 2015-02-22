@@ -105,7 +105,6 @@ class Translation(Interlinear):
         settings.AUTH_USER_MODEL,
         related_name='translations'
     )
-    slug = models.SlugField(max_length=255, editable=False, blank=True)
     added = models.DateTimeField(default=tznow, editable=False)
     last_modified = models.DateTimeField(default=tznow, editable=False)
 
@@ -113,8 +112,6 @@ class Translation(Interlinear):
     _base_manager = _default_manager
     objects = _default_manager
     all_translations = models.Manager()
-
-    RE = r'[-_\w]+/language/[-\w]+/[-\w]+/'
 
     class Meta:
         db_table = 'cals_translation'
