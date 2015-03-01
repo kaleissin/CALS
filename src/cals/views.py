@@ -189,9 +189,11 @@ def search_languages(request, *args, **kwargs):
 
     if raw_q:
         if q:
-            ls = Language.objects.filter(id__in=[ln.language.id for ln in LanguageName.objects.find(q, anywhere)])
+            lns = LanguageName.objects.find(q, anywhere)
         else:
-            ls = Language.objects.filter(id__in=[ln.language.id for ln in LanguageName.objects.filter(slug='')])
+            lns = LanguageName.objects.filter(slug='')
+        lns = lns.select_related('language').filter(language__visible=True)
+        ls = Language.objects.filter(id__in=[ln.language.id for ln in lns])
         ls = ls.order_by()
     else:
         ls = []
