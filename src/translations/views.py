@@ -134,7 +134,6 @@ class CreateTranslationView(CreateView):
     """Add a specific translation by a specific user for a specific
     language."""
     model = Translation
-    template_name = 'translations/languagetranslation_form.html'
     form_class = TranslationForm
 
     def get_success_url(self):
@@ -230,7 +229,6 @@ class ChangeTranslationMixin(TranslationMixin):
 class UpdateTranslationView(ChangeTranslationMixin, UpdateView):
     """Change a specific translation by a specific user for a specific
     language."""
-    template_name = 'translations/languagetranslation_form.html'
 
     def get_success_url(self):
         return self.object.get_absolute_url()
