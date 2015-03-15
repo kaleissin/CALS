@@ -1,8 +1,7 @@
 from django.conf.urls import *
 from . import views
-from .settings import MEETUPS
 
-MEETUP_RE = '^(?P<group>(%s))/' % '|'.join(MEETUPS.keys())
+MEETUP_RE = '^(?P<group>[-a-z0-9])/'
 
 urlpatterns = patterns('',
     url(MEETUP_RE + '$', views.meetup_activate, name='meetup-activate'),

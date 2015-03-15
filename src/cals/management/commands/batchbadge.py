@@ -15,7 +15,7 @@ from nano.privmsg.models import PM
 from nano.mark.models import *
 from nano.comments.models import Comment
 from verification.models import Key, KeyGroup
-from meetups.settings import MEETUPS
+from meetups.models import Meetup
 
 from cals.people.models import user_unlurked
 
@@ -237,10 +237,9 @@ def timetravellers():
 
 # -- meetups
 def meetups():
-    for keygroup, setup in MEETUPS.items():
-        badge_dict = setup['badge']
-        badge = Badge.objects.get(name=badge_dict['name'])
-        keygroup = KeyGroup.objects.get(name=keygroup)
+    for meetup in Meetup.objects.all():
+        badge = meetup.badge
+        keygroup = meetup.keygroup
         showed_up = [k.claimed_by for k in
             Key.objects.filter(group=keygroup).exclude(claimed_by__isnull=True)]
         batchbadge(badge, showed_up)

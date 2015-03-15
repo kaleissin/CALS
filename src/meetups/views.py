@@ -10,7 +10,7 @@ from verification.signals import key_claimed
 
 from nano.badge.models import Badge
 
-from .settings import MEETUPS
+from .models import Meetup
 
 __all__ = [
     'meetup_direct_activate',
@@ -22,16 +22,11 @@ class KeyForm(forms.Form):
 
 class MeetupMixin(object):
 
-    def expired_on(self):
-        until = MEETUPS[self.keygroup].get('until', None)
-        if until:
-            expired_on = date(*(int(piece) for piece in until.split('-')))
-            return expired_on
-        return None
-
     def dispatch(self, request, *args, **kwargs):
         """Get KeyGroup from context"""
         self.keygroup = self.kwargs['group']
+        self.meetup = Meetup.object.get(keygroup__name=self.keygroup)
+        self.badge = self.meetup.badge
         return super(MeetupMixin, self).dispatch(request, *args, **kwargs)
 
     def get_template_names(self):
@@ -46,13 +41,8 @@ class MeetupMixin(object):
 
     def get_context_data(self, **kwargs):
         context = super(MeetupMixin, self).get_context_data(**kwargs)
-        context['expired_on'] = self.expired_on()
+        context['expired_on'] = self.meetup.valid_until
         return context
-
-    def get_badge(self):
-        badge_dict = MEETUPS[self.keygroup]['badge']
-        badge = Badge.objects.get(name=badge_dict['name'])
-        return badge
 
     def form_valid(self, form):
         nextpage = super(MeetupMixin, self).form_valid(form)
@@ -65,7 +55,7 @@ class MeetupMixin(object):
         return nextpage
 
     def get_success_url(self):
-        return '/badge/%i/' % self.get_badge().pk
+        return '/badge/%i/' % self.badge.pk
 
 class DirectActivateMeetupKeyView(MeetupMixin, ClaimOnPostUrlView):
     template_name_suffix = 'claim_verify.html'
@@ -82,9 +72,12 @@ meetup_activate = login_required(ActivateMeetupKeyView.as_view())
 def user_claimed_key(sender, **kwargs):
     claimant = kwargs['claimant']
     group = kwargs['group']
-    if group.name in MEETUPS.keys():
-        badge_dict = MEETUPS[group.name]['badge']
-        badge = Badge.objects.get(name=badge_dict['name'])
+    try:
+        meetup = Meetup.objects.get(keygroup__name=group.name)
+    except Meetup.DoesNotExist:
+        pass
+    else:
+        badge = meetup.badge
         try:
             claimant.badges.add(badge)
         except:
