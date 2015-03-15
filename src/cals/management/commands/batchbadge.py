@@ -264,7 +264,6 @@ _batch_jobs = {
         'old_hands': old_hands,
         'boomerangs': boomerangs,
         'timetravellers': timetravellers,
-        'phoneticians': phoneticians,
         'regulars': regulars,
         'meetups': meetups,
 }
