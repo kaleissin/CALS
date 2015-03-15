@@ -7,6 +7,11 @@ class TranslationAdmin(admin.ModelAdmin):
     ordering = ('exercise', 'translator', 'translation')
     list_display = ('translation', 'exercise', 'language', 'translator')
     list_filter = ('exercise',)
+    search_fields = [
+        'translator__username',
+        'language__name',
+        'exercise__slug',
+    ]
 admin.site.register(Translation, TranslationAdmin)
 
 class TranslationExerciseAdmin(admin.ModelAdmin):
