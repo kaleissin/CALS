@@ -33,16 +33,11 @@ credits</a>, the authors of the book and probably many more.</p>
 
 <h3>... submitters of useful bugreports</h3>
 <ul>
-    <li>{% showuser 3 %}</li>
-    <li>{% showuser 30 %}</li>
-    <li>{% showuser 32 %}<!-- paul.w.bennet --></li>
-    <li>{% showuser 195 %}{# deramoz #}</li>
-    <li>{% showuser 87 %}<!-- Qwynegold--></li>
-    <li>{% showuser 52 %}<!--Henrik Theiling --></li>
     <li>R. Forkel</li>
-    <li>{% showuser 90 %}<!--wycoval--></li>
     <li>anonymous</li>
-    <li>{% showuser 82 %}<!--piotr--></li>
+    {% for bughunter in bughunters %}
+    <li>{% showuser bughunter.id %}</li>
+    {% endfor %}
 </ul>
 
 {% endblock content %}
