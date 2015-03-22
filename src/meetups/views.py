@@ -25,12 +25,14 @@ class MeetupMixin(object):
     def dispatch(self, request, *args, **kwargs):
         """Get KeyGroup from context"""
         self.keygroup = self.kwargs['group']
-        self.meetup = Meetup.object.get(keygroup__name=self.keygroup)
+        self.meetup = Meetup.objects.get(keygroup__name=self.keygroup)
         self.badge = self.meetup.badge
         return super(MeetupMixin, self).dispatch(request, *args, **kwargs)
 
     def get_template_names(self):
-        if self.expired_on() is None:
+        valid_until = self.meetup.valid_until
+        today = date.today()
+        if not valid_until or today <= valid_until:
             names = [
                 'meetups/%s/' % self.keygroup,
                 'meetups/',
