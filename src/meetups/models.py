@@ -25,6 +25,7 @@ class Meetup(models.Model):
     valid_from = models.DateField(blank=True, null=True)
     valid_until = models.DateField(blank=True, null=True)
     estimated_number_of_attendees = models.IntegerField(default=0, blank=True, null=True)
+    actual_number_of_attendees = models.IntegerField(default=0, blank=True, null=True)
 
     def get_absolute_url(self):
         return reverse_lazy('meetup-activate', kwargs={'group': self.keygroup.name})
@@ -45,6 +46,10 @@ class Meetup(models.Model):
                 group=self.keygroup,
                 expires=expires.replace(tzinfo=pytz.utc),
             )
+
+    def set_actual_number_of_attendees(self):
+        self.actual_number_of_attendees = self.badge.receivers.count()
+        self.save()
 
 
 registry = Registry()
