@@ -5,8 +5,12 @@ from django.core.urlresolvers import reverse_lazy
 
 from verification.generators import Registry
 
-
-from .generators import CALSGenerator
+from .generators import (
+    CALSGenerator,
+    HexColorGenerator,
+    ZeroPaddedNumberGenerator,
+    IsoDateGenerator,
+)
 
 class Meetup(models.Model):
     keygroup = models.ForeignKey('verification.KeyGroup')
@@ -20,3 +24,6 @@ class Meetup(models.Model):
 
 registry = Registry()
 registry.register('cals', CALSGenerator)
+registry.register('hexcolor', HexColorGenerator)
+registry.register('isodate', IsoDateGenerator)
+registry.register('zeropaddedpin', ZeroPaddedNumberGenerator)
