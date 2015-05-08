@@ -20,14 +20,6 @@ for setting, value in config.items():
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
-########## TEST SETTINGS
-SOUTH_TESTS_MIGRATE = False
-SKIP_SOUTH_TESTS = True
-TEST_RUNNER = 'discover_runner.DiscoverRunner'
-TEST_DISCOVER_TOP_LEVEL = SITE_ROOT
-TEST_DISCOVER_ROOT = SITE_ROOT
-TEST_DISCOVER_PATTERN = "*"
-
 ########## IN-MEMORY TEST DATABASE
 DATABASES = {
     "default": {
