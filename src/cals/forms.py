@@ -182,10 +182,3 @@ class NewFeatureValueForm(forms.Form):
 NewFeatureValueFormSet = formset_factory(NewFeatureValueForm, extra=10, max_num=10, can_order=True)
 ChangeFeatureValueFormSet = formset_factory(NewFeatureValueForm, extra=10, max_num=10, can_order=True, can_delete=True)
 
-# class _ExternalInfoBaseModelFormSet(BaseModelFormSet):
-#     def add_fields(self, form, index):
-#         super(_ExternalInfoBaseModelFormSet, self).add_fields(form,index)
-#         form.fields['link'].widget = forms.TextInput(attrs={'size': 40})
-#         form.fields['link']
-# ExternalInfoFormSet = modelformset_factory(ExternalInfo, formset=_ExternalInfoBaseModelFormSet)
-ExternalInfoFormSet = modelformset_factory(ExternalInfo)

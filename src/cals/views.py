@@ -404,7 +404,6 @@ def change_language(request, *args, **kwargs):
     _LOG.info('%s about to change %s', (user, lang))
 
     langform = LanguageForm(instance=lang)
-    #moreinfoformset = ExternalInfoFormSet(queryset=lang.externalinfo.all())
     #profile = user.profile
     manager = lang.manager
     if is_manager:
@@ -455,12 +454,6 @@ def change_language(request, *args, **kwargs):
                         else:
                             if greetingtrans:
                                 greetingtrans.delete()
-            #             # more info
-            #             moreinfoformset = ExternalInfoFormSet(request.POST)
-            #             if moreinfoformset.is_valid():
-            #                 moreinfo = moreinfoformset.save()
-            #                 assert False, moreinfo
-            #
                         # values
                         lang = set_featurevalues_for_lang(lang, request.POST.getlist(u'value'))
 
