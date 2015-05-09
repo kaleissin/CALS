@@ -54,7 +54,7 @@ class Sense(models.Model):
     ids = models.BooleanField(default=False)
     ids_number = models.CharField(max_length=12, blank=True, null=True)
     uld2 = models.CharField(max_length=3, blank=True, null=True)
-    see_also = models.ManyToManyField('self', blank=True, null=True)
+    see_also = models.ManyToManyField('self', blank=True)
     added = models.DateTimeField(auto_now_add=True)
     suggested_by = models.ForeignKey(settings.AUTH_USER_MODEL, default=1)
 
@@ -106,11 +106,11 @@ class Sense(models.Model):
 
 class Word(models.Model):
     word = models.CharField(max_length=40, blank=True, null=True)
-    senses = models.ManyToManyField(Sense, related_name='words', blank=True, null=True)
+    senses = models.ManyToManyField(Sense, related_name='words', blank=True)
     notes = models.TextField(blank=True, null=True)
     language = models.ForeignKey('cals.language', related_name='words')
     not_applicable = models.NullBooleanField(default=False)
-    see_also = models.ManyToManyField('self', blank=True, null=True)
+    see_also = models.ManyToManyField('self', blank=True)
     added = models.DateTimeField(auto_now_add=True)
     added_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='words_added')
     last_modified = models.DateTimeField(auto_now=True)

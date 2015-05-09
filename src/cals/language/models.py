@@ -182,7 +182,7 @@ class Language(models.Model):
             help_text=u"""The person who controls who gets to
             change the description of this language. This makes 
             it possible to hand a language over to another person.""")
-    editors = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, null=True, 
+    editors = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True,
             related_name='edits',
             help_text=u"""People who get to change the description of this language.""")
     created = models.DateTimeField(default=tznow)
@@ -196,7 +196,7 @@ class Language(models.Model):
     try:
         from nano.blog.models import Entry
         blogentries = models.ManyToManyField(Entry,
-                blank=True, null=True, related_name='languages')
+                blank=True, related_name='languages')
     except ImportError:
         # nano.blog not in use
         pass
