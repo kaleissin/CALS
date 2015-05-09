@@ -105,6 +105,7 @@ class FeatureForm(forms.ModelForm):
 
     class Meta:
         model = Feature
+        fields = '__all__'
 
 class FeatureValueForm(forms.Form):
     value = forms.ChoiceField(required=False, choices=())
@@ -137,6 +138,7 @@ class LanguageFeatureForm(forms.ModelForm):
 
     class Meta:
         model = LanguageFeature
+        fields = '__all__'
 
 class UserForm(forms.ModelForm):
     username = forms.CharField(max_length=16, min_length=3)
@@ -169,6 +171,7 @@ class CategoryForm(forms.ModelForm):
 
     class Meta:
         model = Category
+        fields = '__all__'
 
 class FeatureForm(forms.ModelForm):
 
