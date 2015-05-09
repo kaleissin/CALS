@@ -21,7 +21,7 @@ urlpatterns = patterns('tagtools.views',
 )
 
 urlpatterns += patterns('',
-        url(LANG_RE+r'comment/', include('nano.comments.urls', app_name='language'),
+        url(LANG_RE+r'comment/', include('nano.comments.urls', namespace='cals', app_name='language'),
                 {'model': Language, 
                 'object_arg': 'lang',
                 'object_field': 'slug',
