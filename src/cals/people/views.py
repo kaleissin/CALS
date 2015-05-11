@@ -47,6 +47,11 @@ SOCIAL = {
         }
 }
 
+
+def get_user_model_w_related():
+    return get_user_model().objects.prefetch_related('badges', 'profile')
+
+
 class CALSError(Exception):
     pass
 
@@ -63,7 +68,7 @@ def all_people_map(request, *args, **kwargs):
     people = get_user_model().objects.filter(is_active=True)
 
 class ListPeopleView(ListView):
-    queryset = get_user_model().objects.filter(profile__is_lurker=False, profile__is_visible=True)
+    queryset = get_user_model_w_related().filter(profile__is_lurker=False, profile__is_visible=True)
     template_name = 'cals/profile_list.html'
     http_method_names = ['get', 'head', 'options', 'trace']
 
@@ -94,7 +99,7 @@ class ListPeopleView(ListView):
 list_people = ListPeopleView.as_view()
 
 class DetailPeopleView(DetailView):
-    queryset = get_user_model().objects.all()
+    queryset = get_user_model_w_related()
     model = get_user_model()
     context_object_name = 'user'
     template_name = 'profile_detail.html'

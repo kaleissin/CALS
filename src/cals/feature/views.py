@@ -180,7 +180,7 @@ def change_or_add_feature(request, *args, **kwargs):
     return render(request, 'cals/suggested_feature_form.html', data)
 
 class ListFeatureView(ListView):
-    queryset = Category.active_objects.filter(feature__active=True).distinct().order_by('id')
+    queryset = Category.active_objects.prefetch_related('feature_set').filter(feature__active=True).distinct().order_by('id')
     template_name = 'cals/feature_list.html'
 
     def get_context_data(self, **kwargs):

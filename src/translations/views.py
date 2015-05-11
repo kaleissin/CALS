@@ -80,7 +80,7 @@ def list_translation_for_language(request, *args, **kwargs):
 
 class ListAllTranslationView(ListView):
     """List all translations."""
-    queryset = TranslationExercise.objects.all()
+    queryset = TranslationExercise.objects.prefetch_related('translations')
     template_name = 'translations/translation_list.html'
 
     def get_context_data(self, **kwargs):
