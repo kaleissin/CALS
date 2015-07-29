@@ -11,7 +11,7 @@ XXX
 {% tags_for_model cals.Language as tags with counts %}
     <ul>
         {% for object in tags %}
-        <li class="{% cycle odd,even %}">
+        <li class="{% cycle 'odd' 'even' %}">
             <a href="/language/{{ object.slug }}/">{{ object }}</a>
             ({{ object.count }} languages)
         {% endfor %}

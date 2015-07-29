@@ -148,7 +148,7 @@
     <div>
         <table>
         {% for translation in object.translations.all %}
-            <tr class="{% cycle odd,even %}">
+            <tr class="{% cycle 'odd' 'even' %}">
                 <th>{{ translation.exercise }}</th>
                 <td>{{ translation.language }}</td>
                 <td><a href="/translation/language/{{ translation.language.slug }}/" class="plaintext">{{ translation }}</a></td>

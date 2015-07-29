@@ -44,7 +44,7 @@
                         <th>Conlangs:</th>
                     </tr>
                     {% for value in object.values.all %}
-                    <tr class="{% cycle odd,even %}">
+                    <tr class="{% cycle 'odd' 'even' %}">
                         <td><a href="/value/{{ value.id }}">{{ value.name }}</a> 
                             ({{ value.languages.for_conlangs.count }} 
                             language{{ value.languages.for_conlangs.count|pluralize }})</td>
@@ -58,7 +58,7 @@
                         <th>Natlangs:</th>
                     </tr>
                     {% for value in object.values.all %}
-                    <tr class="{% cycle odd,even %}">
+                    <tr class="{% cycle 'odd' 'even' %}">
                         <td><a href="/value/{{ value.id }}">{{ value.name }}</a> 
                             ({{ value.languages.for_natlangs.count }} 
                             language{{ value.languages.for_natlangs.count|pluralize }})</td>

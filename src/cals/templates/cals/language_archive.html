@@ -13,7 +13,7 @@
     <table>
         <tr><th>Language</th><th>Author</th><th>Features</th><th>Last modified</th></tr>
         {% for object in latest %}
-        <tr class="{% cycle odd,even %}">
+        <tr class="{% cycle 'odd' 'even' %}">
             <td><a href="/language/{{ object.slug }}/">{{ object }}</a></td>
             <td>{% if object.author %}{{ object.author }}{% endif %}</td>
             <td>{{ object.features.count }}</td>

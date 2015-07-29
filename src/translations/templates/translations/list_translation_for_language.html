@@ -20,7 +20,7 @@
         <th><h2>Translator</h2></th>
     </tr>
     {% for translation in object_list %}
-    <tr class="{% cycle odd,even %}">
+    <tr class="{% cycle 'odd' 'even' %}">
         <td>
         <div class="plaintext">{% ifequal translation.translator request.user %}<a href="{{ translation.get_update_url }}">{{ translation }}</a>{% else %}{{ translation }}{% endifequal %}</div>
         {% if translation.interlinear %}{{ translation.il_xhtml|safe }}{% endif %}

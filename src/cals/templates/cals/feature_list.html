@@ -15,7 +15,7 @@
             <a href="#top" class="category">{{ category }}</a>
         <ul>
             {% for feature in category.feature_set.active %}
-            <li class="{% cycle odd,even %}">
+            <li class="{% cycle 'odd' 'even' %}">
                 <a class="feature" href="../{{ feature.id }}">{{ feature }}</a>
                 {% with feature.languages.count as feature_count %}
                     ({{ feature_count }} language{{ feature_count|pluralize }})

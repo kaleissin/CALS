@@ -165,7 +165,7 @@ $("#id_background").keyup(function() {
             </tr>
             {{ moreinfoformset.management_form }}
             {% for infoform in moreinfoformset.forms %}
-            <tr class="{% cycle odd,even %}">
+            <tr class="{% cycle 'odd' 'even' %}">
                 <td>{{ infoform.id }}{{ infoform.category }}
                 {% if infoform.category.help_text %}<div class="help">{{ infoform.category.help_text }} </div>{% endif %}</td>
                 {% if infoform.category.errors %}<div class="error">{{ infoform.category.errors }}</div>{% endif %}
@@ -259,7 +259,7 @@ $("#id_background").keyup(function() {
 <table class="feature">
         {% if category.features %}
         {% for feature in category.features %}
-    <tr class="feature {% cycle odd,even %}">
+    <tr class="feature {% cycle 'odd' 'even' %}">
         <th>{{ feature.feature }} {% wals feature.feature.id %}</th>
         <td>{{ feature.form.value }}</td>
     </tr>

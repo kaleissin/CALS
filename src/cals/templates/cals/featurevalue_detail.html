@@ -16,7 +16,7 @@
                 <table>
                     <tr><th colspan="2">Conlangs ({{ conlangs.count }}):</th></tr>
                     {% for lf in conlangs %}
-                    <tr class="{% cycle odd,even %}">
+                    <tr class="{% cycle 'odd' 'even' %}">
                         <td><a href="/language/{{ lf.language.slug }}/feature/{{ lf.feature.id }}/"> {{ lf.language.name }}</a></td>
                         <td>{{ lf.description|default:""|safe }}</td>
                     </tr>
@@ -27,7 +27,7 @@
                 <table>
                     <tr><th colspan="1">Natlangs ({{ natlangs.count }}):</th></tr>
                     {% for lf in natlangs %}
-                    <tr class="{% cycle odd,even %}">
+                    <tr class="{% cycle 'odd' 'even' %}">
                         <td><a href="/language/{{ lf.language.slug }}/feature/{{ lf.feature.id }}/"> {{ lf.language.name }}</a></td>
                     </tr>
                     {% endfor %}

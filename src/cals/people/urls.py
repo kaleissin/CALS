@@ -3,7 +3,7 @@ from django.views.generic.base import RedirectView
 
 # people
 urlpatterns = patterns('',
-        url(r'^$',                       RedirectView.as_view(url='/people/p1/')),
+        url(r'^$', RedirectView.as_view(url='/people/p1/', permanent=False)),
 )
 
 urlpatterns += patterns('cals.people.views',

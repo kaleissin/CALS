@@ -56,7 +56,7 @@ if settings.DEBUG:
 
 urlpatterns += patterns('',
     # red tape
-    url(r'^favicon\.ico$',      RedirectView.as_view(**{'url': '/static/img/favicon.ico'})),
+    url(r'^favicon\.ico$',      RedirectView.as_view(url='/static/img/favicon.ico', permanent=True)),
     url(r'^robots\.txt$',       render, robots_txt_params),
 
     url(r'^thankyou$',          render, thankyou_params),
@@ -83,7 +83,7 @@ urlpatterns += patterns('',
     url(r'^news/',              include('nano.blog.urls')),
 
     url(r'^word/list/',         include('wordlist.list.urls')),
-    url(r'^word/$',             RedirectView.as_view(**{'url': '/word/list/'})),
+    url(r'^word/$',             RedirectView.as_view(url='/word/list/', permanent=True)),
     url(r'^translation/',       include('translations.urls')),
     url(r'^badge/',             include('nano.badge.urls')),
     url(r'^faq/',               include('nano.faq.urls')),

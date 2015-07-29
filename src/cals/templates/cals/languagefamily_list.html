@@ -10,7 +10,7 @@
     <ul>
         {% for object in object_list %}
         {% if object.descendants.count or object.languages.count %}
-        <li class="{% cycle odd,even %}">
+        <li class="{% cycle 'odd' 'even' %}">
             <a href="/language/family/{{ object.slug }}/">{{ object }}</a>
             ({{ object.descendants.count }} sub-famil{{ object.descendants.count|pluralize:"y,ies" }})
             ({{ object.languages.count }} language{{ object.languages.count|pluralize }})</li>

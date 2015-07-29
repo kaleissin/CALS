@@ -23,7 +23,7 @@
             <th>Translator</th>
         </tr>
         {% for translation in object_list %}
-        <tr class="{% cycle odd,even %}">
+        <tr class="{% cycle 'odd' 'even' %}">
             <th><a href="{{ translation.get_absolute_url }}">{{ translation.language }}</a></th>
             <td>
                 {% ifequal translation.translator request.user %}

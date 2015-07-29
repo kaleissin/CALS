@@ -12,7 +12,7 @@
         </tr>
         {% for object in object_list %}
         {% if object.get_profile.is_visible %}
-        <tr class="{% cycle odd,even %}">
+        <tr class="{% cycle 'odd' 'even' %}">
             <td>{% showuser object %}</td>
             <td>{{ object.date_joined|date:"Y-m-d" }}</td>
             <td class="right">{{ object.languages.count }}</td>

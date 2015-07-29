@@ -94,7 +94,7 @@ Comparing: {{ langs|join:", " }}
     {% with langs|last as lang %} and <a href="{{ lang.get_absolute_url }}">{{ lang }}</a>{% endwith %}
     </th></tr>{% endspaceless %}
     {% for line in comparison|slice:"1:" %}
-    <tr class="feature {% cycle even,odd %}">
+    <tr class="feature {% cycle 'even' 'odd' %}">
         <th>{{ line.0 }} {% wals line.0.id %}</th>
         <td>{{ line.1|default:"&#x2013;" }}</td>
     </tr>
@@ -102,7 +102,7 @@ Comparing: {{ langs|join:", " }}
     {% else %}
     <tr class="odd"><td></td>{% for lang in langs %}<th><a href="{{ lang.get_absolute_url }}">{{ lang }}</a></th>{% endfor %}</tr>
     {% for line in comparison|slice:"1:" %}
-    <tr class="feature {% cycle even,odd %}">
+    <tr class="feature {% cycle 'even' 'odd' %}">
         <th>{{ line.0 }} {% wals line.0.id %}</th>
         {% for value in line|slice:"1:" %}
         <td>{{ value|default:"&#x2013;" }}</td>

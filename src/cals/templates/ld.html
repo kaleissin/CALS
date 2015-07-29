@@ -45,7 +45,7 @@
     <h2>Features:</h2>
     <table>
         {% for feature in object.features.all %}
-        <tr class="{% cycle odd,even %}">
+        <tr class="{% cycle 'odd' 'even' %}">
             <th><a href="/feature/{{ feature.feature.id }}">{{ feature.feature }}</a> {% wals feature.feature_id %}</th>
             <td>{{ feature.value }}</td>
         </tr>

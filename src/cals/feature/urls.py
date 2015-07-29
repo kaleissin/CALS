@@ -15,7 +15,7 @@ suggested_features_dict = {
 }
 
 urlpatterns = patterns('',
-        url(r'^$',                            RedirectView.as_view(**{'url': '/feature/p1/'})),
+        url(r'^$', RedirectView.as_view(url='/feature/p1/', permanent=False)),
 #         url(r'^suggested/$',                   'list_detail.object_list', suggested_features_dict),
 )
 

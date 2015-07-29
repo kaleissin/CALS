@@ -6,7 +6,7 @@
 {% block content %}
     <h2>The following {{ object_list.count }} conlangs have their own homepages:</h2>
     {% for object in object_list %}
-    <div class="listitem {% cycle odd,even %}">
+    <div class="listitem {% cycle 'odd' 'even' %}">
         <h3><a href="/language/{{ object.slug }}/">{{ object }}</a></h3>
         <ul>
             <li>By {{ object.author }}</li>

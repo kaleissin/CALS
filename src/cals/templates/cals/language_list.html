@@ -7,7 +7,7 @@
     {% paginator %}
     <ul>
         {% for object in object_list %}
-        <li class="{% cycle odd,even %}">
+        <li class="{% cycle 'odd' 'even' %}">
             <a href="/language/{{ object.slug }}/">{{ object }}</a>
             {% if not natlang %}
             {% if object.author %}by {{ object.author }}{% endif %} 
