@@ -5,6 +5,7 @@ from datetime import datetime
 from django.contrib.syndication.views import Feed
 from django.utils.feedgenerator import Atom1Feed
 from django.template.loader import render_to_string
+from django.core.urlresolvers import reverse
 
 from nano.blog.models import Entry
 from nano.comments.models import Comment
@@ -98,6 +99,9 @@ class RecentCommentsFeed(AbstractFeed):
 
     def item_pubdate(self, item):
         return item.added
+
+    def item_link(self, item):
+        return reverse('feed-comments')
 
 class UpdatedLanguagesFeed(AbstractFeed):
     title = "CALS: recently modified languages"

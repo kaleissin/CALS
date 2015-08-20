@@ -46,7 +46,7 @@ urlpatterns = patterns('',
     url(r'^feeds/languages/newest/$',        feeds.NewestLanguagesFeed()),
     url(r'^feeds/people/recent/$',           feeds.RecentlyJoinedFeed()),
     url(r'^feeds/people/all/$',              feeds.AllPeopleFeed()),
-    url(r'^feeds/comments/$',                feeds.RecentCommentsFeed()),
+    url(r'^feeds/comments/$',                feeds.RecentCommentsFeed(), name='feed-comments'),
     url(r'^feeds/all/$',                     feeds.AllFeed()),
 )
 
