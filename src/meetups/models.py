@@ -7,7 +7,7 @@ from random import sample
 import pytz
 
 from django.db import models
-from django.db.models.loading import get_model
+from django.apps import apps
 from django.core.urlresolvers import reverse_lazy
 
 from verification.generators import Registry
@@ -18,6 +18,8 @@ from .generators import (
     ZeroPaddedNumberGenerator,
     IsoDateGenerator,
 )
+
+get_model = apps.get_model
 
 class Meetup(models.Model):
     keygroup = models.ForeignKey('verification.KeyGroup')
