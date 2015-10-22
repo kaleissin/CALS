@@ -1,4 +1,4 @@
-Django==1.8.4
+Django==1.8.5
 Interlinears
 Unidecode
 django-activity-stream==0.6.0
