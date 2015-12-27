@@ -7,7 +7,7 @@ django-taggit==0.17.6
 ipython
 nano==0.9.4
 psycopg2
-pygal<=2.0.0
+pygal>=2.0.0
 pygal-maps-world
 python-memcached
 python-social-auth==0.2.13
