@@ -14,6 +14,7 @@ from django.db.models import Q, Count, Avg, Max, Min
 from django.contrib.auth import get_user_model
 
 import pygal
+from pygal.maps.world import World as Worldmap
 from pygal.style import LightGreenStyle, Style
 
 from nano.countries.models import Country
@@ -49,7 +50,7 @@ def conlanger_map():
       transition='400ms ease-in',
       colors=('#527C3A', '#E8537A', '#E95355', '#E87653', '#E89B53'))
 
-    chart = pygal.Worldmap(style=custom_style)
+    chart = Worldmap(style=custom_style)
     chart.no_prefix = True
     chart.disable_xml_declaration = True
     chart.show_legend = False
