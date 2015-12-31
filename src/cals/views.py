@@ -57,7 +57,7 @@ from translations.models import TranslationExercise, Translation
 from nano.blog.models import Entry
 from nano.blog.tools import get_nano_blog_entries
 
-from tagtools import set_tags_for_model, get_tagcloud_for_model
+from tagtools.tools import set_tags_for_model, get_tagcloud_for_model
 
 _error_forbidden_msg = "You don't have the necessary permissions to edit here."
 error_forbidden = render_to_string('error.html',
