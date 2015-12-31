@@ -1,14 +1,18 @@
-import datetime
-import operator
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 import logging
 
 from django.db import models
 from django.conf import settings
+from django.utils.encoding import python_2_unicode_compatible
 
 from cals.tools import uslugify
 
 LOG = logging.getLogger(__name__)
 
+
+@python_2_unicode_compatible
 class BuckCategory(models.Model):
     id = models.IntegerField(primary_key=True)
     name = models.TextField()
@@ -19,8 +23,9 @@ class BuckCategory(models.Model):
         verbose_name = 'Buck category'
         verbose_name_plural = 'Buck categories'
 
-    def __unicode__(self):
-        return u'%i. %s' % (self.id, self.name)
+    def __str__(self):
+        return '%i. %s' % (self.id, self.name)
+
 
 class SenseManager(models.Manager):
     def yakholman(self):
@@ -36,6 +41,8 @@ class SenseManager(models.Manager):
                 self).get_queryset().filter(buck=True, ids=True,
                 wold=True)
 
+
+@python_2_unicode_compatible
 class Sense(models.Model):
     entry = models.CharField(max_length=40)
     slug = models.SlugField()
@@ -63,8 +70,8 @@ class Sense(models.Model):
     class Meta:
         ordering = ('id',)
 
-    def __unicode__(self):
-        return u'\u201c%s\u201d' % self.entry
+    def __str__(self):
+        return '\u201c%s\u201d' % self.entry
 
     def save(self, *args, **kwargs):
         self.slug = uslugify(self.entry)
@@ -104,6 +111,8 @@ class Sense(models.Model):
             # None set
             return None
 
+
+@python_2_unicode_compatible
 class Word(models.Model):
     word = models.CharField(max_length=40, blank=True, null=True)
     senses = models.ManyToManyField(Sense, related_name='words', blank=True)
@@ -117,8 +126,8 @@ class Word(models.Model):
     last_modified_by = models.ForeignKey(settings.AUTH_USER_MODEL,
             related_name='words_modified')
 
-    def __unicode__(self):
-        return self.word or u''
+    def __str__(self):
+        return self.word or ''
 
     def save(self, *args, **kwargs):
         self.not_applicable = False
@@ -126,6 +135,8 @@ class Word(models.Model):
             self.not_applicable = True
         super(Word, self).save(*args, **kwargs)
 
+
+@python_2_unicode_compatible
 class SkippedWord(models.Model):
     sense = models.ForeignKey(Sense, related_name='skipped_words')
     language = models.ForeignKey('cals.language', related_name='skipped_words')
@@ -133,6 +144,5 @@ class SkippedWord(models.Model):
     added_by = models.ForeignKey(settings.AUTH_USER_MODEL,
             related_name='skipped_words')
 
-    def __unicode__(self):
-        return unicode(self.sense)
-
+    def __str__(self):
+        return self.sense

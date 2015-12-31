@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from django import forms
 
 from wordlist.models import Word, Sense
@@ -33,9 +35,9 @@ class WordForm(forms.ModelForm):
             for word in words:
                 if word.notes == notes:
                     raise forms.ValidationError(
-                            u"A word with the same sense \u201c%s\u201d "
-                            u"and the same notes already exists, "
-                            u"see: %s" % (sense.entry, word.word))
+                            "A word with the same sense \u201c%s\u201d "
+                            "and the same notes already exists, "
+                            "see: %s" % (sense.entry, word.word))
 #                 if word.word == new_word:
 #                     raise forms.ValidationError(
 #                             u"A word with the same sense \u201c%s\u201d "
@@ -68,11 +70,11 @@ class NAWordForm(forms.ModelForm):
             for word in words:
                 if word.entry:
                     raise forms.ValidationError(
-                            u"A word for this sense already exists, "
-                            u"see: %s" % word.word)
+                            "A word for this sense already exists, "
+                            "see: %s" % word.word)
                 if word.notes == notes and word.not_applicable:
                     raise forms.ValidationError(
-                            u"This sense \u201c%s\u201d is already marked not "
-                            u"applicable" % sense.entry)
+                            "This sense \u201c%s\u201d is already marked not "
+                            "applicable" % sense.entry)
         return cleaned_data
 

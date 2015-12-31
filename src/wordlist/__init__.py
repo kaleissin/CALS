@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import logging
 
 from django.db.models import Q
@@ -25,7 +27,7 @@ def get_object_or_slug_from_kwargs(model, field='pk', **kwargs):
             pk = kwargs['params'].get(field, None) 
     if pk: 
         pk = int(pk)
-    slug = kwargs.get(u'slug', None)
+    slug = kwargs.get('slug', None)
     return get_object_or_404(model, Q(pk=pk)|Q(slug=slug))
     try:
         object = get_object_or_404(model, Q(pk=pk)|Q(slug=slug))
@@ -56,7 +58,7 @@ def get_language_from_kwargs(**kwargs):
     language = kwargs.get('language', None)
     if not language:
         try:
-            return get_object_or_404(Language, slug=kwargs.get(u'langslug', None))
+            return get_object_or_404(Language, slug=kwargs.get('langslug', None))
         except:
             assert False, kwargs 
     return language
