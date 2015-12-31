@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 
 from __future__ import unicode_literals
+from __future__ import absolute_import
 
 import logging
 _LOG = logging.getLogger(__name__)
@@ -10,10 +11,12 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.html import escape
 from django.utils.timezone import now as tznow
+from django.utils.encoding import python_2_unicode_compatible
 
 from cals.tools import uslugify
 
 from cals.language.models import Language
+
 
 def get_interlinear(model):
     if not model.interlinear.strip():
@@ -23,13 +26,14 @@ def get_interlinear(model):
     if format == 'leipzig':
         try:
             from interlinears.leipzig import InterlinearText
-        except ImportError, e:
+        except ImportError as e:
             assert False, e
             format = 'monospace'
         else:
             il = InterlinearText()
             return il.do_text(interlinear)
     return '<pre>%s</pre>' % escape(interlinear)
+
 
 class Interlinear(models.Model):
     INTERLINEAR_FORMATS = (
@@ -52,6 +56,8 @@ class Interlinear(models.Model):
         self.il_xhtml = new_il if new_il else ''
         super(Interlinear, self).save(**kwargs)
 
+
+@python_2_unicode_compatible
 class TranslationExerciseCategory(models.Model):
     name = models.CharField(max_length=64, unique=True)
 
@@ -59,9 +65,11 @@ class TranslationExerciseCategory(models.Model):
         verbose_name_plural = 'translation-exercise categories'
         db_table = 'cals_translationcategory'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
+
+@python_2_unicode_compatible
 class TranslationExercise(models.Model):
     name = models.CharField(max_length=64, unique=True,
             help_text="A short name to refer to the translation excrcise")
@@ -81,7 +89,7 @@ class TranslationExercise(models.Model):
         ordering = ('category', 'slug',)
         get_latest_by = 'added'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def save(self, user=None, **kwargs):
@@ -92,11 +100,14 @@ class TranslationExercise(models.Model):
             self.added = tznow()
         super(TranslationExercise, self).save(**kwargs)
 
+
 class TranslationManager(models.Manager):
     def get_queryset(self):
         qs = super(TranslationManager, self).get_queryset()
         return qs.select_related('language').filter(language__visible=True)
 
+
+@python_2_unicode_compatible
 class Translation(Interlinear):
     translation = models.TextField()
     exercise = models.ForeignKey(TranslationExercise, related_name='translations')
@@ -119,7 +130,7 @@ class Translation(Interlinear):
         unique_together = (('language', 'translator', 'exercise'),)
         get_latest_by = 'last_modified'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.translation
 
     def get_url_kwargs(self):
@@ -144,4 +155,3 @@ class Translation(Interlinear):
         if not batch:
             self.last_modified = tznow()
         super(Translation, self).save(*args, **kwargs)
-
