@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+from __future__ import absolute_import
 
 import random
 import string
@@ -7,12 +8,13 @@ import time
 from datetime import date
 
 from verification.generators import AbstractAlphabetKeyGenerator
+from six.moves import range
 
 __all__ = ['CALSGenerator']
 
 
 class CALSGenerator(AbstractAlphabetKeyGenerator):
-    alphabet = string.lowercase + string.digits
+    alphabet = string.ascii_lowercase + string.digits
     length = 5
     name = 'cals'
 
@@ -58,13 +60,13 @@ class ZeroPaddedNumberGenerator(AbstractAlphabetKeyGenerator):
         return self._pad(sample)
 
     def generate_all_keys(self, *args):
-        samples = xrange(0, self._maximum)
+        samples = range(0, self._maximum)
         for i, sample in enumerate(samples):
             samples[i] = self._pad(sample)
         return samples
 
     def generate_n_keys(self, numkeys=0, *args):
-        samples = random.sample(xrange(0, self._maximum), numkeys)
+        samples = random.sample(range(0, self._maximum), numkeys)
         if not numkeys:
             return self.generate_all_keys(*args)
         for i, sample in enumerate(samples):
@@ -108,7 +110,7 @@ class IsoDateGenerator(AbstractAlphabetKeyGenerator):
         return self.format(date.fromtimestamp(sample))
 
     def generate_n_keys(numkeys=0, *args):
-        samples = random.sample(xrange(self._date_range()), numkeys)
+        samples = random.sample(range(self._date_range()), numkeys)
         for i, sample in enumerate(samples):
             samples[i] = self.format(date.fromtimestamp(sample))
         return samples

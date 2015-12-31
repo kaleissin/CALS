@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+from __future__ import absolute_import
 
 from datetime import datetime
 
@@ -20,6 +21,7 @@ from .generators import (
 )
 
 get_model = apps.get_model
+
 
 class Meetup(models.Model):
     keygroup = models.ForeignKey('verification.KeyGroup')
