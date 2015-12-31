@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+from __future__ import absolute_import
 
 from datetime import datetime
 
@@ -17,7 +18,7 @@ from cals.people.models import Profile
 
 from translations.models import TranslationExercise, Translation
 
-STANDARD_AUTHOR = u'admin'
+STANDARD_AUTHOR = 'admin'
 
 class AbstractFeed(Feed):
     _domain = 'cals.conlang.org'
@@ -89,13 +90,13 @@ class RecentCommentsFeed(AbstractFeed):
         return Comment.objects.order_by('-added')[:15]
 
     def item_guid(self, item):
-        return self.base_id(item) + '/%s-%s' % (uslugify(unicode(item.content_object)), item.user.id)
+        return self.base_id(item) + '/%s-%s' % (uslugify(str(item.content_object)), item.user.id)
 
     def item_title(self, item):
         return 'New comment by %s on %s' % (item.user.profile.display_name, item.content_object)
 
     def item_author_name(self, item):
-        return unicode(item.user)
+        return str(item.user)
 
     def item_pubdate(self, item):
         return item.added
@@ -121,7 +122,7 @@ class UpdatedLanguagesFeed(AbstractFeed):
         return 'Changed language: %s' % item.name
 
     def item_author_name(self, item):
-        return unicode(item.added_by.profile.display_name)
+        return str(item.added_by.profile.display_name)
 
     def item_pubdate(self, item):
         return item.created
@@ -144,7 +145,7 @@ class NewestLanguagesFeed(AbstractFeed):
         return 'New language: %s' % item.name
 
     def item_author_name(self, item):
-        return unicode(item.added_by.profile.display_name)
+        return str(item.added_by.profile.display_name)
 
     def item_pubdate(self, item):
         return item.created
@@ -167,7 +168,7 @@ class AllPeopleFeed(AbstractFeed):
         return item.display_name
 
     def item_author_name(self, item):
-        return unicode(item.display_name)
+        return str(item.display_name)
 
     def item_pubdate(self, item):
         return item.user.date_joined
@@ -190,7 +191,7 @@ class RecentlyJoinedFeed(AbstractFeed):
         return '%s just joined!' % item.display_name
 
     def item_author_name(self, item):
-        return unicode(item.display_name)
+        return str(item.display_name)
 
     def item_pubdate(self, item):
         return item.user.date_joined
@@ -209,10 +210,10 @@ class NewTranslationExerciseFeed(AbstractFeed):
                 item.slug)
 
     def item_title(self, item):
-        return u'To translate: "%s"' % item.name
+        return 'To translate: "%s"' % item.name
 
     def item_author_name(self, item):
-        return unicode(item.added_by)
+        return str(item.added_by)
 
     def item_pubdate(self, item):
         return item.added
@@ -238,7 +239,7 @@ class NewTranslationFeed(AbstractFeed):
         return '%s translated "%s" into %s' % (item.translator, item.exercise.name, item.language)
 
     def item_author_name(self, item):
-        return unicode(item.translator)
+        return str(item.translator)
 
     def item_pubdate(self, item):
         return item.added

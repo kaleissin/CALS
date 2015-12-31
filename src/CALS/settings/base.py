@@ -1,5 +1,8 @@
 """Common settings and globals."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 from os.path import abspath, basename, dirname, join, normpath, splitext, split
 from os.path import isfile, getsize
 from sys import path
@@ -25,7 +28,7 @@ def get_json_config(environment):
     for location in CONFIG_PATH:
         filename = join(location, SITE_NAME + '.config.json')
         if isfile(filename) and getsize(filename) > 0:
-            with file(filename, 'r') as CONFIG:
+            with open(filename, 'r') as CONFIG:
                 config = json.load(CONFIG)
                 if environment in config:
                     return config[environment]

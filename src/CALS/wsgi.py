@@ -13,6 +13,10 @@ middleware here, or combine a Django application with an application of another
 framework.
 
 """
+
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 # Workaround for http://bugs.python.org/issue8098
 # Closes github issue #7
 import _strptime
