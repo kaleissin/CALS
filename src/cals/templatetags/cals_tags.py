@@ -13,7 +13,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.sessions.models import Session
 from django.conf import settings
 from django.core.cache import cache
-from django.utils.encoding import smart_str, force_text
+from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
 from django.utils.timezone import now as tznow
 
