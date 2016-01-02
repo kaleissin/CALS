@@ -356,7 +356,12 @@ def gravatar(obj, size=32, fallback='identicon'):
             string = str(obj)
 
     url = "http://www.gravatar.com/avatar.php?"
-    url += urllib.urlencode({ 'gravatar_id': hashlib.md5(string).hexdigest()+'.jpg', 's': str(size), 'd': fallback })
+    data = {
+        'gravatar_id': hashlib.md5(string.encode('utf8')).hexdigest()+'.jpg',
+        's': str(size),
+        'd': fallback,
+    }
+    url += urllib.parse.urlencode(data)
     return """<img src="%s" width="%s" height="%s" alt="" title="gravatar" class="gravatar" border="0" />""" % (url, size, size)
 
 # --------------- Inclusion tags
