@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from django.contrib import admin
 
 from cals.language.models import *
@@ -14,7 +16,7 @@ class LanguageAdmin(admin.ModelAdmin):
 
     def make_invisible(self, request, queryset):
         qs = queryset.update(visible=False)
-        msg = u'%i language%s hidden' % (qs, u'' if qs == 1 else u's')
+        msg = '%i language%s hidden' % (qs, '' if qs == 1 else 's')
         self.message_user(request, msg)
         language_hidden.send(sender=self, languages=queryset)
     make_invisible.short_description = "Hide languages"

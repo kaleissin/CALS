@@ -1,3 +1,6 @@
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 from django import template
 from django.template import Library
 from django.template import RequestContext
@@ -83,7 +86,7 @@ def do_gmap(parser, token):
         param = param.strip()
         value = value.strip()
         
-        if parameters.has_key(param):
+        if param in parameters:
             if value[0]=="\"":
                 value = value[1:-1]
             parameters[param] = value

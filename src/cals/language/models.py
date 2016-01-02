@@ -1,5 +1,7 @@
-
 # -*- coding: UTF-8 -*-
+
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 import logging
 _LOG = logging.getLogger(__name__)
@@ -8,7 +10,8 @@ import django.dispatch
 from django.conf import settings
 from django.db import models
 from django.db.models.query import QuerySet
-from django.utils.encoding import smart_unicode
+from django.utils.encoding import smart_text
+from django.utils.encoding import python_2_unicode_compatible
 from django.utils.timezone import now as tznow
 
 from taggit.managers import TaggableManager
@@ -24,12 +27,14 @@ from cals.people.models import Profile
 
 language_hidden = django.dispatch.Signal(providing_args=["languages"])
 
+
 class LangtypeQuerySet(QuerySet):
     def conlangs(self):
         return self.exclude(natlang=True)
 
     def natlangs(self):
         return self.filter(natlang=True)
+
 
 class DefaultLanguageManager(models.Manager):
     use_for_related_fields = True
@@ -45,15 +50,17 @@ class DefaultLanguageManager(models.Manager):
     def get_by_natural_key(self, slug):
         return self.get(slug=slug)
 
+
 class NaturalLanguageManager(models.Manager):
     def get_queryset(self):
         return super(NaturalLanguageManager, self).get_queryset().filter(natlang=True)
+
 
 class UnorderedTreeMixin(models.Model):
     part_of = models.ForeignKey('self', blank=True, null=True, default=None)
     path = models.CharField(max_length=255, blank=True, default='')
 
-    _sep = u'/'
+    _sep = '/'
 
     class Meta:
         abstract = True
@@ -75,13 +82,13 @@ class UnorderedTreeMixin(models.Model):
 
     @property
     def level(self):
-        return unicode(self.path).count(self._sep)
+        return str(self.path).count(self._sep)
 
     def roots(self):
         return self._default_manager.filter(part_of__isnull=True)
 
     def get_path(self):
-        return [self._default_manager.get(id=p) for p in unicode(self.path).split(self._sep) if p]
+        return [self._default_manager.get(id=p) for p in str(self.path).split(self._sep) if p]
 
     def descendants(self):
         return self._default_manager.filter(path__startswith=self.path).exclude(id=self.id)
@@ -111,6 +118,8 @@ class UnorderedTreeMixin(models.Model):
 
         return self.descendants().count() == 0
 
+
+@python_2_unicode_compatible
 class LanguageFamily(UnorderedTreeMixin):
     name = models.CharField(max_length=64)
     slug = models.SlugField(editable=False, blank=True, null=True)
@@ -123,7 +132,7 @@ class LanguageFamily(UnorderedTreeMixin):
         ordering = ('name',)
         app_label = 'cals'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def save(self, *args, **kwargs):
@@ -131,12 +140,14 @@ class LanguageFamily(UnorderedTreeMixin):
 
         super(LanguageFamily, self).save(*args, **kwargs)
 
+
+@python_2_unicode_compatible
 class Language(models.Model):
     name = models.CharField('External name', max_length=64, 
-            help_text=u'Anglified name, safe for computing. ASCII!')
+            help_text='Anglified name, safe for computing. ASCII!')
     internal_name = models.CharField('Internal name', max_length=64,
             blank=True,
-            help_text=u'What the speakers call their language. All of unicode OK')
+            help_text='What the speakers call their language. All of unicode OK')
     slug = models.SlugField(max_length=64, editable=False, blank=True, null=True)
     author = models.CharField('Author(s)', max_length=128)
     homepage = models.URLField(null=True, blank=True)
@@ -179,12 +190,12 @@ class Language(models.Model):
             blank=True,
             null=True,
             related_name='manages',
-            help_text=u"""The person who controls who gets to
+            help_text="""The person who controls who gets to
             change the description of this language. This makes 
             it possible to hand a language over to another person.""")
     editors = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True,
             related_name='edits',
-            help_text=u"""People who get to change the description of this language.""")
+            help_text="""People who get to change the description of this language.""")
     created = models.DateTimeField(default=tznow)
     last_modified = models.DateTimeField(blank=True, null=True, editable=False, default=tznow)
     last_modified_by = models.ForeignKey(settings.AUTH_USER_MODEL,
@@ -214,7 +225,7 @@ class Language(models.Model):
         get_latest_by = 'last_modified'
         app_label = 'cals'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def save(self, user=None, solo=True, *args, **kwargs):
@@ -326,6 +337,7 @@ class Language(models.Model):
     def previous_names(self):
         return self.alternates().exclude(name=self.internal_name)
 
+
 class SearchManager(models.Manager):
 
     def find_prefix(self, q):
@@ -342,6 +354,8 @@ class SearchManager(models.Manager):
         else:
             return self.find_prefix(q)
 
+
+@python_2_unicode_compatible
 class LanguageName(models.Model):
     language = models.ForeignKey(Language, related_name="alternate_names")
     added = models.DateTimeField(blank=True, null=True)
@@ -360,17 +374,19 @@ class LanguageName(models.Model):
         app_label = 'cals'
 
     def save(self, *args, **kwargs):
-        self.slug = uslugify(smart_unicode(self.name))
+        self.slug = uslugify(smart_text(self.name))
         if not self.added:
             self.added = tznow()
         super(LanguageName, self).save(*args, **kwargs)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def is_current(self):
         return (self.name == self.language.name) or (self.name == self.language.internal_name)
 
+
+@python_2_unicode_compatible
 class WALSCode(models.Model):
     language = models.OneToOneField(Language, primary_key=True, related_name="wals_code")
     walscode = models.CharField(max_length=3, unique=True)
@@ -379,12 +395,14 @@ class WALSCode(models.Model):
         db_table = 'cals_walscodes'
         app_label = 'cals'
 
-    def __unicode__(self):
+    def __str__(self):
         return "%i: %s" % (self.language.id, self.walscode)
 
     def natural_key(self):
         return self.walscode
 
+
+@python_2_unicode_compatible
 class ExternalInfo(models.Model):
     EXTERNALINFO_TYPES = (
             ('homepage', 'Homepage'),
@@ -400,7 +418,6 @@ class ExternalInfo(models.Model):
     class Meta:
         app_label = 'cals'
 
-    def __unicode__(self):
-        return u"%s %s: on request: %s, link: %s" % (self.language,
+    def __str__(self):
+        return "%s %s: on request: %s, link: %s" % (self.language,
                 self.category, self.on_request, self.link or 'No')
-

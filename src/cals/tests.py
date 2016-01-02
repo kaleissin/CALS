@@ -1,7 +1,11 @@
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 from django.test import TestCase
 from django.test.client import Client
 
-import models, views, admin, urls
+from . import models, views, admin, urls
+from six.moves import range
 
 test_user = {
             'username': 'foo',

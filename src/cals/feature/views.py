@@ -1,4 +1,6 @@
-# Create your views here.
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 import sys
 sys.stderr = sys.stdout
 
@@ -39,7 +41,7 @@ def _get_url_pieces(name='slug', **kwargs):
     _LOG.debug('Url-pieces: %s', kwargs)
     if name in kwargs:
         # split on +, remove empty pieces
-        pieces = filter(None, kwargs[name].split('+'))
+        pieces = [_f for _f in kwargs[name].split('+') if _f]
         if pieces:
             return pieces
     # '%s not in kwargs: %s' % (name, pformat(kwargs))
@@ -172,7 +174,7 @@ def change_or_add_feature(request, *args, **kwargs):
     featureform = FeatureForm()
     valueformset = NewFeatureValueFormSet()
 
-    data = {u'me': u'feature',
+    data = {'me': 'feature',
         'featureform': featureform,
         'fvformset': valueformset,
     }
@@ -233,7 +235,7 @@ def show_feature(request, features=None, object_id=None, template_name='feature_
 def change_feature_description(request, *args, **kwargs):
     me = 'feature'
     feature = get_object_or_404(Feature, id=kwargs.get('object_id', None))
-    preview = u''
+    preview = ''
     link = '/feature/%i/' % feature.id
     if not request.user.is_staff:
         error = "You do not have permission to change this feature's description"
@@ -295,11 +297,11 @@ def compare_feature_history(request, *args, **kwargs):
         if newid:
             newest = descriptions.get(id=int(newid))
         link_format = '/feature/%i/history/compare?' % feature.id
-        patch = u''
+        patch = ''
         if request.method == 'GET':
             patch = description_diff(oldest, newest, link_format)
     else:
-        oldest, newest, patch = None, None, u''
+        oldest, newest, patch = None, None, ''
     data = {'me': me,
             'oldest': oldest,
             'newest': newest,
@@ -362,11 +364,11 @@ def denormalize_lang(lang):
 def page_in_kwargs_or_get(request, kwargs):
     """If an url has the key-value-pair page=<page> in kwargs or
     GET, return the value, else return False."""
-    page = kwargs.get(u'page', 0) or request.GET.get(u'page', 0)
+    page = kwargs.get('page', 0) or request.GET.get('page', 0)
     try:
         page = int(page)
     except ValueError:
-        if page != u'last':
+        if page != 'last':
             page = False
     return page
 

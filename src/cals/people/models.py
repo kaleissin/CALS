@@ -1,6 +1,11 @@
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 from django.conf import settings
 from django.db import models
 from django.db.models import Q
+from django.utils.encoding import python_2_unicode_compatible
+import django.dispatch
 
 from nano.countries.models import Country
 
@@ -8,8 +13,8 @@ from cals.tools import uslugify
 
 # Signals defined here
 
-import django.dispatch                                                          
 user_unlurked = django.dispatch.Signal(providing_args=["user"])
+
 
 class ProfileManager(models.Manager):
     def autobiographers(self):
@@ -21,6 +26,8 @@ class ProfileManager(models.Manager):
                 Q(homepage__isnull=True) | Q(homepage_title='')
         )
 
+
+@python_2_unicode_compatible
 class Profile(models.Model):
 # TODO: change date-format on profile-page, needs new date-filter
 #     CHOICE_DATE = datetime(2008, 5, 1, 14, 0, 0, 7, UTC())
@@ -61,7 +68,7 @@ class Profile(models.Model):
         db_table = 'cals_profile'
         app_label = 'cals'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.display_name
 
     def save(self, *args, **kwargs):
@@ -80,7 +87,7 @@ class Profile(models.Model):
 #     def twittername(self):
 #         twitteraccounts = self.user.web20.filter(type='Twitter')
 #         if twitteraccounts:
-            
+
 
 #     def get_absolute_url(self):
 #         return ('profiles_profile_detail', (), { 'username': self.user.username })

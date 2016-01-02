@@ -1,3 +1,6 @@
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 import logging
 _LOG = logging.getLogger(__name__)
 
@@ -42,13 +45,13 @@ def blog_unlurked_user(unlurked_user):
 
 def user_now_active(sender, **kwargs):
     _LOG.info('blogging unlurking')
-    user = kwargs.get(u'user')
+    user = kwargs.get('user')
     blog_unlurked_user(user)
 
 def new_user_anywhere(sender, **kwargs):
-    new = kwargs.get(u'created', False)
+    new = kwargs.get('created', False)
     if new:
-        new_user = kwargs[u'instance']
+        new_user = kwargs['instance']
         test_users = getattr(settings, 'NANO_USER_TEST_USERS', ())
 
         # Add blog-entry
@@ -68,9 +71,9 @@ def new_user_anywhere(sender, **kwargs):
 
 def new_or_changed_language(sender, **kwargs):
     "Signal handler for cals.Language.post_save"
-    new = kwargs[u'created']
-    lang = kwargs[u'instance']
-    if u'testarossa' in lang.slug:
+    new = kwargs['created']
+    lang = kwargs['instance']
+    if 'testarossa' in lang.slug:
         return
     new_title = 'New language: %s' % lang.name
     changed_title = 'Changed language: %s' % lang.name
@@ -107,11 +110,11 @@ def hidden_language(sender, **kwargs):
         count = languages.count()
         if count == 1:
             lang = languages[0]
-            title = u'Dropped language: %s' % lang.name
+            title = 'Dropped language: %s' % lang.name
             add_entry_to_blog(lang, title,
                     'feeds/languages_single_dropped_description.html', date_field='last_modified')
         elif count > 1:
-            title = u'Several languages dropped'
+            title = 'Several languages dropped'
             add_entry_to_blog(languages, title,
                     'feeds/languages_multi_dropped_description.html', date_field='last_modified')
 

@@ -1,3 +1,7 @@
+from __future__ import absolute_import
+from __future__ import print_function
+from __future__ import unicode_literals
+
 from django.core.management.base import NoArgsCommand
 from django.contrib.auth import get_user_model
 
@@ -11,5 +15,5 @@ class Command(NoArgsCommand):
                 p = u.profile
             except Profile.DoesNotExist:
                 Profile.objects.create(user=u)
-                print 'Created profile for:', u
+                print('Created profile for:', u)
 

@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 # vim: set fileencoding=utf-8 :
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 from random import choice
 from math import modf, floor, ceil
 import os.path
@@ -10,7 +13,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.sessions.models import Session
 from django.conf import settings
 from django.core.cache import cache
-from django.utils.encoding import smart_str, force_unicode
+from django.utils.encoding import smart_str, force_text
 from django.utils.safestring import mark_safe
 from django.utils.timezone import now as tznow
 
@@ -63,7 +66,7 @@ def _get_display_name(user):
             try:
                 user = User.objects.get(username=str(user))
             except:
-                raise template.TemplateSyntaxError, 'wrong argument type: %s' % type(user)
+                raise template.TemplateSyntaxError('wrong argument type: %s' % type(user))
         # implicit fallback: User()
         display_name = user.profile.display_name.strip()
         return display_name, user
@@ -78,14 +81,14 @@ def _make_userlink(user, icon=False):
         display = icon
     else:
         display, _ = _get_display_name(user)
-    return u'<a href="/people/%i/">%s</a>' % (user.id, display) 
+    return '<a href="/people/%i/">%s</a>' % (user.id, display) 
 
 def _make_langlink(lang, internal=False):
     """Makes a link to a language"""
     langname = lang.name
     if internal:
         langname = lang.get_name()
-    return u'<a href="/language/%s/">%s</a>' % (lang.slug, langname) 
+    return '<a href="/language/%s/">%s</a>' % (lang.slug, langname) 
 
 def fetch_lf_description(language, feature, value):
     lf =LanguageFeature.objects.get(language=language, feature=feature, value=value)
@@ -94,20 +97,20 @@ def fetch_lf_description(language, feature, value):
 @register.simple_tag
 def show_language_tags(language):
     # django-tagging among others
-    if type(language.tags) == type(u''):
+    if type(language.tags) == type(''):
         return language.tags
     # django-taggit among others
     if getattr(language.tags, '__module__', False):
-        return u', '.join(unicode(tag) for tag in language.tags.all())
-    return u''
+        return ', '.join(str(tag) for tag in language.tags.all())
+    return ''
 
 @register.simple_tag
 def cals_tags_status(verbose=False):
-    successmsg = u'cals_tags loaded successfully'
+    successmsg = 'cals_tags loaded successfully'
     _LOG.info(successmsg)
     if verbose:
         return successmsg
-    return u''
+    return ''
 
 @register.simple_tag
 def currently_logged_in():
@@ -124,11 +127,11 @@ def currently_logged_in():
     out = []
     for user in users:
         out.append(_make_userlink(user.user))
-    return u','.join(out)
+    return ','.join(out)
 
 @register.simple_tag
 def graphline(barsize):
-    string = u'<img src="%simg/gradient.png" width="%%i" height="16" />' % STATIC_URL
+    string = '<img src="%simg/gradient.png" width="%%i" height="16" />' % STATIC_URL
     return string % (int(barsize) * 10)
 
 @register.simple_tag
@@ -145,12 +148,12 @@ def feature_graph(feature, ltype):
             max_count = count
     num_values = len(values)
     if not num_values or max_count == 0:
-        return u''
+        return ''
     chart = pygal.Bar()
     chart.disable_xml_declaration = True
     chart.add('', values)
     return chart.render()
-    return u'<img src="%s" />' % chart.get_url()
+    return '<img src="%s" />' % chart.get_url()
 
 @register.simple_tag
 def show_lang(lang):
@@ -161,7 +164,7 @@ def wals(feature):
     try:
         int(feature)
     except ValueError:
-        raise template.TemplateSyntaxError, u'must be integer'
+        raise template.TemplateSyntaxError('must be integer')
     if feature <= MWF:
         return _wals_description % feature
     return ''
@@ -171,7 +174,7 @@ def walsfeature(feature):
     try:
         int(feature)
     except ValueError:
-        raise template.TemplateSyntaxError, u'must be integer'
+        raise template.TemplateSyntaxError('must be integer')
     if feature <= MWF:
         return _wals_description % feature
     return ''
@@ -187,7 +190,7 @@ def showuser(user):
         user = User.objects.get(id=user)
     badges = show_badges(user)
     if badges:
-        badges = u' ' + badges
+        badges = ' ' + badges
     return _make_userlink(user) + badges
 
 def _make_greet_link(greeting, objstring=''):
@@ -196,9 +199,9 @@ def _make_greet_link(greeting, objstring=''):
     langlink = None
     try:
         # string!
-        greetstring = greeting + u''
+        greetstring = greeting + ''
     except TypeError: # Translation!
-        langlink = u'<a href="/language/%s/">%%s</a>'
+        langlink = '<a href="/language/%s/">%%s</a>'
         try:
             greetstring = greeting.translation.strip()
             langlink = langlink % greeting.language.slug
@@ -206,12 +209,12 @@ def _make_greet_link(greeting, objstring=''):
             greetstring = get_greeting_of_lang(greeting)
             langlink = langlink % greeting.slug
     _LOG.info('1 ' + greetstring)
-    if not u'$' in greetstring:
-        greetstring = greetstring + u' $'
-    greetstring = greetstring.split(u'$', 1)
+    if not '$' in greetstring:
+        greetstring = greetstring + ' $'
+    greetstring = greetstring.split('$', 1)
     _LOG.info('2 ' + str( greetstring))
     if langlink:
-        greetstring = [langlink % greetbit if greetbit else u'' for greetbit in greetstring]
+        greetstring = [langlink % greetbit if greetbit else '' for greetbit in greetstring]
     _LOG.info('3 ' + str( greetstring))
     _LOG.info('4 ' + objstring.join(greetstring))
     return objstring.join(greetstring)
@@ -229,16 +232,16 @@ def make_greet_link(lang, ahref_to_object):
     greeting = get_greeting_of_lang(lang)
     if not greeting:
         return 'Hello, %s!' % ahref_to_object
-    _link = u'<a href="/language/%%(slug)s/">%%(%s)s</a>'
-    _link1 = _link % u'greeting'
-    _link_front = _link % u'front'
-    _link_back = _link % u'back'
-    _langlink1 = u'%s&nbsp;%%(objectlink)s!' % _link1
-    _langlink2 = u'%s%%(objectlink)s%s' % (_link_front, _link_back)
+    _link = '<a href="/language/%%(slug)s/">%%(%s)s</a>'
+    _link1 = _link % 'greeting'
+    _link_front = _link % 'front'
+    _link_back = _link % 'back'
+    _langlink1 = '%s&nbsp;%%(objectlink)s!' % _link1
+    _langlink2 = '%s%%(objectlink)s%s' % (_link_front, _link_back)
     langd = {'slug': lang.slug, 
             'greeting': greeting,
             'objectlink': ahref_to_object}
-    if u'$' in langd['greeting']:
+    if '$' in langd['greeting']:
         front, back = langd['greeting'].split('$', 1)
         langd['front'] = front
         langd['back'] = back
@@ -280,9 +283,9 @@ def latest_modified_languages(num_lang):
     try:
         num_lang = int(num_lang)
         langs = Language.objects.order_by('-last_modified')[:num_lang]
-        return u'<ul>%s</ul>' % [_make_langlink(lang) for lang in langs]
+        return '<ul>%s</ul>' % [_make_langlink(lang) for lang in langs]
     except ValueError:
-        raise template.TemplateSyntaxError, 'must be integer'
+        raise template.TemplateSyntaxError('must be integer')
     return ''
 
 @register.inclusion_tag('cals/language/family_path.html')
@@ -299,8 +302,8 @@ def restructuredtext(value):
         import docutils
     except ImportError:
         if settings.DEBUG:
-            raise template.TemplateSyntaxError, "Error in {% restructuredtext %} filter: The Python docutils library isn't installed."
-        return force_unicode(value)
+            raise template.TemplateSyntaxError("Error in {% restructuredtext %} filter: The Python docutils library isn't installed.")
+        return force_text(value)
     else:
         return mark_safe(markup_as_restructuredtext(value))
 restructuredtext.is_safe = True
@@ -320,13 +323,13 @@ load_shareicon_library.is_safe = True
 @register.simple_tag
 def messages_for_user(user):
     count = PM.objects.received(user).count()
-    imgstring = u'(%%s <img class="icon" src="%s%s" alt="PMs:" />) '
-    icon = u'mail_generic.png'
+    imgstring = '(%%s <img class="icon" src="%s%s" alt="PMs:" />) '
+    icon = 'mail_generic.png'
     if count:
         imgstring = imgstring % (_img_src, icon)
         return _make_userlink(user, imgstring % count)
     else:
-        return u''
+        return ''
 
 # -------------- Move to nano
 
@@ -344,13 +347,13 @@ def gravatar(obj, size=32, fallback='identicon'):
     # - Fallback different from those provided by gravatar
 
     try:
-        string = obj + u''
+        string = obj + ''
     except TypeError:
         User = get_user_model()
         if isinstance(obj, User):
-            string = obj.email or u'%s %s' % (obj.id, obj.date_joined)
+            string = obj.email or '%s %s' % (obj.id, obj.date_joined)
         else:
-            string = unicode(obj)
+            string = str(obj)
 
     url = "http://www.gravatar.com/avatar.php?"
     url += urllib.urlencode({ 'gravatar_id': hashlib.md5(string).hexdigest()+'.jpg', 's': str(size), 'd': fallback })

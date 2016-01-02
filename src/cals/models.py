@@ -1,5 +1,6 @@
-
 # -*- coding: UTF-8 -*-
+
+from __future__ import absolute_import
 
 import logging
 _LOG = logging.getLogger(__name__)
@@ -21,16 +22,18 @@ from cals.language.models import Language
 def add_filter(queryset, **kwargs):
     return queryset.filter(**kwargs)
 
+
 def add_exclude(queryset, **kwargs):
     return queryset.exclude(**kwargs)
+
 
 def with_args(qs, keyword, *values):
     for v in values:
         qs = add_filter(qs, **{keyword: v})
     return qs
 
+
 def without_args(qs, keyword, *values):
     for v in values:
         qs = add_exclude(qs, **{keyword: v})
     return qs
-

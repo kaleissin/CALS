@@ -1,6 +1,10 @@
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 from django.conf import settings
 from django.db import models
 from django.db.models.query import QuerySet
+from django.utils.encoding import python_2_unicode_compatible
 
 from cals.tools.models import DescriptionMixin
 
@@ -20,12 +24,14 @@ FEATURE_GROUPS_CHOICES = (
 
 # BEGIN Features
 
+
 class ActiveQuerySet(QuerySet):
     def active(self):
         return self.filter(active=True)
 
     def passive(self):
         return self.filter(active=False)
+
 
 class ActivePassiveManager(models.Manager):
     "Needed to use the custom queryset"
@@ -38,6 +44,7 @@ class ActivePassiveManager(models.Manager):
     def passive(self):
         return self.get_queryset().passive()
 
+
 class ActiveManager(models.Manager):
     "Needed to use the custom queryset"
     def get_queryset(self):
@@ -45,6 +52,7 @@ class ActiveManager(models.Manager):
 
     def active(self):
         return self.get_queryset().active()
+
 
 class PassiveManager(models.Manager):
     "Needed to use the custom queryset"
@@ -54,11 +62,14 @@ class PassiveManager(models.Manager):
     def passive(self):
         return self.get_queryset().passive()
 
+
 class CategoryManager(ActivePassiveManager):
 
     def get_by_natural_key(self, name):
         return self.get(name=name)
 
+
+@python_2_unicode_compatible
 class Category(models.Model):
     name = models.CharField(max_length=20, unique=True)
     active = models.BooleanField(default=False, editable=False)
@@ -73,17 +84,20 @@ class Category(models.Model):
         db_table = 'cals_category'
         app_label = 'cals'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def natural_key(self):
         return self.name
+
 
 class FeatureManager(ActivePassiveManager):
 
     def get_by_natural_key(self, category, name):
         return self.get(category__name=category, name=name)
 
+
+@python_2_unicode_compatible
 class Feature(models.Model, DescriptionMixin):
     MAX_WALS_FEATURE = 144
     name = models.CharField(max_length=96, unique=True) # Longest feature-name... 93 chars!!
@@ -104,11 +118,12 @@ class Feature(models.Model, DescriptionMixin):
         db_table = 'cals_feature'
         app_label = 'cals'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def natural_key(self):
         return (self.category.name, self.name)
+
 
 class FeatureValueManager(models.Manager):
     def get_by_natural_key(self, feature, name):
@@ -123,6 +138,8 @@ class FeatureValueManager(models.Manager):
     def value_counts(self):
         return self._value_counts().order_by('count')
 
+
+@python_2_unicode_compatible
 class FeatureValue(models.Model, DescriptionMixin):
     feature = models.ForeignKey(Feature, related_name='values')
     name = models.CharField(max_length=64)
@@ -135,7 +152,7 @@ class FeatureValue(models.Model, DescriptionMixin):
         db_table = 'cals_featurevalue'
         app_label = 'cals'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def natural_key(self):

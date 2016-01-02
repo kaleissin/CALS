@@ -1,9 +1,13 @@
 # -*- coding: UTF-8 -*-
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 import logging
 _LOG = logging.getLogger(__name__)
 
 from django.db import models
+from django.utils.encoding import python_2_unicode_compatible
 
 from cals.tools.models import DescriptionMixin
 
@@ -12,6 +16,7 @@ from cals.feature.models import FeatureValue, Feature
 from cals.language.models import Language
 
 __all__ = ['LanguageFeature']
+
 
 class LanguageFeatureQuerySet(models.query.QuerySet):
     def for_natlangs(self):
@@ -27,6 +32,7 @@ class LanguageFeatureQuerySet(models.query.QuerySet):
         natlangs = self.for_natlangs().count()
         conlangs = self.for_conlangs().count()
         return (conlangs, natlangs)
+
 
 class LanguageFeatureManager(models.Manager):
     use_for_related_fields = True
@@ -46,6 +52,8 @@ class LanguageFeatureManager(models.Manager):
     def count_both(self):
         return self.get_queryset().count_both()
 
+
+@python_2_unicode_compatible
 class LanguageFeature(models.Model, DescriptionMixin):
     language = models.ForeignKey(Language, related_name='features')
     feature = models.ForeignKey(Feature, related_name='languages')
@@ -58,10 +66,8 @@ class LanguageFeature(models.Model, DescriptionMixin):
         db_table = 'cals_languagefeature'
         app_label = 'cals'
 
-    def __unicode__(self):
-        return u"%s / %s / %s" % (self.language, self.feature, self.value)
+    def __str__(self):
+        return "%s / %s / %s" % (self.language, self.feature, self.value)
 
     def natural_key(self):
         return (self.language.slug, self.feature)
-
-

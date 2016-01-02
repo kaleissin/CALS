@@ -1,6 +1,7 @@
 # -*- coding: utf8 -*-
 
 from __future__ import unicode_literals
+from __future__ import absolute_import
 
 import unicodedata
 import re
@@ -8,6 +9,7 @@ import difflib
 from unidecode import unidecode
 
 import logging
+from six.moves import zip
 _LOG = logging.getLogger(__name__)
 
 from django.contrib.contenttypes.models import ContentType
@@ -50,7 +52,7 @@ def string_statistics(strings):
     return [(string, count, count/num_strings*100) for (string, count) in outdict.items()]
 
 class BetterHtmlDiff(difflib.HtmlDiff):
-    _table_template = u"""
+    _table_template = """
     <table class="diff" id="difflib_chg_%(prefix)s_top">
         <colgroup span="3"></colgroup> <colgroup span="3"></colgroup>
         %(header_row)s
@@ -92,9 +94,9 @@ def description_diff(oldest, newest, link_prefix, may_revert=False, may_remove=F
     def make_link_piece(obj, piece):
         if obj:
             return '%s=%s' % (piece, obj.id)
-        return u''
+        return ''
 
-    url = u"""<a href="%s">%s</a>"""
+    url = """<a href="%s">%s</a>"""
     def get_next_prev_links(prevobj, nextobj, direction):
         if prevobj != nextobj:
             prev = make_link_piece(prevobj, 'oldid')
@@ -102,35 +104,35 @@ def description_diff(oldest, newest, link_prefix, may_revert=False, may_remove=F
             if next and prev:
                 link = '%s%s&%s' % (link_prefix, prev, next)
                 return url % (link, direction)
-        return u''
+        return ''
 
     diff_header_template = loader.get_template('cals/diff_header.html')
     differ = BetterHtmlDiff()
 
     if may_revert:
-        use_this_button = u'<a href="../use?id=%i"><button>Use this</button></a>'
+        use_this_button = '<a href="../use?id=%i"><button>Use this</button></a>'
     else:
-        use_this_button = u''
+        use_this_button = ''
 
     if may_remove:
-        remove_button = u'<a href="./delete?id=%i"><button>Remove this</button></a>'
+        remove_button = '<a href="./delete?id=%i"><button>Remove this</button></a>'
     else:
-        remove_button = u''
+        remove_button = ''
 
     # prev header
-    prev_use_this_button = use_this_button % oldest.id if may_revert else u'' 
-    prev_remove_button = remove_button % oldest.id if may_remove else u''
+    prev_use_this_button = use_this_button % oldest.id if may_revert else '' 
+    prev_remove_button = remove_button % oldest.id if may_remove else ''
     prev_extra = prev_use_this_button + prev_remove_button
     old_prev_url = get_next_prev_links(oldest.prev_version(),
             newest, 'Previous')
     if not old_prev_url:
         old_prev_url = '<b>First</b>'
     else:
-        old_prev_url = u'← ' + old_prev_url
+        old_prev_url = '← ' + old_prev_url
     old_next_url = get_next_prev_links(oldest.next_version(),
             newest, 'Next')
     if old_next_url:
-        old_next_url += u' →'
+        old_next_url += ' →'
     prev_version = Context({'prev_version': old_prev_url,
             'next_version': old_next_url,
             'extra': prev_extra,
@@ -142,14 +144,14 @@ def description_diff(oldest, newest, link_prefix, may_revert=False, may_remove=F
     new_prev_url = get_next_prev_links(oldest,
             newest.prev_version(), 'Previous')
     if new_prev_url:
-        new_prev_url = u'← ' + new_prev_url
+        new_prev_url = '← ' + new_prev_url
     new_next_url = get_next_prev_links(oldest,
-            newest.next_version(), 'Next') + u' →'
+            newest.next_version(), 'Next') + ' →'
     if newest.current:
         new_next_url = '<b>Current</b>'
     else:
-        next_use_this_button = use_this_button % newest.id if may_revert else u'' 
-        next_remove_button = remove_button % newest.id if may_remove else u''
+        next_use_this_button = use_this_button % newest.id if may_revert else '' 
+        next_remove_button = remove_button % newest.id if may_remove else ''
         next_extra = next_use_this_button + next_remove_button
         #new_extra = use_this_button % newest.id if use_this_button else u''
     

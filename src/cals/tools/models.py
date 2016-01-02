@@ -1,3 +1,6 @@
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
@@ -6,6 +9,7 @@ from django.db.models import Q
 from django.db.models.query import QuerySet
 from django.utils.html import strip_tags
 from django.utils.timezone import now as tznow
+from django.utils.encoding import python_2_unicode_compatible
 
 from interlinears import leipzig
 from cals import markup_as_restructuredtext
@@ -17,11 +21,12 @@ FREETEXT_TYPES = (
         ('plaintext', 'plaintext'),
         )
 
+
 class UnorderedTreeMixin(models.Model):
     part_of = models.ForeignKey('self', blank=True, null=True, default=None)
     path = models.CharField(max_length=255, blank=True, default='')
 
-    _sep = u'/'
+    _sep = '/'
 
     class Meta:
         abstract = True
@@ -43,13 +48,13 @@ class UnorderedTreeMixin(models.Model):
 
     @property
     def level(self):
-        return unicode(self.path).count(self._sep)
+        return str(self.path).count(self._sep)
 
     def roots(self):
         return self._default_manager.filter(part_of__isnull=True)
 
     def get_path(self):
-        return [self._default_manager.get(id=p) for p in unicode(self.path).split(self._sep) if p]
+        return [self._default_manager.get(id=p) for p in str(self.path).split(self._sep) if p]
 
     def descendants(self):
         return self._default_manager.filter(path__startswith=self.path).exclude(id=self.id)
@@ -79,6 +84,8 @@ class UnorderedTreeMixin(models.Model):
 
         return self.descendants().count() == 0
 
+
+@python_2_unicode_compatible
 class Freetext(models.Model):
     freetext = models.TextField(blank=True, null=True, default='')
     freetext_xhtml = models.TextField(null=True, editable=False)
@@ -88,7 +95,7 @@ class Freetext(models.Model):
     class Meta:
         abstract = True
 
-    def __unicode__(self):
+    def __str__(self):
         return self.freetext_xhtml
 
     def save(self, *args, **kwargs):
@@ -96,20 +103,22 @@ class Freetext(models.Model):
         super(Freetext, self).save(*args, **kwargs)
 
     def make_xhtml(self):
-        plaintext_fmt = u'<pre class="plaintext">%s</pre>'
+        plaintext_fmt = '<pre class="plaintext">%s</pre>'
         if self.freetext_type == 'rst':
             try:
                 freetext_xhtml = markup_as_restructuredtext(self.freetext)
-            except leipzig.InterlinearError, e:
+            except leipzig.InterlinearError as e:
                 freetext_xhtml = '<div class="error">%s<br />%s</div>' % (e.args[0], plaintext_fmt % self.freetext.strip())
         else:
             freetext = strip_tags(self.freetext)
             freetext_xhtml = plaintext_fmt % self.freetext.strip()
         return freetext_xhtml
 
+
 class DescriptionManager(models.Manager):
     def get_queryset(self):
         return super(DescriptionManager, self).get_queryset().filter(current=True)
+
 
 class Description(Freetext):
     last_modified = models.DateTimeField(default=tznow, editable=False)
@@ -176,6 +185,7 @@ class Description(Freetext):
         self.freetext_xhtml = self.make_xhtml()
         self.save(batch=True)
 
+
 class DescriptionMixin(object):
 
     descriptions = GenericRelation(Description)
@@ -187,6 +197,7 @@ class DescriptionMixin(object):
             return Description.archive.get(object_id=self.id, current=True, content_type=self_type)
         except Description.DoesNotExist:
             return None
+
 
 class SearchManager(models.Manager):
 
@@ -203,4 +214,3 @@ class SearchManager(models.Manager):
             return self.find_anywhere(q)
         else:
             return self.find_prefix(q)
-

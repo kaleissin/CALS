@@ -3,6 +3,9 @@
 # See the LICENSE file that should have been included with this distribution
 # for more specific information.
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 from django import oldforms
 from django.contrib.auth.forms import AuthenticationForm
 from django.template import Library

@@ -1,3 +1,6 @@
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 from django.apps import AppConfig
 from django.contrib.auth.apps import AuthConfig
 from django.conf import settings

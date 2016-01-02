@@ -1,4 +1,8 @@
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 import logging
+from six.moves import map
 _LOG = logging.getLogger(__name__)
 _LOG.info(__name__)
 
@@ -102,7 +106,7 @@ class LanguageFeatureDescriptionCompareView(LanguageFeatureDescriptionMixin, Det
 
     def get_context_data(self, **kwargs):
         context = super(LanguageFeatureDescriptionCompareView, self).get_context_data(**kwargs)
-        oldest, newest, patch = None, None, u''
+        oldest, newest, patch = None, None, ''
         descriptions = self.descriptions
         if descriptions:
             newest = descriptions[0]
@@ -114,7 +118,7 @@ class LanguageFeatureDescriptionCompareView(LanguageFeatureDescriptionMixin, Det
             if newid:
                 newest = descriptions.get(id=int(newid))
             link_format = '/language/%s/feature/%i/history/compare?' % (self.language.slug, self.feature.id)
-            patch = u''
+            patch = ''
             if self.request.method == 'GET':
                 patch = description_diff(oldest, newest, link_format, self.may_edit, self.user_is_superuser)
         context['patch'] = patch
@@ -170,8 +174,8 @@ def describe_languagefeature(request, *args, **kwargs):
     feature = get_object_or_404(Feature, id=kwargs.get('feature', None))
     lf = get_object_or_404(LanguageFeature, language=lang, feature=feature)
     value_str = '%s_%s' % (feature.id, lf.value.id)
-    preview = u''
-    preview_value = u''
+    preview = ''
+    preview_value = ''
     link = '/language/%s/feature/%i/' % (lang.slug, feature.id)
     new_xhtml = ''
     lfd = lf.description
@@ -186,7 +190,7 @@ def describe_languagefeature(request, *args, **kwargs):
         valueform = FeatureValueForm(feature=feature, data=request.POST)
 
         if valueform.is_valid():
-            new_f, new_v = map(int, valueform.cleaned_data.get('value', value_str).split('_'))
+            new_f, new_v = list(map(int, valueform.cleaned_data.get('value', value_str).split('_')))
             if not new_v:
                 messages.error(request, "Cannot delete a feature that way")
                 return HttpResponseRedirect(link + 'change')
@@ -209,14 +213,14 @@ def describe_languagefeature(request, *args, **kwargs):
                 descriptionform = DescriptionForm()
         elif request.POST.get('submit'):
             # value
-            value_change = u''
+            value_change = ''
             if new_v and new_f == feature.id and new_v != lf.value.id:
                 lf.value = new_fv
                 lf.save()
-                value_change = u'Value now "%s." ' % lf.value
+                value_change = 'Value now "%s." ' % lf.value
 
             # description
-            desc_change = u''
+            desc_change = ''
             # Add/change desc
             if new_lfd and new_xhtml:
                 if not lf.description or new_lfd.freetext != lf.description.freetext \
@@ -225,13 +229,13 @@ def describe_languagefeature(request, *args, **kwargs):
                     new_lfd.content_type = ContentType.objects.get_for_model(lf)
                     new_lfd.object_id = lf.id
                     new_lfd.save(user=request.user)
-                    desc_change = u'Description changed.'
+                    desc_change = 'Description changed.'
             # Delete desc
             else:
                 if lfd:
                     lfd.delete()
                 descriptionform = DescriptionForm()
-            messages.info(request, u'%s%s' % (value_change, desc_change))
+            messages.info(request, '%s%s' % (value_change, desc_change))
             return HttpResponseRedirect(link)
     else:
         valueform = FeatureValueForm(feature=feature, initial={'value': value_str})

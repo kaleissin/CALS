@@ -1,11 +1,14 @@
-
 # -*- coding: utf8 -*-
+
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 import unicodedata
 from pprint import pformat
 import difflib
 
 import logging
+from six.moves import zip
 _LOG = logging.getLogger(__name__)
 
 from django.contrib.contenttypes.models import ContentType

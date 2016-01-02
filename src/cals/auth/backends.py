@@ -1,3 +1,7 @@
+from __future__ import absolute_import
+from __future__ import print_function
+from __future__ import unicode_literals
+
 import sys
 import logging
 logging.basicConfig(level=logging.DEBUG,
@@ -14,8 +18,8 @@ class LibrarythingBackend:
     # http://www.djangoproject.com/documentation/0.96/authentication/#writing-an-authentication-backend
     def authenticate(self, username=None, password=None):
         logging.debug('LibrarythingBackend: authenticating')
-        username = u'%s' % username.strip()
-        password = u'%s' % password.strip()
+        username = '%s' % username.strip()
+        password = '%s' % password.strip()
         if not (username and password):
             return None
         valid = None
@@ -35,8 +39,8 @@ class LibrarythingBackend:
         "Create a new user"
         logging.info('Making user: %s/%s', username, password)
         # Clean input
-        username = u'%s' % username.strip()
-        password = u'%s' % username.strip()
+        username = '%s' % username.strip()
+        password = '%s' % username.strip()
         user = User(username=username)
         user.set_password(password)
         user.is_staff = False
@@ -58,7 +62,7 @@ class LibrarythingBackend:
 
     def get_user(self, user_id):
         try:
-            print 'Fetching user with id', user_id
+            print('Fetching user with id', user_id)
             return User.objects.get(id=user_id)
         except User.DoesNotExist:
             return None

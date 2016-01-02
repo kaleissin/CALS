@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+from __future__ import absolute_import
 
 __all__ = [
         'show_people_map',
@@ -21,7 +22,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.http import HttpResponseRedirect, HttpResponseNotFound, Http404
 from django.shortcuts import get_object_or_404, render
-from django.utils.encoding import smart_unicode
+from django.utils.encoding import smart_text
 from django.utils.timezone import now as tznow
 from django.db.models import Count
 from django.views.generic import ListView, DetailView
@@ -78,7 +79,7 @@ class ListPeopleView(ListView):
         self.prolificness = False
 
     def get(self, request, *args, **kwargs):
-        if self.request.GET.has_key('prolificness'):
+        if 'prolificness' in self.request.GET:
             self.prolificness = True
         return super(ListPeopleView, self).get(request, *args, **kwargs)
 
@@ -212,7 +213,7 @@ def auth_login(request, *args, **kwargs):
     if request.method == 'POST':
         # 1
         if not request.user.is_authenticated():
-            username = asciify(smart_unicode(request.POST['username'], errors='ignore').strip())
+            username = asciify(smart_text(request.POST['username'], errors='ignore').strip())
             password = request.POST['password'].strip()
             # 2
             if username and password:

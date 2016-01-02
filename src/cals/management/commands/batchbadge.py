@@ -1,3 +1,7 @@
+from __future__ import absolute_import
+from __future__ import print_function
+from __future__ import unicode_literals
+
 from datetime import timedelta
 import sys
 
@@ -269,12 +273,12 @@ _batch_jobs = {
 
 def run_batch(verbose=True):
     for batch_name, batch_job in _batch_jobs.items():
-        if verbose: print batch_name,
+        if verbose: print(batch_name, end=' ')
         batch_job()
-        if verbose: print 'done'
+        if verbose: print('done')
     unlurked = unlurk()
     if verbose:
-        print '\n%i users have become active' % unlurked
+        print('\n%i users have become active' % unlurked)
 
 class Command(BaseCommand):
     help = "Recalculate and set badges for users"

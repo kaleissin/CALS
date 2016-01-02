@@ -1,5 +1,8 @@
-
 # -*- coding: utf8 -*-
+
+from __future__ import absolute_import
+from __future__ import print_function
+from __future__ import unicode_literals
 
 from docutils.parsers import rst
 from docutils.parsers.rst import directives
@@ -44,7 +47,7 @@ class InterlinearDirective(rst.Directive):
         try:
             il = InterlinearText()
             html = il.do_text(text)
-        except InterlinearError, e:
+        except InterlinearError as e:
             raise self.error(e.args[0])
         text_nodes, messages = self.state.inline_text(text, self.lineno)
         node = self.interlinear(text, '', *text_nodes)
@@ -80,6 +83,6 @@ if __name__ == '__main__':
     z
 """
 
-    print test(goodteststring)
-    print test(badteststring)
+    print(test(goodteststring))
+    print(test(badteststring))
 

@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+from __future__ import absolute_import
 
 import logging
 _LOG = logging.getLogger(__name__)
@@ -60,8 +61,7 @@ from nano.blog.tools import get_nano_blog_entries
 from tagtools.tools import set_tags_for_model, get_tagcloud_for_model
 
 _error_forbidden_msg = "You don't have the necessary permissions to edit here."
-error_forbidden = render_to_string('error.html',
-        {'error_message': _error_forbidden_msg })
+error_forbidden = render_to_string('error.html', {'error_message': _error_forbidden_msg })
 
 class CALSError(Exception):
     pass
@@ -81,7 +81,7 @@ def _get_url_pieces(name='slug', **kwargs):
     _LOG.debug('Url-pieces: %s', kwargs)
     if name in kwargs:
         # split on +, remove empty pieces
-        pieces = filter(None, kwargs[name].split('+'))
+        pieces = [_f for _f in kwargs[name].split('+') if _f]
         if pieces:
             return pieces
     return None
@@ -167,9 +167,9 @@ def compare_language(request, *args, **kwargs):
     same, different = _generate_comparison_type(comparison_type)
     cform = CompareTwoForm()
     _LOG.debug('0: %s', comparison_type)
-    _LOG.debug('1: same %s, different %s', (same, different))
+    _LOG.debug('1: same %s, different %s', same, different)
     comparison = compare_languages(langs, same=same, different=different)
-    _LOG.debug('Last: Features compared: %s (%s)', (len(comparison), comparison_type))
+    _LOG.debug('Last: Features compared: %s (%s)', len(comparison), comparison_type)
     data = {
             'comparison': comparison,
             'me': me,
@@ -208,16 +208,16 @@ def search_languages(request, *args, **kwargs):
         page = paginator.page(paginator.num_pages)
 
     form = SearchForm(initial={'q': raw_q, 'anywhere': anywhere, 'limit': limit})
-    data = {u'me': me,
-            u'submenu': 'search',
-            u'q': raw_q,
-            u'anywhere': anywhere,
-            u'limit': limit,
-            u'searchform': form,
-            u'object_list': page.object_list,
-            u'page_obj': page,
-            u'paginator': paginator,
-            u'is_paginated': True}
+    data = {'me': me,
+            'submenu': 'search',
+            'q': raw_q,
+            'anywhere': anywhere,
+            'limit': limit,
+            'searchform': form,
+            'object_list': page.object_list,
+            'page_obj': page,
+            'paginator': paginator,
+            'is_paginated': True}
     return render(request, 'cals/languagenames_search.html', data)
 
 def denormalize_lang(lang):
@@ -311,7 +311,7 @@ def create_language(request, lang=None, fvlist=None, clone=False, *args, **kwarg
                         trans.save()
 
                     # values
-                    lang = set_featurevalues_for_lang(lang, request.POST.getlist(u'value'))
+                    lang = set_featurevalues_for_lang(lang, request.POST.getlist('value'))
 
                     # Final save
                     lang.save(user=user)
@@ -319,7 +319,7 @@ def create_language(request, lang=None, fvlist=None, clone=False, *args, **kwarg
                         streamaction.send(request.user, verb='cloned the language', action_object=cloned_from_lang, target=lang)
                     else:
                         streamaction.send(request.user, verb='added the language', action_object=lang)
-                    messages.info(request, u'You successfully added the language %s to CALS' % lang.name)
+                    messages.info(request, 'You successfully added the language %s to CALS' % lang.name)
                     return HttpResponseRedirect('/language/%s/' % lang.slug)
         else:
             if not clone:
@@ -401,7 +401,7 @@ def change_language(request, *args, **kwargs):
     if not may_edit:
         return HttpResponseForbidden(error_forbidden)
 
-    _LOG.info('%s about to change %s', (user, lang))
+    _LOG.info('%s about to change %s', user, lang)
 
     langform = LanguageForm(instance=lang)
     #profile = user.profile
@@ -455,7 +455,7 @@ def change_language(request, *args, **kwargs):
                             if greetingtrans:
                                 greetingtrans.delete()
                         # values
-                        lang = set_featurevalues_for_lang(lang, request.POST.getlist(u'value'))
+                        lang = set_featurevalues_for_lang(lang, request.POST.getlist('value'))
 
                         # Final save
                         lang.save(user=user)
@@ -510,7 +510,7 @@ def list_languages(request, *args, **kwargs):
         'homepage': list_conlang_homepages,
     }
 
-    action = in_kwargs_or_get2(request, kwargs, 'action', *mapping.keys())
+    action = in_kwargs_or_get2(request, kwargs, 'action', *list(mapping.keys()))
     if action:
         return mapping[action](request, *args, **kwargs)
     form = SearchForm()
@@ -559,24 +559,24 @@ def language_list(request, natlang=False, *args, **kwargs):
         page = paginator.page(paginator.num_pages)
 
     submenu = 'alphabetic' if not natlang else 'natlang'
-    data = {u'me': u'language',
-            u'submenu': submenu,
-            u'object_list': page.object_list,
-            u'natlang': natlang,
-            u'page_obj': page,
-            u'paginator': paginator,
-            u'is_paginated': True}
+    data = {'me': 'language',
+            'submenu': submenu,
+            'object_list': page.object_list,
+            'natlang': natlang,
+            'page_obj': page,
+            'paginator': paginator,
+            'is_paginated': True}
 
     return render(request, 'cals/language_list.html', data)
 
 def page_in_kwargs_or_get(request, kwargs):
     """If an url has the key-value-pair page=<page> in kwargs or
     GET, return the value, else return False."""
-    page = kwargs.get(u'page', 0) or request.GET.get(u'page', 0)
+    page = kwargs.get('page', 0) or request.GET.get('page', 0)
     try:
         page = int(page)
     except ValueError:
-        if page != u'last':
+        if page != 'last':
             page = False
     return page
 
@@ -618,7 +618,7 @@ def home(request, *args, **kwargs):
     _LOG.info('Homepage')
     greeting = None
     nexthop = ''
-    nextfield = u'next'
+    nextfield = 'next'
     User = get_user_model()
     langs = Language.objects.exclude(slug__startswith='testarossa')
     langs_newest = langs.order_by('-created')[:5]

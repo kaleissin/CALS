@@ -1,4 +1,6 @@
-# Create your views here.
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 from random import choice, sample
 import time
 import unicodedata
