@@ -12,6 +12,9 @@ lists have in common.</p>
 {{ word.show_notes }}
 {{ word.words.count }}
 {% endifequal %}
+{% if word.concepticon_id %}
+<a href="http://concepticon.clld.org/parameters/{{ word.concepticon_id }}">Concepticon</a>
+{% endif %}
 </li>
 {% endfor %}
 </ul>

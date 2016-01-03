@@ -9,7 +9,11 @@
 <li class="{% cycle 'odd' 'odd' 'odd' 'odd' 'odd show' 'even' 'even' 'even' 'even' 'even show' %}">
 <span class="buck">{{ word.show_buck_numbers }}</span>
 {{ word }}
-<span class="help">{{ word.notes|default:''|safe }}</span></li>
+<span class="help">{{ word.notes|default:''|safe }}</span>
+{% if word.concepticon_id %}
+<a href="http://concepticon.clld.org/parameters/{{ word.concepticon_id }}">Concepticon</a>
+{% endif %}
+</li>
 {% endfor %}
 </ol>
 {% endblock content %}

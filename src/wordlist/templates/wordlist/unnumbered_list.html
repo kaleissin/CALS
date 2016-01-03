@@ -4,7 +4,11 @@
 <h1>{{ title }}</h1>
 <ul>
 {% for word in words %}
-<li class="{% cycle 'odd' 'odd' 'odd' 'odd' 'odd' 'even' 'even' 'even' 'even' 'even' %}">{{ word }}</li>
+<li class="{% cycle 'odd' 'odd' 'odd' 'odd' 'odd' 'even' 'even' 'even' 'even' 'even' %}">{{ word }}
+{% if word.concepticon_id %}
+<a href="http://concepticon.clld.org/parameters/{{ word.concepticon_id }}">Concepticon</a>
+{% endif %}
+</li>
 {% endfor %}
 </ul>
 {% endblock content %}
