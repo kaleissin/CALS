@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
+from __future__ import division
 
 from random import choice, sample
 import time
@@ -90,13 +91,14 @@ def timeline():
 def median(datapoints, n=0):
     n = n or len(datapoints)
     datapoints = sorted(datapoints)
-    middle = n / 2
+    middle = n // 2
     if n % 2:
         # odd
         return datapoints[middle]
     else:
         # even
-        return (datapoints[middle-1] + datapoints[middle]) / 2
+        return (datapoints[middle - 1] + datapoints[middle]) // 2
+
 
 def stddev(datapoints):
     from math import sqrt
@@ -290,22 +292,22 @@ def generate_global_stats():
 
     data = {}
     data['langs'] = {
-            'number': num_conlangs,
-            'number_natlangs': num_natlangs,
-            'features_per_lang': str(num_lfs/float(num_langs)),
-            'percentage_greetings': str(num_greetings/float(num_langs)*100),
-            'percentage_backgrounds': str(num_backgrounds/float(num_langs)*100),
-            'num_translations': num_translations,
-            }
+        'number': num_conlangs,
+        'number_natlangs': num_natlangs,
+        'features_per_lang': str(num_lfs / num_langs),
+        'percentage_greetings': str(num_greetings / num_langs * 100),
+        'percentage_backgrounds': str(num_backgrounds / num_langs * 100),
+        'num_translations': num_translations,
+    }
     data['features'] = {
-            'number': num_features,
-            'percentage_wals': str(142/float(num_features)*100),
+        'number': num_features,
+        'percentage_wals': str(142 / num_features * 100),
     }
     data['users'] = {
-            'number': num_users,
-            'langs_per_user': str(num_langs/float(num_users)),
-            'percentage_countries': str(num_countries/float(num_users)*100),
-            'percentage_lurkers': str(num_lurkers / float(num_users) * 100)
-            }
+        'number': num_users,
+        'langs_per_user': str(num_langs / num_users),
+        'percentage_countries': str(num_countries / num_users * 100),
+        'percentage_lurkers': str(num_lurkers / num_users * 100)
+    }
     return data
 
