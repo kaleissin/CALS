@@ -37,21 +37,24 @@ from cals.languagefeature.models import LanguageFeature
 
 from translations.models import Translation
 
+
 def country_most_common():
     return Country.objects.annotate(count=Count('profile')).filter(count__gt=0).order_by('-count')
+
 
 def conlanger_map():
     foo = dict([(country.iso.lower(), country.count) for country in country_most_common()])
     custom_style = Style(
-      background='#fff',
-      plot_background='#fff',
-      foreground='#ffffff',
-      foreground_light='#ffffff',
-      foreground_dark='#ffffff',
-      opacity='.6',
-      opacity_hover='.9',
-      transition='400ms ease-in',
-      colors=('#527C3A', '#E8537A', '#E95355', '#E87653', '#E89B53'))
+        background='#fff',
+        plot_background='#fff',
+        foreground='#ffffff',
+        foreground_light='#ffffff',
+        foreground_dark='#ffffff',
+        opacity='.6',
+        opacity_hover='.9',
+        transition='400ms ease-in',
+        colors=('#527C3A', '#E8537A', '#E95355', '#E87653', '#E89B53')
+    )
 
     chart = Worldmap(style=custom_style)
     chart.no_prefix = True
@@ -59,6 +62,7 @@ def conlanger_map():
     chart.show_legend = False
     chart.add('Conlangers', foo)
     return chart.render()
+
 
 def unused_featurevalues():
     """Returns feature values not used by conlangs.
@@ -79,6 +83,7 @@ def unused_featurevalues():
     sort = sorted(decorate)
     return [fv for (_, fv) in sort]
 
+
 def timeline():
     "Statistics over which days/weeks/months are most visited/update etc."
     User = get_user_model()
@@ -87,6 +92,7 @@ def timeline():
     created = Language.objects.dates('created', 'day')
     last_modified = Language.objects.dates('last_modified', 'day')
     _LOG.info('Joined: %s' % joined[:5])
+
 
 def median(datapoints, n=0):
     n = n or len(datapoints)
@@ -102,10 +108,11 @@ def median(datapoints, n=0):
 
 def stddev(datapoints):
     from math import sqrt
-    n = float(len(datapoints))
-    mean = sum(datapoints)/n
-    std = sqrt(sum((float(dp) - mean)**2 for dp in datapoints)/n)
+    n = len(datapoints)
+    mean = sum(datapoints) / n
+    std = sqrt(sum((float(dp) - mean) ** 2 for dp in datapoints) / n)
     return std
+
 
 def vocab_chart(rows):
     chart = pygal.Line(style=LightGreenStyle)
@@ -116,6 +123,7 @@ def vocab_chart(rows):
     chart.show_legend = False
     chart.add('', rows)
     return chart.render()
+
 
 def vocab_size():
     """Generate statistics on the vocabulary_size-field."""
@@ -156,15 +164,19 @@ def vocab_size():
             'outliers': outliers,
             'upper_bound': MAXSIZE}
 
+
 def get_all_lurkers():
     users = get_user_model().objects.filter(is_active=True, profile__is_visible=True)
-    lurkers = users.filter(edits__isnull=True,
-            manages__isnull=True,
-            translations__isnull=True,
-            languages__isnull=True,
-            translation_exercises__isnull=True,
-            languages_modified__isnull=True)
+    lurkers = users.filter(
+        edits__isnull=True,
+        manages__isnull=True,
+        translations__isnull=True,
+        languages__isnull=True,
+        translation_exercises__isnull=True,
+        languages_modified__isnull=True
+    )
     return lurkers
+
 
 def country():
 
@@ -179,6 +191,7 @@ def country():
         'chart': barchart.render(),
     }
 
+
 def generate_feature_stats():
     conlangs = Language.objects.conlangs()
     skeleton_langs = conlangs.filter(num_features=0)
@@ -188,39 +201,41 @@ def generate_feature_stats():
     natlang_features_mu = feature_usage(langtype=LANGTYPES.NATLANG, limit=20)
     not_used = unused_featurevalues()
     data = {
-            'number': num_features,
-            'percentage_wals': str(142/float(num_features)*100),
-            'most_used': features_mu,
-            'natlang_most_used': natlang_features_mu,
-            #'least_used': tuple(reversed(features_mu))[:20],
-            'not_used': not_used,
-            'num_not_used': len(not_used),
-            'skeleton_langs': skeleton_langs,
-            }
+        'number': num_features,
+        'percentage_wals': str(142 / num_features * 100),
+        'most_used': features_mu,
+        'natlang_most_used': natlang_features_mu,
+        #'least_used': tuple(reversed(features_mu))[:20],
+        'not_used': not_used,
+        'num_not_used': len(not_used),
+        'skeleton_langs': skeleton_langs,
+    }
     return data
 
+
 def generate_people_stats():
-    data = {
-            'country': country(),
-            }
+    data = {'country': country()}
     return data
+
 
 def generate_vocabulary_stats():
     data = vocab_size()
     return data
 
+
 def generate_langname_stats():
     data = {
-            'first_letters': {
-                    'conlangs': language_first_letters(),
-                    'natlangs': language_first_letters(langtype=LANGTYPES.NATLANG),
-            },
-            'alpha_letters': {
-                    'conlangs': language_alphabetic_letters(),
-                    'natlangs': language_alphabetic_letters(langtype=LANGTYPES.NATLANG),
-            },
+        'first_letters': {
+            'conlangs': language_first_letters(),
+            'natlangs': language_first_letters(langtype=LANGTYPES.NATLANG),
+        },
+        'alpha_letters': {
+            'conlangs': language_alphabetic_letters(),
+            'natlangs': language_alphabetic_letters(langtype=LANGTYPES.NATLANG),
+        },
     }
     return data
+
 
 def generate_averageness_stats():
     conlangs = Language.objects.conlangs()
@@ -233,12 +248,13 @@ def generate_averageness_stats():
     most_average = most_average[:20]
 
     data = {
-            'most_average': most_average,
-            'most_average_natlangs': most_average_natlangs,
-            'least_average': least_average,
-            'lma': lma-10,
+        'most_average': most_average,
+        'most_average_natlangs': most_average_natlangs,
+        'least_average': least_average,
+        'lma': lma - 10,
     }
     return data
+
 
 def generate_milestone_stats():
     conlangs = Language.objects.conlangs()
@@ -255,18 +271,19 @@ def generate_milestone_stats():
     lang500 = conlangs.get(id=776)
 
     data = {
-            'user100': user100,
-            'user150': user150,
-            'user200': user200,
-            'user250': user250,
-            'user500': user500,
-            'lang100': lang100,
-            'lang150': lang150,
-            'lang200': lang200,
-            'lang250': lang250,
-            'lang500': lang500,
+        'user100': user100,
+        'user150': user150,
+        'user200': user200,
+        'user250': user250,
+        'user500': user500,
+        'lang100': lang100,
+        'lang150': lang150,
+        'lang200': lang200,
+        'lang250': lang250,
+        'lang500': lang500,
     }
     return data
+
 
 def generate_global_stats():
     "Used by the statistics-view"
@@ -310,4 +327,3 @@ def generate_global_stats():
         'percentage_lurkers': str(num_lurkers / num_users * 100)
     }
     return data
-
