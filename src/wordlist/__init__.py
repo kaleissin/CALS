@@ -1,5 +1,8 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
+
+default_app_config = 'wordlist.apps.WordlistConfig'
+
 import logging
 
 from django.db.models import Q
