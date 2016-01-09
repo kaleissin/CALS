@@ -99,6 +99,9 @@ have to do so at WALS, not here.</p>
     <tr><th>From earth:</th><td>{{ object.from_earth|yesno:"yes,no,unknown" }}</td></tr>
     {% else %}
     <tr><th>Natlang:</th><td>yes</td>
+    <tr><th>WALS Code:</th><td><a class="ext" href="{{ object.walscode.uri }}">{{ object.walscode }}</a></td>
+    <tr><th>Glottocode:</th><td><a class="ext" href="{{ object.glottocode.uri }}">{{ object.glottocode }}</a></td>
+    <tr><th>ISO 639-3 Code:</th><td><a class="ext" href="{{ object.iso639_3.uri }}">{{ object.iso639_3 }}</a></td>
     {% endif %}
     {% if object.family %}
     <tr><th>Family:</th><td>{% show_family_path object %}</td></tr>

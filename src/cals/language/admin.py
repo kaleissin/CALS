@@ -4,6 +4,7 @@ from django.contrib import admin
 
 from cals.language.models import *
 
+
 class LanguageAdmin(admin.ModelAdmin): 
     model = Language
     ordering = ('name',)
@@ -21,12 +22,35 @@ class LanguageAdmin(admin.ModelAdmin):
         language_hidden.send(sender=self, languages=queryset)
     make_invisible.short_description = "Hide languages"
 
-class LanguageFamilyAdmin(admin.ModelAdmin): 
+
+class LanguageFamilyAdmin(admin.ModelAdmin):
     model = LanguageFamily
     list_display = ('name', 'part_of', 'path',)
 
-class LanguageNameAdmin(admin.ModelAdmin): 
+
+class LanguageNameAdmin(admin.ModelAdmin):
     model = LanguageName
     ordering = ('language',)
     list_display = ('name', 'language', 'added')
     ordering = ('name', 'language', '-added')
+
+
+class WALSCodeAdmin(admin.ModelAdmin):
+    model = WALSCode
+    ordering = ('walscode',)
+    list_display = ('walscode', 'language')
+    search_fields = ['walscode', 'language__name']
+
+
+class GlottocodeAdmin(admin.ModelAdmin):
+    model = Glottocode
+    ordering = ('glottocode',)
+    list_display = ('glottocode', 'language')
+    search_fields = ['glottocode', 'language__name']
+
+
+class ISO639_3Admin(admin.ModelAdmin):
+    model = ISO639_3
+    ordering = ('iso639_3',)
+    list_display = ('iso639_3', 'language')
+    search_fields = ['iso639_3', 'language__name']

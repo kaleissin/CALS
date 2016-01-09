@@ -388,7 +388,8 @@ class LanguageName(models.Model):
 
 @python_2_unicode_compatible
 class WALSCode(models.Model):
-    language = models.OneToOneField(Language, primary_key=True, related_name="wals_code")
+    URI_FORMAT = 'http://wals.info/languoid/lect/wals_code_{}'
+    language = models.OneToOneField(Language, primary_key=True, related_name="walscode")
     walscode = models.CharField(max_length=3, unique=True)
 
     class Meta:
@@ -396,10 +397,55 @@ class WALSCode(models.Model):
         app_label = 'cals'
 
     def __str__(self):
-        return "%i: %s" % (self.language.id, self.walscode)
+        return self.walscode
 
     def natural_key(self):
         return self.walscode
+
+    def uri(self):
+        return self.URI_FORMAT.format(str(self))
+
+
+@python_2_unicode_compatible
+class ISO639_3(models.Model):
+    URI_FORMAT = 'https://www.ethnologue.com/language/{}'
+    language = models.OneToOneField(Language, primary_key=True, related_name="iso639_3")
+    iso639_3 = models.CharField(max_length=3, unique=True)
+
+    class Meta:
+        db_table = 'cals_iso639_3'
+        app_label = 'cals'
+        verbose_name = 'ISO 639-3'
+        verbose_name_plural = 'ISO 639-3'
+
+    def __str__(self):
+        return self.iso639_3
+
+    def natural_key(self):
+        return self.iso639_3
+
+    def uri(self):
+        return self.URI_FORMAT.format(str(self))
+
+
+@python_2_unicode_compatible
+class Glottocode(models.Model):
+    URI_FORMAT = 'http://glottolog.org/resource/languoid/id/{}'
+    language = models.OneToOneField(Language, primary_key=True, related_name="glottocode")
+    glottocode = models.CharField(max_length=8, unique=True)
+
+    class Meta:
+        db_table = 'cals_glottocode'
+        app_label = 'cals'
+
+    def __str__(self):
+        return self.glottocode
+
+    def natural_key(self):
+        return self.glottocode
+
+    def uri(self):
+        return self.URI_FORMAT.format(str(self))
 
 
 @python_2_unicode_compatible
