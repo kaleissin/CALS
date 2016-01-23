@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.http import HttpResponseRedirect, Http404
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404, render
@@ -133,6 +134,20 @@ class ListTranslationsForExercise(ListView):
 show_translationexercise = ListTranslationsForExercise.as_view()
 
 
+def save_translation(trans, user):
+    """Save a translation regardless of the interlinear being broken.
+
+    Report if steps had to be taken.
+    """
+    old_format = str(trans.il_format)
+    trans.save(user=user)
+    trans = Translation.objects.get(id=trans.id)
+    changed_format = False
+    if old_format == trans.LEIPZIG and old_format != trans.il_format:
+        changed_format = True
+    return trans, changed_format
+
+
 class CreateTranslationView(CreateView):
     """Add a specific translation by a specific user for a specific
     language."""
@@ -159,7 +174,10 @@ class CreateTranslationView(CreateView):
         trans.exercise = TranslationExercise.objects.get(slug=exercise)
         language = self.kwargs['language']
         trans.language = get_object_or_404(Language, slug=language)
-        trans.save(user=self.request.user)
+        trans, changed_format = save_translation(trans, self.request.user)
+        if changed_format:
+            msg = 'Could not be interpreted as "leipzig", used format "monospace" instead'
+            messages.warning(self.request, msg)
         return HttpResponseRedirect(trans.get_absolute_url())
 add_languagetranslations = login_required(CreateTranslationView.as_view())
 
@@ -232,6 +250,14 @@ class ChangeTranslationMixin(TranslationMixin):
 class UpdateTranslationView(ChangeTranslationMixin, UpdateView):
     """Change a specific translation by a specific user for a specific
     language."""
+
+    def form_valid(self, form):
+        trans = form.save(commit=False)
+        trans, changed_format = save_translation(trans, self.request.user)
+        if changed_format:
+            msg = 'Could not be interpreted as "leipzig", used format "monospace" instead'
+            messages.warning(self.request, msg)
+        return HttpResponseRedirect(trans.get_absolute_url())
 
     def get_success_url(self):
         return self.object.get_absolute_url()

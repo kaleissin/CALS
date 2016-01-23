@@ -13,6 +13,8 @@ from django.utils.html import escape
 from django.utils.timezone import now as tznow
 from django.utils.encoding import python_2_unicode_compatible
 
+from interlinears.leipzig import InterlinearText, InterlinearError
+
 from cals.tools import uslugify
 
 from cals.language.models import Language
@@ -20,30 +22,29 @@ from cals.language.models import Language
 
 def get_interlinear(model):
     if not model.interlinear.strip():
-        return ''
+        return '', 'monospace'
     interlinear = model.interlinear
     format = model.il_format
     if format == 'leipzig':
+        il = InterlinearText()
         try:
-            from interlinears.leipzig import InterlinearText
-        except ImportError as e:
-            assert False, e
+            return il.do_text(interlinear), format
+        except InterlinearError:
             format = 'monospace'
-        else:
-            il = InterlinearText()
-            return il.do_text(interlinear)
-    return '<pre>%s</pre>' % escape(interlinear)
+    return '<pre>%s</pre>' % escape(interlinear), format
 
 
 class Interlinear(models.Model):
+    MONOSPACE = 'monospace'
+    LEIPZIG = 'leipzig'
     INTERLINEAR_FORMATS = (
-            ('monospace', 'WYSIWYG monospace'),
-            ('leipzig', 'Leipzig Glossing Rules'),
+            (MONOSPACE, 'WYSIWYG monospace'),
+            (LEIPZIG, 'Leipzig Glossing Rules'),
     )
 
     interlinear = models.TextField('Interlinear', blank=True, default='', db_column='il_text')
     il_xhtml = models.TextField('Interlinear, formatted', blank=True, default='', db_column='il_xhtml')
-    il_format = models.CharField('Interlinear format', max_length=20, choices=INTERLINEAR_FORMATS, blank=True, default='monospace')
+    il_format = models.CharField('Interlinear format', max_length=20, choices=INTERLINEAR_FORMATS, blank=True, default=MONOSPACE)
 
     class Meta:
         abstract = True
@@ -52,8 +53,9 @@ class Interlinear(models.Model):
         return get_interlinear(self)
 
     def save(self, **kwargs):
-        new_il = self.get_interlinear()
+        new_il, new_format = self.get_interlinear()
         self.il_xhtml = new_il if new_il else ''
+        self.il_format = new_format
         super(Interlinear, self).save(**kwargs)
 
 
