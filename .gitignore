@@ -3,6 +3,7 @@ include
 lib
 share
 local
+Attic
 *.bash
 *.pyc
 *.pyo
