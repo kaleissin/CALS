@@ -11,6 +11,7 @@ from django.views.generic import ListView, DetailView
 from django.views.generic import DeleteView, UpdateView, CreateView
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import get_user_model
+from django.db.models import Count
 
 import logging
 _LOG = logging.getLogger(__name__)
@@ -18,7 +19,9 @@ _LOG = logging.getLogger(__name__)
 from cals.views import langs_for_user
 from cals.models import Language
 
-from translations.models import Translation, TranslationExercise
+from translations.models import Translation
+from translations.models import TranslationExercise
+from translations.models import TranslationExerciseCategory
 from translations.forms import TranslationForm
 from translations.tools import get_model_for_kwarg
 
@@ -30,6 +33,9 @@ def get_language(**kwargs):
 
 def get_user(**kwargs):
     return get_model_for_kwarg(settings.AUTH_USER_MODEL, 'translator', 'username', **kwargs)
+
+def get_translationexercise_category(**kwargs):
+    return get_model_for_kwarg(TranslationExerciseCategory, 'category', 'pk', **kwargs)
 
 
 class ListLanguageTranslationView(ListView):
@@ -93,6 +99,38 @@ class ListAllTranslationView(ListView):
         context['exercises'] = self.queryset
         return context
 list_all_translations = ListAllTranslationView.as_view()
+
+
+class ListAllTranslationExerciseCategoryView(ListView):
+    queryset = (
+        TranslationExerciseCategory.objects
+        .annotate(count=Count('exercises'))
+        .filter(count__gt=0)
+        .order_by('id')
+    )
+    template_name = 'translations/translationcategory_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ListAllTranslationExerciseCategoryView, self).get_context_data(**kwargs)
+        context['me'] = 'translation'
+        return context
+list_all_translationexercise_categories = ListAllTranslationExerciseCategoryView.as_view()
+
+
+class ListTranslationExerciseCategoryView(ListView):
+    """List translation exercises for specified category."""
+    template_name = 'translations/translationcategory_exercise_list.html'
+
+    def get_queryset(self):
+        self.category = get_translationexercise_category(**self.kwargs)
+        queryset = self.category.exercises.prefetch_related('translations').order_by('id')
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super(ListTranslationExerciseCategoryView, self).get_context_data(**kwargs)
+        context['me'] = 'translation'
+        return context
+show_translationexercise_category = ListTranslationExerciseCategoryView.as_view()
 
 
 class ListTranslationsForExercise(ListView):

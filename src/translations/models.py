@@ -70,6 +70,9 @@ class TranslationExerciseCategory(models.Model):
     def __str__(self):
         return self.name
 
+    def get_absolute_url(self):
+        data = {'category': self.pk}
+        return reverse('translationexercise-category', kwargs=data)
 
 @python_2_unicode_compatible
 class TranslationExercise(models.Model):

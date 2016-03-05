@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load cals_tags %}
+{% block submenu %}
+<ul>
+    <li><b>Categories</b></li>
+</ul>
+{% endblock submenu %}
+{% block content %}
+<dl>
+{% for category in object_list %}
+<dt class="{% cycle 'odd' 'even' %}"><a href="{{ category.get_absolute_url }}">{{ category }}</a> ({{ category.count }} exercises)</dt>
+{% endfor %}
+</dl>
+{% endblock content %}

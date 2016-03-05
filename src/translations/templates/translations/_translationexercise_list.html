@@ -1,0 +1,20 @@
+<dl>
+{% for exercise in object_list %}
+    <dt class="{% cycle 'odd' 'even' %}"><a href="/translation/{{ exercise.slug }}/">{{ exercise }}</a> 
+    ({{ exercise.translations.count }} translation{{ exercise.translations.count|pluralize }})
+    </dt>
+    {% if exercise.translations.count %}
+    <dd>
+        <table>
+            <tr> <th class="langname">English:</th><td class="plaintext">{{ exercise.exercise }}</td></tr>
+            <tr>
+            {% with exercise.translations.latest as translation %}
+                <th class="langname"><a href="{{ translation.get_absolute_url }}">{{ translation.language }}</a>:</th>
+                <td class="plaintext">{% ifequal translation.translator user %}<a href="{{ translation.get_update_url }}">{{ translation }}</a>{% else %}{{ translation }}{% endifequal %}</td>
+            {% endwith %}
+            </tr>
+        </table>
+    </dd>
+    {% endif %}
+{% endfor %}
+</dl>
