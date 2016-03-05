@@ -28,9 +28,10 @@
 {% block content %}
 <form action="" method="post">
 {% csrf_token %}
+{{ formset.management_form }}
+{% if initial_names %}
 <h2>Change/delete existing names</h2>
 <table>
-    {{ formset.management_form }}
     {% comment %}
     {{ formset }}
     {% endcomment %}
@@ -63,9 +64,9 @@
     {% endfor %}
     <tr><td></td><td colspan="5"><input type="submit" value="Change/Delete" /></td></tr>
 </table>
+{% endif %}
 <h2>Add additional names</h2>
 <table>
-    {{ formset.management_form }}
     <tr>
         <th>Name<span class="required">*</span></th>
         <th>Internal?</th>

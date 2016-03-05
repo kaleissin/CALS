@@ -43,7 +43,8 @@ def change_languagenames(request, *args, **kwargs):
         formset = languagenameformset(queryset=queryset)
         #assert False, dir(formset)
     data = {'me': 'language',
-            'formset': formset }
+            'formset': formset,
+            'initial_names': queryset.count()}
     return render(request, 'cals/language/name_form.html', data)
 
 
