@@ -114,6 +114,38 @@ class Sense(models.Model):
 
 
 @python_2_unicode_compatible
+class Concept(models.Model):
+    concepticon_id = models.IntegerField(blank=True, null=True)
+    name = models.CharField(max_length=40)
+    slug = models.SlugField()
+    pos = models.CharField(max_length=16, blank=True, null=True)
+    definition = models.TextField(blank=True, null=True)
+    notes = models.TextField(blank=True, null=True)
+    see_also = models.ManyToManyField('self', blank=True)
+    added = models.DateTimeField(blank=True, null=True)
+
+
+    class Meta:
+        ordering = ('id',)
+
+    def __str__(self):
+        return '\u201c%s\u201d' % self.name
+
+    def save(self, *args, **kwargs):
+        self.slug = uslugify(self.name)
+        super(Sense, self).save(*args, **kwargs)
+
+    def show_notes(self):
+        if self.pos and self.notes:
+            return '%s, %s' % (self.pos, self.notes)
+        if self.pos:
+            return self.pos
+        if self.notes:
+            return self.notes
+        return None
+
+
+@python_2_unicode_compatible
 class Word(models.Model):
     word = models.CharField(max_length=40, blank=True, null=True)
     senses = models.ManyToManyField(Sense, related_name='words', blank=True)
