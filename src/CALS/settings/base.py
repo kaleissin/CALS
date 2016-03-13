@@ -305,6 +305,11 @@ LOGGING = {
     },
 }
 
+PASSWORD_HASHERS = (
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'CALS.utils.hashers.PBKDF2WrappedSHA1PasswordHasher',
+)
+
 # -- 3rd party settings
 
 FORCE_LOWERCASE_TAGS = True
