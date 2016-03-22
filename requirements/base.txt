@@ -12,3 +12,4 @@ pygal-maps-world
 python-memcached
 python-social-auth==0.2.13
 pytz
+RelayMuseum>=0.2
