@@ -245,4 +245,4 @@ class NewTranslationFeed(AbstractFeed):
         return item.added
 
     def item_link(self, item):
-        return '/translation/%s/language/%s/%s/' % (item.exercise.slug, item.language.slug, item.translator.profile.slug)
+        return item.get_absolute_url()
