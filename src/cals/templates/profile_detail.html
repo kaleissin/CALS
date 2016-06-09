@@ -7,22 +7,22 @@
 <ul>
     <li><a href="../">All people</a></li>
     <li><b>Details</b></li>
-    {% ifequal user.id object.id %}
+    {% if private %}
     <li><a href="./change">Change</a></li>
-    {% endifequal %}
+    {% endif %}
 </ul>
-{% if user.is_authenticated %}
+{% if request.user.is_authenticated %}
 <hr />
-{% ifequal user.id object.id %}
+{% if private %}
     <ul>
         <li><a href="./pm/archive/">Archived messages</a></li>
         <li><a href="./pm/sent/">Sent messages</a></li>
     </ul>
-    {% if user.marks.faved.count %}
+    {% if object.marks.faved.count %}
     <hr />
     <h4>Favorites</h4>
     <ul>
-    {% for mark in user.marks.faved %}
+    {% for mark in object.marks.faved %}
         <li><a href="{{ mark.content_object.get_absolute_url }}">{{ mark.content_object }}</a></li>
     {% endfor %}
     </ul>
@@ -31,7 +31,7 @@
     <ul>
         <li><a href="./pm/add{% if whereami %}?next={{ whereami }}{% endif %}">Send {{ object.username }} a message</a></li>
     </ul>
-{% endifequal %}
+{% endif %}
 {% endif %}
 {% endblock submenu %}
 {% block content %}
@@ -51,10 +51,10 @@
     <p>Any stuff surrounded by a <span class="private">pale green
     border</span> is only visible to you.</p>
 
-    <p>On every page you will find your username, {{ user.username }},
+    <p>On every page you will find your username, {{ object.username }},
     (or display name{% if profile.display_name %}, {{ profile.display_name }}, {% endif %}
     if you have set this) in the upper right corner of every page, like
-    this: {% showuser profile.user %}. Clicking on that will take you
+    this: {% showuser object %}. Clicking on that will take you
     back here. You can also add languages and change any of the public
     ones, add and change your own translations and send private messages
     to the other people here.</p>
@@ -73,7 +73,7 @@
     <table>
         <tr><th>Username:</th><td>{{ object.username }}</td></tr>
         <tr><th>Link:</th><td><a href="{{ request.build_absolute_uri }}/{{ profile.get_absolute_url }}">{{ request.SITE }}{{ profile.get_absolute_url }}</a></td></tr>
-        {% ifequal user.username object.username %}
+        {% if private %}
         <tr class="private"><th>Email:</th>
             <td>{% if object.email %}{{ object.email }}{% else %}None registered{% endif %}
                 {# <span class="message">Your email-address is only shown to you</span></td> #}
@@ -84,7 +84,7 @@
                 <span class="message">Your secret is only shown to you</span></td>
         </tr>
         {% endcomment %}
-        {% endifequal %}
+        {% endif %}
         {% if profile.homepage %}
         <tr>
             <th>Homepage:</th>
