@@ -102,7 +102,6 @@ list_people = ListPeopleView.as_view()
 class DetailPeopleView(DetailView):
     queryset = get_user_model_w_related()
     model = get_user_model()
-    context_object_name = 'user'
     template_name = 'profile_detail.html'
 
     def get_object(self, queryset=None):
@@ -149,6 +148,7 @@ class DetailPeopleView(DetailView):
         private = self.request.user == self.object
         seen = self.object.profile.seen_profile
         public_context = {
+            'user': self.request.user,
             'me': 'people',
             'whereami': self.request.META.get('PATH_INFO', None),
             'seen': seen,
