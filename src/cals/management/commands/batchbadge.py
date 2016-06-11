@@ -50,6 +50,8 @@ FAQERS = (
     513,    # Portuguese is not in CALS
 )
 
+LEGACY_RESEARCH_LIBRARIANS = (1, 2, 37)
+
 def batchbadge(badge, models):
     for model in models:
         if badge not in model.badges.all():
@@ -173,6 +175,12 @@ def ghostbusters():
     ghostbusters = User.objects.filter(id__in=ghostbuster_ids)
     batchbadge(badge, ghostbusters)
 
+def research_librarians():
+    User = get_user_model()
+    badge = Badge.objects.get(name='Research Librarian')
+    librarian_ids = LEGACY_RESEARCH_LIBRARIANS
+    librarians = User.objects.filter(id__in=librarian_ids)
+    batchbadge(badge, librarians)
 
 def dreamers():
     # Cannot use signal
@@ -270,6 +278,7 @@ _batch_jobs = {
         'timetravellers': timetravellers,
         'regulars': regulars,
         'meetups': meetups,
+        'research_librarians': research_librarians,
 }
 
 def run_batch(verbose=True):
