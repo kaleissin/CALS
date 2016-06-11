@@ -103,7 +103,7 @@ def nudgers():
 def connoiseurs():
     User = get_user_model()
     badge = Badge.objects.get(name='Connoisseur')
-    connoiseurs = [u for u in User.objects.all() 
+    connoiseurs = [u for u in User.objects.all()
             if u.marks.filter(marktype__slug__startswith='fav').count()]
     batchbadge(badge, connoiseurs)
 
@@ -120,7 +120,7 @@ def _active_year_ago(years):
     # Keep forgetting this, in datetimes:
     # < is before, earlier than
     # > is after, later than
-    return [u for u in User.objects.all() 
+    return [u for u in User.objects.all()
             if u.date_joined <= x_years_ago and u.last_login > a_month_ago]
 
 # 1 year
@@ -211,7 +211,7 @@ def civ4fans():
     User = get_user_model()
     badge = Badge.objects.get(name='CIV IV-fan')
     num_civ_exercises = TranslationExercise.objects.filter(category=4).count()
-    translators = [u for u in User.objects.filter(translations__exercise__category=4).distinct() 
+    translators = [u for u in User.objects.filter(translations__exercise__category=4).distinct()
             if u.translations.filter(exercise__category=4).count() == num_civ_exercises]
     batchbadge(badge, translators)
 
@@ -245,7 +245,7 @@ def timetravellers():
     Profile = get_profile_model()
     badge = Badge.objects.get(name='Timetraveller')
     timetravellers = [profile.user for profile in Profile.objects.all()
-            if profile.seen_ipv6] 
+            if profile.seen_ipv6]
     batchbadge(badge, timetravellers)
 
 # -- meetups
@@ -260,10 +260,10 @@ def meetups():
 _batch_jobs = {
         'connoiseurs': connoiseurs,
         'developers': developers,
-        'early_birds': early_birds, 
-        'conlangers': conlangers, 
-        'translators': translators, 
-        'civ4fans': civ4fans, 
+        'early_birds': early_birds,
+        'conlangers': conlangers,
+        'translators': translators,
+        'civ4fans': civ4fans,
         'autobiographers': autobiographers,
         'torchbearers': torchbearers,
         'relay_masters': relay_masters,
