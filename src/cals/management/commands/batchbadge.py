@@ -89,9 +89,9 @@ def conlangers():
     Redundant, done by signal in cals.models"""
     User = get_user_model()
     badge = Badge.objects.get(name='Conlanger')
-    editors = User.objects.filter(edits__isnull=False)
+    editors = User.objects.filter(edits__isnull=False).distinct()
     batchbadge(badge, editors)
-    managers = User.objects.filter(manages__isnull=False)
+    managers = User.objects.filter(manages__isnull=False).distinct()
     batchbadge(badge, managers)
 
 def nudgers():
