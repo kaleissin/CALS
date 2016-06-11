@@ -265,7 +265,7 @@ _batch_jobs = {
         'connoiseurs': connoiseurs,
         'developers': developers,
         'early_birds': early_birds,
-        'conlangers': conlangers,
+#        'conlangers': conlangers, #  marks too many
         'translators': translators,
         'civ4fans': civ4fans,
         'autobiographers': autobiographers,
