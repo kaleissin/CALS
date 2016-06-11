@@ -33,6 +33,8 @@ class LanguageNameAdmin(admin.ModelAdmin):
     ordering = ('language',)
     list_display = ('name', 'language', 'added')
     ordering = ('name', 'language', '-added')
+    search_fields = ['name']
+    list_filter = ('internal', 'alternate', 'previous',)
 
 
 class WALSCodeAdmin(admin.ModelAdmin):
