@@ -153,6 +153,7 @@ def boomerangs():
 
 def testbunnies():
     # Cannot use signal
+    # tested fixes
     User = get_user_model()
     badge = Badge.objects.get(name='Test Bunny')
     testbunny_ids = TESTBUNNIES
@@ -161,6 +162,7 @@ def testbunnies():
 
 def bughunters():
     # Cannot use signal
+    # tickets for bugs
     User = get_user_model()
     badge = Badge.objects.get(name='Bughunter')
     bughunter_ids = BUGHUNTERS
@@ -169,6 +171,7 @@ def bughunters():
 
 def ghostbusters():
     # Cannot use signal
+    # dead links
     User = get_user_model()
     badge = Badge.objects.get(name='Ghostbuster')
     ghostbuster_ids = GHOSTBUSTERS
@@ -184,6 +187,7 @@ def research_librarians():
 
 def dreamers():
     # Cannot use signal
+    # feature requests
     User = get_user_model()
     badge = Badge.objects.get(name='Dreamer')
     dreamer_ids = DREAMERS
