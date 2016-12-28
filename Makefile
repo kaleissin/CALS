@@ -69,6 +69,7 @@ clean:
 	find . -name "*.bak" -print0 | xargs -0 rm -rf
 	rm -rf htmlcov
 	rm -rf .coverage
+	rm -f archive-*.tgz
 
 test: clean
 	$(PYTHON_BIN)/django-admin.py test $(APP) $(DJANGO_TEST_POSTFIX)
@@ -103,6 +104,9 @@ batchbadge:
 
 batchbadge-verbose:
 	$(PYTHON_BIN)/django-admin.py batchbadge $(DJANGO_POSTFIX)
+
+tar:
+	tar --posix -c -a -f archive-`date -u "+%Y%m%d%H%M%SZ"`.tgz  --exclude '__pycache__' --exclude 'archive-*' --exclude '*~' *
 
 all: collectstatic refresh
 
