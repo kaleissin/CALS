@@ -15,3 +15,4 @@ htmlcov
 src/env
 src/CALS/templates/robots.txt
 src/static
+__pycache__
