@@ -65,6 +65,7 @@ compare:
 	rsync -avz --checksum --dry-run --exclude-from .gitignore --exclude-from .rsyncignore . ${REMOTE_URI}
 
 clean:
+	find . -name __pycache__ -print0 | xargs -0 rm -rf
 	find . -name "*.pyc" -print0 | xargs -0 rm -rf
 	find . -name "*.bak" -print0 | xargs -0 rm -rf
 	rm -rf htmlcov
