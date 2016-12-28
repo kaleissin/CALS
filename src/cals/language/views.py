@@ -99,7 +99,7 @@ def show_features_for_language(request, *args, **kwargs):
     me = 'language'
     lang = _get_lang(all=True, *args, **kwargs)
     may_edit, (is_admin, is_manager) = may_edit_lang(request.user, lang)
-    categories = Category.objects.all().select_related().order_by('id')
+    categories = Category.objects.active().select_related().order_by('id')
     cats = []
     for category in categories:
         try:

@@ -11,7 +11,7 @@ SUGGESTED_RE = r'^suggested/'
 SUGGESTED_FEATURE_RE = SUGGESTED_RE + FEATURE_RE
 
 suggested_features_dict = {
-        'queryset': Category.objects.filter(feature__active=False).distinct().order_by('id'),
+        'queryset': Category.objects.passive().distinct().order_by('id'),
         'template_name': 'cals/suggested_feature_list.html', 
         'extra_context': { 'me': 'feature' },
 }

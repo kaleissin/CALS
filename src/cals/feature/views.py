@@ -74,7 +74,7 @@ def fvlist_to_fvdict(fvlist):
     return {}
 
 def make_feature_list_for_lang(lang=None, fvlist=None):
-    categories = Category.objects.all().select_related().order_by('id')
+    categories = Category.active_objects.all().select_related().order_by('id')
     cats = []
     fvdict = fvlist_to_fvdict(fvlist)
     for category in categories:
