@@ -179,6 +179,7 @@ THIRD_PARTY_APPS = (
 )
 
 PROJECT_APPS = (
+    'nano.blog',
     'translations',
     'cals',
     'nano.countries',
@@ -187,7 +188,6 @@ PROJECT_APPS = (
 
     'verification',
 
-    'nano.blog',
     'nano.badge',
     'nano.mark',
     'nano.comments',
