@@ -5,8 +5,6 @@ from django.apps import AppConfig
 from django.contrib.auth.apps import AuthConfig
 from django.conf import settings
 
-from actstream import registry
-
 __ALL__ = [
     'DjangoContribAuthConfig',
 ]
@@ -14,6 +12,8 @@ __ALL__ = [
 class DjangoContribAuthConfig(AuthConfig):
 
     def ready(self):
+        from actstream import registry
+
         super(DjangoContribAuthConfig, self).ready()
         user_model_string = settings.AUTH_USER_MODEL.rsplit('.', 1)[1]
         registry.register(self.get_model(user_model_string))
@@ -23,6 +23,7 @@ class CalsConfig(AppConfig):
     verbose_name = "CALS"
 
     def ready(self):
+        from actstream import registry
         registry.register(self.get_model('Language'))
 
         from django.db.models.signals import post_save
