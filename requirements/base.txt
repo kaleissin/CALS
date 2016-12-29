@@ -5,7 +5,7 @@ django-activity-stream==0.6.0
 django-tag-tools
 django-taggit==0.17.6
 ipython
-nano==0.9.4
+nano==1.0a3
 psycopg2
 pygal>=2.0.0
 pygal-maps-world
