@@ -160,9 +160,9 @@ TEMPLATE_DIRS = (
 )
 
 DJANGO_APPS = (
+    'django.contrib.contenttypes',
     'cals.apps.DjangoContribAuthConfig',
 #     'django.contrib.auth',
-    'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.messages',
