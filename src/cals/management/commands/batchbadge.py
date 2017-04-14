@@ -12,7 +12,6 @@ from django.contrib.auth import get_user_model
 
 from cals.models import *
 from translations.models import *
-from relay.models import *
 from nano.badge.models import Badge
 from nano.tools import get_profile_model
 from nano.privmsg.models import PM
@@ -219,25 +218,6 @@ def civ4fans():
             if u.translations.filter(exercise__category=4).count() == num_civ_exercises]
     batchbadge(badge, translators)
 
-# -- relay
-def torchbearers():
-    badge = Badge.objects.get(name='Torchbearer')
-    torchbearers = [torch.participant.cals_user for torch in Torch.objects.all()
-            if torch.participant.cals_user]
-    batchbadge(badge, torchbearers)
-
-def relay_masters():
-    badge = Badge.objects.get(name='Relay master')
-    relay_masters = [relay.relay_master.cals_user for relay in Relay.objects.all()
-            if relay.relay_master.cals_user]
-    batchbadge(badge, relay_masters)
-
-def ring_masters():
-    badge = Badge.objects.get(name='Ring master')
-    ring_masters = [ring.ring_master.cals_user for ring in Ring.objects.all()
-            if ring.ring_master.cals_user]
-    batchbadge(badge, ring_masters)
-
 # -- comments
 def critics():
     badge = Badge.objects.get(name='Critic')
@@ -269,9 +249,6 @@ _batch_jobs = {
         'translators': translators,
         'civ4fans': civ4fans,
         'autobiographers': autobiographers,
-        'torchbearers': torchbearers,
-        'relay_masters': relay_masters,
-        'ring_masters': ring_masters,
         'bughunters': bughunters,
         'testbunnies': testbunnies,
         'dreamers': dreamers,

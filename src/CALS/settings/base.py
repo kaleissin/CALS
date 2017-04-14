@@ -193,7 +193,6 @@ PROJECT_APPS = (
     'nano.comments',
     'nano.chunk',
 
-    'relay',
     'nano.privmsg',
     'nano.user',
     'nano.faq',
