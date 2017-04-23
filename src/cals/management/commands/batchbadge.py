@@ -120,7 +120,9 @@ def _active_year_ago(years):
     # < is before, earlier than
     # > is after, later than
     return [u for u in User.objects.all()
-            if u.date_joined <= x_years_ago and u.last_login > a_month_ago]
+            if u.last_login
+            and u.date_joined <= x_years_ago
+            and u.last_login > a_month_ago]
 
 # 1 year
 def yearlings():
