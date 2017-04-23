@@ -24,7 +24,7 @@ PYTHON_BIN := $(VIRTUAL_ENV)/bin
 showenv:
 	@echo 'Environment:'
 	@echo '-----------------------'
-	@$(PYTHON_BIN)/python -c "import sys; print 'sys.path:', sys.path"
+	@$(PYTHON_BIN)/python3 -c "import sys; print 'sys.path:', sys.path"
 	@echo 'PYTHONPATH:' $(PYTHONPATH)
 	@echo 'PROJECT:' $(PROJECT)
 	@echo 'DJANGO_SETTINGS_MODULE:' $(DJANGO_SETTINGS_MODULE)
@@ -84,13 +84,13 @@ coverage: clean virtual_env_set
 predeploy: test
 
 register: virtual_env_set
-	python setup.py register
+	python3 setup.py register
 
 sdist: virtual_env_set
-	python setup.py sdist
+	python3 setup.py sdist
 
 upload: sdist virtual_env_set
-	python setup.py upload
+	python3 setup.py upload
 	make clean
 
 bootstrap: virtualenv pip virtual_env_set
