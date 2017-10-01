@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load cals_tags %}
+{% block title %}Translations of "{{ exercise }}"{% endblock %}
 {% block submenu %}
 <ul>
     <li><a href="{% url 'translation-home' %}">All</a></li>
