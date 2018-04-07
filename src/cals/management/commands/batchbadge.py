@@ -49,7 +49,7 @@ FAQERS = (
     513,    # Portuguese is not in CALS
 )
 
-LEGACY_RESEARCH_LIBRARIANS = (1, 2, 37)
+LEGACY_RESEARCH_LIBRARIANS = (1, 2, 37, 891)
 
 def batchbadge(badge, models):
     for model in models:
