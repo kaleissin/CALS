@@ -11,7 +11,7 @@ from django.contrib import admin
 from nano.user import views as nanouserviews
 from nano.badge.models import Badge
 
-from CALS.feeds import feeds
+from cals.site.feeds import feeds
 from cals.people.views import auth_login as cals_auth_login
 
 thankyou_params = {

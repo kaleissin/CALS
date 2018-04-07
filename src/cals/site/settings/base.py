@@ -46,13 +46,13 @@ ENVIRONMENT = get_environment(__file__)
 DJANGO_ROOT = dirname(dirname(abspath(__file__)))
 
 # Absolute filesystem path to the top-level project folder:
-SITE_ROOT = dirname(DJANGO_ROOT)
+SITE_ROOT = dirname(dirname(DJANGO_ROOT))
 
 # Path to look for config-files
 CONFIG_PATH = ['/etc/django-sites.d', '/usr/local/etc/django-sites.d', SITE_ROOT]
 
 # Site name:
-SITE_NAME = basename(DJANGO_ROOT)
+SITE_NAME = 'CALS'
 
 # Add our project to our pythonpath, this way we don't need to type our project
 # name in our dotted import paths:
@@ -147,16 +147,16 @@ MIDDLEWARE_CLASSES = (
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'CALS.urls'
+ROOT_URLCONF = 'cals.site.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
-WSGI_APPLICATION = 'CALS.wsgi.application'
+WSGI_APPLICATION = 'cals.site.wsgi.application'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    SITE_ROOT + '/CALS/templates',
+    SITE_ROOT + '/cals/site/templates',
 )
 
 DJANGO_APPS = (
@@ -306,7 +306,7 @@ LOGGING = {
 
 PASSWORD_HASHERS = (
     'django.contrib.auth.hashers.PBKDF2PasswordHasher',
-    'CALS.utils.hashers.PBKDF2WrappedSHA1PasswordHasher',
+    'cals.site.utils.hashers.PBKDF2WrappedSHA1PasswordHasher',
 )
 
 # -- 3rd party settings

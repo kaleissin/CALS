@@ -2,16 +2,18 @@ SHELL := /bin/sh
 
 PROJECT := CALS
 
+SETTINGS_PATH := cals.site.settings
 LOCALPATH := ./src
+WSGI_PATH := $(LOCALPATH)/cals/site/
 PYTHONPATH := $(LOCALPATH)/
 SETTINGS := production
-DJANGO_SETTINGS_MODULE = $(PROJECT).settings.$(SETTINGS)
+DJANGO_SETTINGS_MODULE = $(SETTINGS_PATH).$(SETTINGS)
 DJANGO_POSTFIX := --settings=$(DJANGO_SETTINGS_MODULE) --pythonpath=$(PYTHONPATH)
 LOCAL_SETTINGS := local
-DJANGO_LOCAL_SETTINGS_MODULE = $(PROJECT).settings.$(LOCAL_SETTINGS)
+DJANGO_LOCAL_SETTINGS_MODULE = $(SETTINGS_PATH).$(LOCAL_SETTINGS)
 DJANGO_LOCAL_POSTFIX := --settings=$(DJANGO_LOCAL_SETTINGS_MODULE) --pythonpath=$(PYTHONPATH)
 TEST_SETTINGS := test
-DJANGO_TEST_SETTINGS_MODULE = $(PROJECT).settings.$(TEST_SETTINGS)
+DJANGO_TEST_SETTINGS_MODULE = $(SETTINGS_PATH).$(TEST_SETTINGS)
 DJANGO_POSTFIX := --settings=$(DJANGO_SETTINGS_MODULE) --pythonpath=$(PYTHONPATH)
 DJANGO_TEST_POSTFIX := --settings=$(DJANGO_TEST_SETTINGS_MODULE) --pythonpath=$(PYTHONPATH)
 PYTHON_BIN := $(VIRTUAL_ENV)/bin
@@ -56,7 +58,7 @@ localcmd: virtual_env_set
 	$(PYTHON_BIN)/django-admin.py $(CMD) $(DJANGO_LOCAL_POSTFIX)
 
 refresh:
-	touch src/$(PROJECT)/*wsgi.py
+	touch $(WSGI_PATH)*wsgi.py
 
 rsync:
 	rsync -avz --checksum --exclude-from .gitignore --exclude-from .rsyncignore . ${REMOTE_URI}
