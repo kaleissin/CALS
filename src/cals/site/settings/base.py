@@ -179,6 +179,7 @@ THIRD_PARTY_APPS = (
 )
 
 PROJECT_APPS = (
+    'cals.account.apps.CALSAccountConfig',
     'nano.blog',
     'translations',
     'cals',
@@ -201,6 +202,7 @@ PROJECT_APPS = (
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
 
+AUTH_USER_MODEL = 'calsaccount.User'
 AUTH_PROFILE_MODULE = 'cals.Profile'
 
 LOGIN_URL = '/account/login/'
