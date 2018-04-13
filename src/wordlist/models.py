@@ -62,6 +62,7 @@ class Sense(models.Model):
     ids_number = models.CharField(max_length=12, blank=True, null=True)
     uld2 = models.CharField(max_length=3, blank=True, null=True)
     concepticon_id = models.IntegerField(blank=True, null=True)
+    leipzig_jakarta_rank = models.IntegerField(blank=True, null=True)
     see_also = models.ManyToManyField('self', blank=True)
     added = models.DateTimeField(auto_now_add=True)
     suggested_by = models.ForeignKey(settings.AUTH_USER_MODEL, default=1)
