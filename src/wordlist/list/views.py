@@ -105,7 +105,7 @@ class SpecificListView(WordlistMixin, TemplateView):
         CSV = csv.writer(response, quoting=csv.QUOTE_NONNUMERIC)
         CSV.writerow(fields)
         for row in queryset.values_list(*fields):
-            CSV.writerow([str(value).encode('utf8') for value in row])
+            CSV.writerow(row)
         return response
 
     def csv_simple(self, queryset):
