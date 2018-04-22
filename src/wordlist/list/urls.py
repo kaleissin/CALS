@@ -11,6 +11,7 @@ from wordlist.list.views import BuckView, CommonBuckView, \
         Buck1949View, BuckIDSView, BuckWOLDView
 from wordlist.list.views import OnlyBuck1949View, OnlyBuckIDSView, \
         OnlyBuckWOLDView, OnlyBuckIDSWOLDView
+from wordlist.list.views import LeipzigJakartaView
 
 urlpatterns = patterns('',
         url(r'^swadesh100/$',
@@ -25,6 +26,9 @@ urlpatterns = patterns('',
         url(r'^yakhontov/$',
                 YakhontovListView.as_view(),
                 name='yakhontov_list'),
+        url(r'^leipzig-jakarta/$',
+                LeipzigJakartaView.as_view(),
+                name='leipzig_jakarta_ranked_list'),
 
         url(r'^buck-common/$',
                 CommonBuckView.as_view(),

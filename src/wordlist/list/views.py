@@ -39,6 +39,7 @@ class SpecificListView(WordlistMixin, TemplateView):
             'ids_number',
             'wold_number',
             'buck_category',
+            'leipzig_jakarta_rank',
             'uld2',
             'id',
             )
@@ -165,6 +166,13 @@ class Swadesh207Not100View(SpecificListView):
     fields = ('swadesh_207',)
     exclude = ('swadesh_100',)
     ordering = ('id',)
+
+
+class LeipzigJakartaView(SpecificListView):
+    template_name = 'wordlist/leipzig-jakarta.html'
+    title = 'The Leipzig-Jakarta list'
+    fields = ('leipzig_jakarta_rank',)
+    ordering = ('leipzig_jakarta_rank',)
 
 
 class BuckView(SpecificListView):
