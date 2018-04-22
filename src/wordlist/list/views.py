@@ -123,22 +123,27 @@ class SpecificListView(WordlistMixin, TemplateView):
             return self.csv_types[csv_type](context['words'])
         return TemplateView.render_to_response(self, context)
 
+
 class Swadesh100View(SpecificListView):
     title = 'The Swadesh 100 list'
     fields = ('swadesh_100',)
+
 
 class HolmanListView(SpecificListView):
     title = 'The Holman list'
     fields = ('holman_list',)
 
+
 class YakhontovListView(SpecificListView):
     title = 'The Yakhontov list'
     fields = ('yakhontov',)
+
 
 class HolmanAndYakhontovView(SpecificListView):
     template_name = 'wordlist/holman-yakhontovlist.html'
     title = 'Words Holman and Yakhontov have in common'
     fields = ('yakhontov', 'holman_list',)
+
 
 class Swadesh207View(SpecificListView):
     template_name = 'wordlist/swadesh207.html'
@@ -146,12 +151,14 @@ class Swadesh207View(SpecificListView):
     fields = ('swadesh_207',)
     ordering = ('swadesh_207',)
 
+
 class SwadeshNotBuckView(SpecificListView):
     template_name = 'wordlist/swadesh-notbuck.html'
     title = 'Swadesh minus Buck'
     fields = ('swadesh_207',)
-    exclude = ('buck','ids', 'wold')
+    exclude = ('buck', 'ids', 'wold')
     ordering = ('id',)
+
 
 class Swadesh207Not100View(SpecificListView):
     title = 'Swadesh 207 minus Swadesh 100'
@@ -159,11 +166,13 @@ class Swadesh207Not100View(SpecificListView):
     exclude = ('swadesh_100',)
     ordering = ('id',)
 
+
 class BuckView(SpecificListView):
     template_name = 'wordlist/buck.html'
     title = 'Buck (combined)'
     fields = ('buck_category',)
     ordering = ('buck_category', 'buck_number', 'ids_number', 'wold_number')
+
 
 class CommonBuckView(SpecificListView):
     template_name = 'wordlist/buck.html'
@@ -171,11 +180,13 @@ class CommonBuckView(SpecificListView):
     fields = ('buck', 'ids', 'wold',)
     ordering = ('buck_category', 'buck_number', 'ids_number', 'wold_number')
 
+
 class BuckIDSView(SpecificListView):
     template_name = 'wordlist/buck.html'
     title = 'Buck (IDS)'
     fields = ('ids_number',)
     ordering = ('buck_category', 'ids_number',)
+
 
 class Buck1949View(SpecificListView):
     template_name = 'wordlist/buck.html'
@@ -183,11 +194,13 @@ class Buck1949View(SpecificListView):
     fields = ('buck_number',)
     ordering = ('buck_category', 'buck_number',)
 
+
 class BuckWOLDView(SpecificListView):
     template_name = 'wordlist/buck.html'
     title = 'Buck (WOLD)'
     fields = ('wold_number',)
     ordering = ('buck_category', 'wold_number',)
+
 
 class OnlyBuck1949View(SpecificListView):
     template_name = 'wordlist/buck.html'
@@ -196,6 +209,7 @@ class OnlyBuck1949View(SpecificListView):
     exclude = ('ids_number', 'wold_number',)
     ordering = ('buck_category', 'buck_number',)
 
+
 class OnlyBuckIDSView(SpecificListView):
     template_name = 'wordlist/buck.html'
     title = 'Buck (IDS)'
@@ -203,12 +217,14 @@ class OnlyBuckIDSView(SpecificListView):
     exclude = ('buck_number', 'wold_number',)
     ordering = ('buck_category', 'ids_number',)
 
+
 class OnlyBuckWOLDView(SpecificListView):
     template_name = 'wordlist/buck.html'
     title = 'Buck, unique to WOLD'
     fields = ('wold_number',)
     exclude = ('buck_number', 'ids_number',)
     ordering = ('buck_category', 'wold_number',)
+
 
 class OnlyBuckIDSWOLDView(SpecificListView):
     template_name = 'wordlist/buck.html'
