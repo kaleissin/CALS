@@ -74,7 +74,7 @@ urlpatterns += patterns('',
     url(r'^logged_in$',         render, login_params),
     url(r'^logout$',            logout_then_login),
 
-    url(r'account/social/',     include('social.apps.django_app.urls', namespace='social')),
+    url(r'account/social/',     include('social_django.urls', namespace='social')),
     url(r'account/login/$',     cals_auth_login),
     url(r'^account/',           include('nano.user.urls')),
 

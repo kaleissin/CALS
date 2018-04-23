@@ -175,7 +175,7 @@ DJANGO_APPS = (
 THIRD_PARTY_APPS = (
     'taggit',
     'actstream',
-    'social.apps.django_app.default',
+    'social_django',
 )
 
 PROJECT_APPS = (
@@ -209,9 +209,9 @@ LOGIN_URL = '/account/login/'
 LOGIN_REDIRECT_URL = '/logged_in'
 
 AUTHENTICATION_BACKENDS = (
-    'social.backends.twitter.TwitterOAuth',
-    'social.backends.github.GithubOAuth2',
-    'social.backends.open_id.OpenIdAuth',
+    'social_core.backends.twitter.TwitterOAuth',
+    'social_core.backends.github.GithubOAuth2',
+    'social_core.backends.open_id.OpenIdAuth',
     'django.contrib.auth.backends.ModelBackend',
 )
 
@@ -224,7 +224,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
         "django.core.context_processors.tz",
         "django.contrib.messages.context_processors.messages",
         "django.core.context_processors.request",
-        "social.apps.django_app.context_processors.backends",
+        "social_django.context_processors.backends",
 )
 
 INTERNAL_IPS = ['127.0.0.1']

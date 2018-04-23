@@ -10,7 +10,8 @@ psycopg2
 pygal>=2.0.0
 pygal-maps-world
 python-memcached
-python-social-auth==0.2.13
 pytz
 RelayMuseum>=0.2
 django-verification==0.4.1
+social-auth-app-django==2.1.0
+social-auth-core==1.7.0
