@@ -1,4 +1,3 @@
-{% load url from future %}
 {% if user.is_authenticated %}
 <form class="mark {{ type }}" id="{{ unique_id }}" action="{% url 'toggle_mark' %}" method="post">
 {% csrf_token %}
