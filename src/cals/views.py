@@ -163,7 +163,7 @@ def compare_language(request, *args, **kwargs):
         # Add a slug to langslugs
         return _compare(request, langslugs, comparison_type)
 
-    comparison_type = kwargs.get('opt', request.REQUEST.get('compare', None))
+    comparison_type = kwargs.get('opt', request.GET.get('compare', None))
     same, different = _generate_comparison_type(comparison_type)
     cform = CompareTwoForm()
     _LOG.debug('0: %s', comparison_type)
@@ -626,8 +626,8 @@ def home(request, *args, **kwargs):
     people = User.objects.exclude(username='countach')
     people_recent = people.order_by('-date_joined')[:5]
     trans_ex_recent = TranslationExercise.objects.order_by('-added')[:5]
-    if nextfield in request.REQUEST:
-        nexthop = request.REQUEST[nextfield]
+    if nextfield in request.GET:
+        nexthop = request.GET[nextfield]
     if request.method == 'POST':
         _LOG.debug('request: %s', request.POST)
 

@@ -209,8 +209,9 @@ def auth_login(request, *args, **kwargs):
     me = 'people'
     nextfield = 'next'
 
-    nexthop = request.REQUEST.get(nextfield, '/')
+    nexthop = request.GET.get(nextfield, '/')
     if request.method == 'POST':
+        nexthop = request.POST.get(nextfield, '/')
         # 1
         if not request.user.is_authenticated():
             username = asciify(smart_text(request.POST['username'], errors='ignore').strip())

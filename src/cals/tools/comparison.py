@@ -31,7 +31,7 @@ def _compare(request, langs, comparison_type=None):
     langs = tuple(langs)
 
     # Get existing comparison-type
-    comparison_type = comparison_type or request.REQUEST.get('compare', None)
+    comparison_type = comparison_type or request.GET.get('compare', None)
     same, different = _generate_comparison_type(comparison_type)
 
     cform = CompareTwoForm(data=request.POST)
