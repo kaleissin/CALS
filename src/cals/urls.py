@@ -3,27 +3,29 @@ from __future__ import unicode_literals
 
 from django.conf.urls import *
 
+from cals import views as cviews
+from cals.feature import views as fviews
 from cals.feature.models import FeatureValue
 
 # feature
-urlpatterns = patterns('',
+urlpatterns = [
         url(r'^feature/', include('cals.feature.urls')),
-)
+]
 
 # language
-urlpatterns += patterns('',
+urlpatterns += [
         url(r'^language/', include('cals.language.urls')),
-)
+]
 
 # people
-urlpatterns += patterns('',
+urlpatterns += [
         url(r'^people/', include('cals.people.urls')),
-)
+]
 
 # statistics
-urlpatterns += patterns('',
+urlpatterns += [
         url(r'^statistics/', include('cals.statistics.urls')),
-)
+]
 
 # value
 value_list_dict = {
@@ -36,19 +38,18 @@ value_detail_dict = {
         'extra_context': { 'me': 'feature' },
 }
 
-urlpatterns += patterns('cals.feature.views',
-        url(r'^value/(?P<object_id>[0-9]+)/$',         'show_featurevalue'),
-)
+urlpatterns += [
+        url(r'^value/(?P<object_id>[0-9]+)/$',         fviews.show_featurevalue),
+]
 
 # other
-urlpatterns += patterns('cals.views',
-        url(r'^jrklist/$',                             'language_jrklist'),
+urlpatterns += [
+        url(r'^jrklist/$',                             cviews.language_jrklist),
 
-        #url(r'^search([?](?P<action>[a-z]+))?$',                              'search'),
-        #url(r'^search([?]q=.*)?$',                     'search'),
+        #url(r'^search([?](?P<action>[a-z]+))?$',                              views.search),
+        #url(r'^search([?]q=.*)?$',                     cviews.search),
 
-        url(r'^test/$',                                'test'),
+        url(r'^test/$',                                cviews.test),
 
-        url(r'^$',                                     'home'),
-)
-
+        url(r'^$',                                     cviews.home),
+]

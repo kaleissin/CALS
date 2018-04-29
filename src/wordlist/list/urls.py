@@ -13,7 +13,7 @@ from wordlist.list.views import OnlyBuck1949View, OnlyBuckIDSView, \
         OnlyBuckWOLDView, OnlyBuckIDSWOLDView
 from wordlist.list.views import LeipzigJakartaView
 
-urlpatterns = patterns('',
+urlpatterns = [
         url(r'^swadesh100/$',
                 Swadesh100View.as_view(),
                 name='swadesh100_list'),
@@ -74,4 +74,4 @@ urlpatterns = patterns('',
         url(r'^$',
                 ListAllWordlistView.as_view(),
                 name='wordlist_overview'),
-)
+]

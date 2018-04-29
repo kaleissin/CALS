@@ -10,7 +10,7 @@ LANGUAGE_PK_RE = LANGUAGE_RE+PK_RE
 
 # Language specific pages
 
-urlpatterns = patterns('',
+urlpatterns = [
         url(LANGUAGE_PK_RE+r'$',
                 LanguageSenseDetailView.as_view(),
                 name='show_sense_for_language'),
@@ -26,4 +26,4 @@ urlpatterns = patterns('',
         url(r'^$', 
                 LanguageListView.as_view(),
                 name='list_languages_with_words'),
-)
+]

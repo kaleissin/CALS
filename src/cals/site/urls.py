@@ -42,7 +42,7 @@ login_params = {
     'dictionary': { 'me': 'home', },
 }
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^feeds/translations/exercises/$',  feeds.NewTranslationExerciseFeed()),
     url(r'^feeds/translations/new/$',        feeds.NewTranslationFeed()),
     url(r'^feeds/languages/last_modified/$', feeds.UpdatedLanguagesFeed()),
@@ -51,13 +51,13 @@ urlpatterns = patterns('',
     url(r'^feeds/people/all/$',              feeds.AllPeopleFeed()),
     url(r'^feeds/comments/$',                feeds.RecentCommentsFeed(), name='feed-comments'),
     url(r'^feeds/all/$',                     feeds.AllFeed()),
-)
+]
 
 if settings.DEBUG:
     from django.contrib.staticfiles.urls import staticfiles_urlpatterns
     urlpatterns += staticfiles_urlpatterns()
 
-urlpatterns += patterns('',
+urlpatterns += [
     # red tape
     url(r'^favicon\.ico$',      RedirectView.as_view(url='/static/img/favicon.ico', permanent=True)),
     url(r'^robots\.txt$',       render, robots_txt_params),
@@ -65,9 +65,9 @@ urlpatterns += patterns('',
     url(r'^thankyou$',          render, thankyou_params),
     url(r'^help/rst_quickref$', render, help_rst_quickref_params),
     url(r'^help/',              render, help_params),
-)
+]
 
-urlpatterns += patterns('',
+urlpatterns += [
     url(r'^admin/doc/',         include('django.contrib.admindocs.urls')),
     url(r'^admin/',             include(admin.site.urls)),
 
@@ -95,4 +95,4 @@ urlpatterns += patterns('',
     url(r'meetups/',            include('meetups.urls')),
 
     url(r'^',                   include('cals.urls')),
-)
+]
