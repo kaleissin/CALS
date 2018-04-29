@@ -4,8 +4,6 @@ from django.db.models import Q
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 
-from cals.language.models import Language
-
 LOG = logging.getLogger(__name__)
 
 _me = 'word'
@@ -53,6 +51,7 @@ def get_field_from_kwargs(field='pk', **kwargs):
     return pk
 
 def get_language_from_kwargs(**kwargs):
+    from cals.language.models import Language
     language = kwargs.get('language', None)
     if not language:
         try:
