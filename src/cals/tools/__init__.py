@@ -12,7 +12,6 @@ import logging
 from six.moves import zip
 _LOG = logging.getLogger(__name__)
 
-from django.contrib.contenttypes.models import ContentType
 from django.db import connection
 from django.http import HttpResponseNotFound, HttpResponseForbidden
 from django.shortcuts import get_object_or_404
