@@ -3,8 +3,6 @@ from __future__ import unicode_literals
 
 from django.test import TestCase
 from django.test.client import Client
-
-from . import models, views, admin, urls
 from six.moves import range
 
 test_user = {
