@@ -13,7 +13,7 @@ urlpatterns = [
 
 urlpatterns += [
         url(r'^map$',                           views.show_people_map),
-        url(r'^(?P<pk>[0-9]+)/$',               views.show_profile),
+        url(r'^(?P<pk>[0-9]+)/$',               views.show_profile, name='user_show'),
         url(r'^(?P<object_id>[0-9]+)/change$',  views.change_profile),
         url(r'^p(?P<page>[0-9]+)/$',            views.list_people),
         url(r'^(?P<object_id>[0-9]+)/pm/',      include('nano.privmsg.urls')),

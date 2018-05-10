@@ -47,7 +47,7 @@ urlpatterns += [
         url(r'^jrklist/$',                       cviews.language_jrklist),
         url(r'^p(?P<page>[0-9]+)/$',             cviews.language_list),
         url(r'^new$',                            cviews.create_language),
-        url(LANG_RE+r'$',                        cviews.show_language),
+        url(LANG_RE+r'$',                        cviews.show_language, name='language_show'),
         url(LANG_RE+r'change$',                  cviews.change_language),
         url(MULTISLUGS_RE+r'clone$',             cviews.clone_language),
         url(MULTISLUGS_RE+r'(?P<opt>[^/]*?)/?$', cviews.compare_language),
