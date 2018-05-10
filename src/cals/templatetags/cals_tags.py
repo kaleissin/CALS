@@ -76,7 +76,6 @@ def _get_display_name(user):
         raise
 
 
-#def _make_userlink(user):
 def _make_userlink(user, icon=False):
     """Makes a link to a user-profile with the preferred form of the
     name."""
@@ -268,14 +267,6 @@ def make_greet_link(lang, ahref_to_object):
     return greeting
 
 
-def greet_link(lang, ahref_to_object):
-    return make_greet_link(lang, ahref_to_object)
-
-
-def greet(user, lang):
-    return greet_link(lang, _make_userlink(user))
-
-
 @register.simple_tag
 def greetings(user):
     greetings = cache.get('greetings')
@@ -294,7 +285,7 @@ def greetings(user):
 
 @register.simple_tag
 def greet_user_in_lang(user, lang):
-    return greet(user, lang)
+    return make_greet_link(lang, ahref_to_object)
 
 
 @register.simple_tag
