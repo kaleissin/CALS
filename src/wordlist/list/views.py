@@ -19,8 +19,10 @@ LOG = logging.getLogger(__name__)
 
 # Wordlist views
 
+
 class ListAllWordlistView(WordlistMixin, TemplateView):
     template_name = "wordlist/list_all.html"
+
 
 class SpecificListView(WordlistMixin, TemplateView):
     template_name = 'wordlist/unnumbered_list.html'
@@ -245,6 +247,7 @@ class OnlyBuckIDSWOLDView(SpecificListView):
         senses = Sense.objects.filter(Q(ids_number__isnull=False)
                 |Q(wold_number__isnull=False)).distinct()
         return self.clean_queryset(senses)
+
 
 class NotOnAnyListView(SpecificListView):
     title = 'Not on any list'

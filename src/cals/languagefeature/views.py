@@ -32,11 +32,13 @@ _error_forbidden_msg = "You don't have the necessary permissions to edit here."
 error_forbidden = render_to_string('error.html',
         {'error_message': _error_forbidden_msg })
 
+
 def _get_lang(all=False, **kwargs):
     language = kwargs.get('language', None)
     if all:
         return get_object_or_404(Language.all_langs, slug=language)
     return get_object_or_404(Language, slug=language)
+
 
 def revert_description(user, descriptions, revert_to):
     if revert_to:
@@ -49,6 +51,7 @@ def revert_description(user, descriptions, revert_to):
             description.current = True
             description_last_modified_by = user
             description.save()
+
 
 class LanguageFeatureMixin(object):
     model = LanguageFeature
@@ -78,12 +81,14 @@ class LanguageFeatureDetailView(LanguageFeatureMixin, DetailView):
     template_name = 'languagefeature/language_description_detail.html'
 show_languagefeature = LanguageFeatureDetailView.as_view()
 
+
 class LanguageFeatureDeleteView(MayEditMixin, LanguageFeatureMixin, DeleteView):
     template_name = 'languagefeature/languagefeature_confirm_delete.html'
 
     def get_success_url(self):
         return '/language/%s/' % self.language.slug
 delete_languagefeature = LanguageFeatureDeleteView.as_view()
+
 
 class LanguageFeatureDescriptionMixin(LanguageFeatureMixin):
 
@@ -97,9 +102,11 @@ class LanguageFeatureDescriptionMixin(LanguageFeatureMixin):
         context['descriptions'] = self.descriptions
         return context
 
+
 class LanguageFeatureDescriptionHistoryView(LanguageFeatureDescriptionMixin, DetailView):
     template_name = 'languagefeature/language_description_history_list.html'
 show_languagefeature_history = LanguageFeatureDescriptionHistoryView.as_view()
+
 
 class LanguageFeatureDescriptionCompareView(LanguageFeatureDescriptionMixin, DetailView):
     template_name = 'languagefeature/language_description_history_compare.html'
@@ -127,6 +134,7 @@ class LanguageFeatureDescriptionCompareView(LanguageFeatureDescriptionMixin, Det
         return context
 compare_languagefeature_history = LanguageFeatureDescriptionCompareView.as_view()
 
+
 class LanguageFeatureRevertDescriptionView(MayEditMixin, LanguageFeatureDescriptionMixin, DetailView):
 
     def get(self, request, *args, **kwargs):
@@ -139,6 +147,7 @@ class LanguageFeatureRevertDescriptionView(MayEditMixin, LanguageFeatureDescript
             messages.error(request, error)
         return HttpResponseRedirect(link_format)
 revert_languagefeature_description = LanguageFeatureRevertDescriptionView.as_view()
+
 
 class LanguageFeatureDeleteDescriptionVersionView(LanguageFeatureDescriptionMixin, DetailView):
 
@@ -162,6 +171,7 @@ class LanguageFeatureDeleteDescriptionVersionView(LanguageFeatureDescriptionMixi
         messages.info(request, 'Version as of %s is deleted' % description.last_modified)
         return HttpResponseRedirect(link_format)
 remove_languagefeature_description_version = LanguageFeatureDeleteDescriptionVersionView.as_view()
+
 
 @login_required
 def describe_languagefeature(request, *args, **kwargs):
@@ -258,4 +268,3 @@ def describe_languagefeature(request, *args, **kwargs):
             'description': lf.description,
             }
     return render(request, 'languagefeature/language_description_form.html', data)
-

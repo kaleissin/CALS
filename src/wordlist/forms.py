@@ -4,6 +4,7 @@ from django import forms
 
 from wordlist.models import Word, Sense
 
+
 class WordForm(forms.ModelForm):
     sense = forms.IntegerField(widget=forms.HiddenInput())
     pk = forms.IntegerField(required=False, widget=forms.HiddenInput())
@@ -44,6 +45,7 @@ class WordForm(forms.ModelForm):
 #                             u"and wordshape already exists" % sense.entry)
         return cleaned_data
 
+
 class NAWordForm(forms.ModelForm):
     sense = forms.IntegerField(widget=forms.HiddenInput())
     pk = forms.IntegerField(required=False, widget=forms.HiddenInput())
@@ -77,4 +79,3 @@ class NAWordForm(forms.ModelForm):
                             "This sense \u201c%s\u201d is already marked not "
                             "applicable" % sense.entry)
         return cleaned_data
-

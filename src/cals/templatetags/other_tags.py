@@ -31,11 +31,13 @@ def seasons_greetings():
     url = '<a href="/language/%s/">%s</a>' % (translation.language.slug, translation.translation)
     return url
 
+
 @register.simple_tag
 def happy_new_year():
     translation = choice(tuple(Translation.objects.filter(exercise__slug='happy-new-year')))
     url = '<a href="/language/%s/">%s</a>' % (translation.language.slug, translation.translation)
     return url
+
 
 @register.filter
 def special_date(special):
@@ -63,8 +65,8 @@ def special_date(special):
         return True
     return False
 
+
 @register.simple_tag
 def between(comparee, cmp1, cmp2):
     return cmp1 <= comparee <= cmp2
 between.is_safe = True
-

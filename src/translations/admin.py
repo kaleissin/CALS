@@ -5,6 +5,7 @@ from django.contrib import admin
 
 from translations.models import Translation, TranslationExercise, TranslationExerciseCategory
 
+
 class TranslationAdmin(admin.ModelAdmin):
     model = Translation
     ordering = ('exercise', 'translator', 'translation')
@@ -17,6 +18,7 @@ class TranslationAdmin(admin.ModelAdmin):
     ]
 admin.site.register(Translation, TranslationAdmin)
 
+
 class TranslationExerciseAdmin(admin.ModelAdmin):
     model = TranslationExercise
     ordering = ('category', 'name')
@@ -24,4 +26,3 @@ class TranslationExerciseAdmin(admin.ModelAdmin):
     list_filter = ('category',)
 admin.site.register(TranslationExercise, TranslationExerciseAdmin)
 admin.site.register(TranslationExerciseCategory)
-

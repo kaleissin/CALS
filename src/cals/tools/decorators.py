@@ -12,6 +12,7 @@ __all__ = ['MayEditMixin']
 
 # CBV decorators and mixins
 
+
 class MayEditMixin(object):
 
     @method_decorator(login_required)
@@ -24,6 +25,7 @@ class MayEditMixin(object):
         self.user_is_manager = manager
         self.user_is_admin = admin
         return super(MayEditMixin, self).dispatch(request, *args, **kwargs)
+
 
 class SuperUserMixin(object):
 

@@ -42,11 +42,12 @@ function create_map_%(name)s() {
 """
 # {% gmap name:mimapa width:300 height:300 latitude:x longitude:y zoom:20 view:hybrid %} Message for a marker at that point {% endgmap %}
 
+
 class GMapNode (template.Node):
     def __init__(self, params, nodelist):
         self.params = params
         self.nodelist = nodelist
-        
+
     def render (self, context):
         for k,v in self.params.items():
             try:
@@ -64,12 +65,13 @@ class GMapNode (template.Node):
         self.params["message"] = self.nodelist.render(context).replace("\n", "<br />")
         return BASIC_TEMPLATE % self.params
 
+
 def do_gmap(parser, token):
     items = token.split_contents()
 
     nodelist = parser.parse(('endgmap',))
     parser.delete_first_token()
-    
+
     #Default values 
     parameters={
             'name'      : "default",
@@ -85,19 +87,21 @@ def do_gmap(parser, token):
         param, value = item.split(":")
         param = param.strip()
         value = value.strip()
-        
+
         if param in parameters:
             if value[0]=="\"":
                 value = value[1:-1]
             parameters[param] = value
-        
+
     return GMapNode(parameters, nodelist)
+
 
 class GMapScriptNode (template.Node):
     def __init__(self):
-        pass        
+        pass
     def render (self, context):
         return INCLUDE_TEMPLATE
+
 
 def do_gmap_script(parser, token):
     try:
@@ -106,6 +110,6 @@ def do_gmap_script(parser, token):
         raise template.TemplateSyntaxError("La etiqueta no requiere argumentos" % token.contents[0])
     return GMapScriptNode()
 
+
 register.tag('gmap', do_gmap)
 register.tag('gmap-script', do_gmap_script)
-

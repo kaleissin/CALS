@@ -23,6 +23,7 @@ from cals.tools.models import Description
 from cals.language.models import Language
 from cals.languagefeature.models import LanguageFeature
 
+
 class LANGTYPES(object):
     CONLANG = 1
     NATLANG = 2
@@ -30,11 +31,13 @@ class LANGTYPES(object):
 
     types = (ALL, NATLANG, CONLANG)
 
+
 def compare_value_sets(values1, values2):
     v1 = set(values1)
     v2 = set(values2)
     num_f = Feature.objects.active().count()
     return len(v1 & v2)
+
 
 def get_languagefeature_descriptions(lang=None, feature=None, lf=None):
     assert (lang and feature) or lf
@@ -42,6 +45,7 @@ def get_languagefeature_descriptions(lang=None, feature=None, lf=None):
         lf = get_object_or_404(LanguageFeature, language=lang, feature=feature)
     lf_type = ContentType.objects.get_for_model(lf)
     return Description.objects.filter(content_type=lf_type, object_id=lf.id).order_by('-last_modified')
+
 
 def get_langs(langtype=LANGTYPES.ALL):
     assert langtype in LANGTYPES.types
@@ -53,10 +57,12 @@ def get_langs(langtype=LANGTYPES.ALL):
         langs = Language.objects.all()
     return langs
 
+
 def firstletter_langnames(langtype=LANGTYPES.ALL):
     assert langtype in LANGTYPES.types
     langs = get_langs(langtype=langtype)
     return [l.name.upper().strip()[0] for l in langs.only('name').all()]
+
 
 def string_statistics(strings):
     """Counts how many times each string occurs and calculates percentages"""
@@ -66,16 +72,19 @@ def string_statistics(strings):
         outdict[string] = outdict.get(string, 0) + 1 
     return [(string, count, count/num_strings*100) for (string, count) in outdict.items()]
 
+
 def make_lang_firstletter_stats(langtype=LANGTYPES.CONLANG):
     assert langtype in LANGTYPES.types
     letters = firstletter_langnames(langtype=langtype)
     return string_statistics(letters)
+
 
 def language_alphabetic_letters(num=10, langtype=LANGTYPES.CONLANG):
     letters = make_lang_firstletter_stats(langtype)
 
     letters = sorted((l, c, p) for l, c, p in letters)
     return {'letters': [{'char': l, 'count': c, 'percentage': p} for l, c, p in letters]}
+
 
 def language_first_letters(num=10, langtype=LANGTYPES.CONLANG):
     letters = make_lang_firstletter_stats(langtype)
@@ -118,6 +127,7 @@ def compare_features(features, vfs):
 
     return matrix
 
+
 def compare_languages(langs, same=True, different=True):
     """Side-by-side comparison of languages, all features at least one
     of the languages have is shown."""
@@ -155,6 +165,7 @@ def compare_languages(langs, same=True, different=True):
     _LOG.info('4: a %s b %s c %s d %s' % (a, b, c, d))
     return comparison
 
+
 def feature_usage(langtype=LANGTYPES.ALL, limit=0):
     assert langtype in LANGTYPES.types
 
@@ -180,6 +191,7 @@ def feature_usage(langtype=LANGTYPES.ALL, limit=0):
             for fv in fvs]
     return rows
 
+
 def language_most_average_internal(langtype=LANGTYPES.ALL):
     assert langtype in LANGTYPES.types
     features = {}
@@ -197,6 +209,7 @@ def language_most_average_internal(langtype=LANGTYPES.ALL):
                 max_values[feature] = {'value': value, 'count': languages}
     return max_values
 
+
 def get_averageness_for_lang(lang, scale=100, max_values=None, average_features=None, langtype=LANGTYPES.ALL):
     assert langtype in LANGTYPES.types
     if not max_values:
@@ -208,6 +221,7 @@ def get_averageness_for_lang(lang, scale=100, max_values=None, average_features=
         return 0
     frequency = compare_value_sets(average_features, values)
     return frequency
+
 
 def set_averageness_for_langs(langtype=LANGTYPES.ALL):
     assert langtype in LANGTYPES.types
@@ -225,6 +239,7 @@ def set_averageness_for_langs(langtype=LANGTYPES.ALL):
         l.set_average_score()
         l.save(solo=False)
 
+
 def languages_ranked_by_averageness():
     unrankedlist = [(lang.average_score, lang) for lang in Language.objects.conlangs().all()]
     unranked = {}
@@ -237,4 +252,3 @@ def languages_ranked_by_averageness():
         ranked[i] = unranked[key]
         i += len(unranked[key])
     return sorted(tuple(ranked.items()))
-

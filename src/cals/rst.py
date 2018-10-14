@@ -11,10 +11,12 @@ from docutils.writers import html4css1
 
 from interlinears.leipzig import InterlinearText, InterlinearError
 
+
 class CALSHTMLWriter(html4css1.Writer):
     def __init__(self):
         html4css1.Writer.__init__(self)
         self.translator_class = CALSHTMLTranslator
+
 
 class CALSHTMLTranslator(html4css1.HTMLTranslator):
 
@@ -34,6 +36,7 @@ class CALSHTMLTranslator(html4css1.HTMLTranslator):
 
     def depart_interlinear(self, node):
         pass
+
 
 class InterlinearDirective(rst.Directive):
     final_argument_whitespace = True

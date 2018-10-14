@@ -4,7 +4,8 @@ from django.contrib import admin
 
 from cals.tools.models import *
 
-class DescriptionAdmin(admin.ModelAdmin): 
+
+class DescriptionAdmin(admin.ModelAdmin):
     model = Description
     list_display = ('object_id', 'content_type', 'current', 'last_modified', 'last_modified_by')
     list_filter = ('current', 'content_type',)

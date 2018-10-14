@@ -30,8 +30,10 @@ from cals.forms import (FeatureValueForm, CategoryForm, FeatureForm,
 from cals.tools import description_diff, compare_features
 from cals.modeltools import get_averageness_for_lang, LANGTYPES
 
+
 def _get_feature(*args, **kwargs):
     return get_object_or_404(Feature, id=kwargs.get('object_id', None))
+
 
 def _get_featurevalue(*args, **kwargs):
     return get_object_or_404(FeatureValue, id=kwargs.get('object_id', None))
@@ -46,6 +48,7 @@ def _get_url_pieces(name='slug', **kwargs):
             return pieces
     # '%s not in kwargs: %s' % (name, pformat(kwargs))
     return None
+
 
 def set_language_feature_value(lang, feature_id, value_id):
     feature = Feature.objects.active().get(id=feature_id)
@@ -68,10 +71,12 @@ def set_language_feature_value(lang, feature_id, value_id):
         if lf: # delete
             lf.delete()
 
+
 def fvlist_to_fvdict(fvlist):
     if fvlist:
         return dict([(fv.feature, fv) for fv in fvlist])
     return {}
+
 
 def make_feature_list_for_lang(lang=None, fvlist=None):
     categories = Category.active_objects.all().select_related().order_by('id')
@@ -102,13 +107,14 @@ def make_feature_list_for_lang(lang=None, fvlist=None):
                 if value:
                     form = FeatureValueForm(feature=feature,
                     initial={'value': '%s_%s' % (feature.id, value.id)})
-            
+
             f.append({'feature': feature, 'form':form, 'value': lf})
         if f:
             cats.append({'name': category.name, 'features': f})
         else:
             cats.append({'name': category.name})
     return cats
+
 
 def revert_description(user, descriptions, revert_to):
     if revert_to:
@@ -121,6 +127,7 @@ def revert_description(user, descriptions, revert_to):
             description.current = True
             description_last_modified_by = user
             description.save()
+
 
 # Feature
 def compare_feature(request, *args, **kwargs):
@@ -160,13 +167,14 @@ def compare_feature(request, *args, **kwargs):
         comparison.append({'fv': v2, 'counts': tuple(vs)})
     #return comparison
 
-    data = { 
+    data = {
             'comparison': comparison,
             'me': me,
             'features': fs,
             'fvs': fvs,
             }
     return render(request, 'feature_compare.html', data)
+
 
 @login_required
 def change_or_add_feature(request, *args, **kwargs):
@@ -181,6 +189,7 @@ def change_or_add_feature(request, *args, **kwargs):
 
     return render(request, 'cals/suggested_feature_form.html', data)
 
+
 class ListFeatureView(ListView):
     queryset = Category.active_objects.prefetch_related('feature_set').filter(feature__active=True).distinct().order_by('id')
     template_name = 'cals/feature_list.html'
@@ -190,6 +199,7 @@ class ListFeatureView(ListView):
         context['me'] = 'feature'
         return context
 list_feature = ListFeatureView.as_view()
+
 
 def graph_feature(feature):
     con = []
@@ -209,6 +219,7 @@ def graph_feature(feature):
     chart.label_font_size = 12
     return chart.render()
 
+
 def show_feature(request, features=None, object_id=None, template_name='feature_detail.html', *args, **kwargs):
     me = 'feature'
     if not features:
@@ -224,12 +235,13 @@ def show_feature(request, features=None, object_id=None, template_name='feature_
         if cform.is_valid():
             feature2 = cform.cleaned_data['feature2']
             return HttpResponseRedirect('/feature/%s+%s/' % (feature.id, feature2.id))
-    
-    data = {'object': feature, 
-            'me': me, 
+
+    data = {'object': feature,
+            'me': me,
             'chart': graph_feature(feature),
             'cform': cform}
     return render(request, template_name, data)
+
 
 @login_required
 def change_feature_description(request, *args, **kwargs):
@@ -269,6 +281,7 @@ def change_feature_description(request, *args, **kwargs):
             'feature': feature,}
     return render(request, 'feature_description_form.html', data)
 
+
 def show_feature_history(request, *args, **kwargs):
     me = 'feature'
     feature = get_object_or_404(Feature, id=kwargs.get('object_id', None))
@@ -280,6 +293,7 @@ def show_feature_history(request, *args, **kwargs):
             'feature': feature,
             }
     return render(request, 'feature_description_history_list.html', data)
+
 
 def compare_feature_history(request, *args, **kwargs):
     me = 'feature'
@@ -309,6 +323,7 @@ def compare_feature_history(request, *args, **kwargs):
             'feature': feature,}
     return render(request, 'feature_description_history_compare.html', data)
 
+
 @login_required
 def revert_feature_description(request, object_id=None, *args, **kwargs):
     me = 'feature'
@@ -327,6 +342,7 @@ def revert_feature_description(request, object_id=None, *args, **kwargs):
 
 # Feature Values
 
+
 def show_featurevalue(request, *args, **kwargs):
     # XXX
     me = 'feature'
@@ -343,6 +359,7 @@ def show_featurevalue(request, *args, **kwargs):
 
 # language
 
+
 def _check_langslugs(langslugs):
     langs = []
     for langslug in langslugs:
@@ -353,6 +370,7 @@ def _check_langslugs(langslugs):
         langs.append(lang)
     return langs
 
+
 def denormalize_lang(lang):
     freq = get_averageness_for_lang(lang, scale=100, langtype=LANGTYPES.CONLANG)
     _LOG.info('Freq now: %s' % repr(freq))
@@ -360,6 +378,7 @@ def denormalize_lang(lang):
     lang.num_avg_features = freq
     lang.set_average_score()
     return lang
+
 
 def page_in_kwargs_or_get(request, kwargs):
     """If an url has the key-value-pair page=<page> in kwargs or
@@ -372,6 +391,7 @@ def page_in_kwargs_or_get(request, kwargs):
             page = False
     return page
 
+
 def in_kwargs_or_get(request, kwargs, key, value):
     """If an url has the key-value-pair key=<value> in kwargs or
     the key <value> in GET, return the value, else return False."""
@@ -379,4 +399,3 @@ def in_kwargs_or_get(request, kwargs, key, value):
     if kwargs.get(key, '') == value or value in request.GET:
         return True
     return False
-

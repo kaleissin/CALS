@@ -63,19 +63,24 @@ from tagtools.tools import set_tags_for_model, get_tagcloud_for_model
 _error_forbidden_msg = "You don't have the necessary permissions to edit here."
 error_forbidden = render_to_string('error.html', {'error_message': _error_forbidden_msg })
 
+
 class CALSError(Exception):
     pass
 
+
 class CALSUserExistsError(CALSError):
     pass
+
 
 def _get_lang(all=False, *args, **kwargs):
     if all:
         return get_object_or_404(Language.all_langs, slug=kwargs.get('lang', None))
     return get_object_or_404(Language, slug=kwargs.get('lang', None))
 
+
 def _get_user(*args, **kwargs):
     return get_object_or_404(settings.AUTH_USER_MODEL, username=kwargs.get('user', None))
+
 
 def _get_url_pieces(name='slug', **kwargs):
     _LOG.debug('Url-pieces: %s', kwargs)
@@ -85,6 +90,7 @@ def _get_url_pieces(name='slug', **kwargs):
         if pieces:
             return pieces
     return None
+
 
 def langs_for_user(user):
     if isinstance(user, Profile):
@@ -97,6 +103,7 @@ def langs_for_user(user):
 
 # language
 
+
 def _check_langslugs(langslugs):
     langs = []
     for langslug in langslugs:
@@ -107,6 +114,7 @@ def _check_langslugs(langslugs):
         langs.append(lang)
     return langs
 
+
 class LanguageViewMixin(object):
     queryset = Language.objects.conlangs().order_by('name')
 
@@ -116,6 +124,7 @@ class LanguageViewMixin(object):
         if self.submenu:
             context['submenu'] = self.submenu
         return context
+
 
 def dispatch_langslugs(request, func_one, func_many, *args, **kwargs):
     """Returns a tuple of (True, payload) if the func is to
@@ -131,6 +140,7 @@ def dispatch_langslugs(request, func_one, func_many, *args, **kwargs):
         return func_one(request, langs[0], *args, **kwargs)
     else:
         return func_many(request, langs, *args, **kwargs)
+
 
 def compare_language(request, *args, **kwargs):
     me = 'language'
@@ -179,6 +189,7 @@ def compare_language(request, *args, **kwargs):
             }
     return render(request, 'language_compare.html', data)
 
+
 def search_languages(request, *args, **kwargs):
     me = 'language'
 
@@ -220,6 +231,7 @@ def search_languages(request, *args, **kwargs):
             'is_paginated': True}
     return render(request, 'cals/languagenames_search.html', data)
 
+
 def denormalize_lang(lang):
     freq = get_averageness_for_lang(lang, scale=100, langtype=LANGTYPES.CONLANG)
     _LOG.info('Freq now: %s' % repr(freq))
@@ -227,6 +239,7 @@ def denormalize_lang(lang):
     lang.num_avg_features = freq
     lang.set_average_score()
     return lang
+
 
 def set_featurevalues_for_lang(lang, valuelist):
     """Given a (saved but not committed) language and a list of feature
@@ -239,8 +252,10 @@ def set_featurevalues_for_lang(lang, valuelist):
     lang = denormalize_lang(lang)
     return lang
 
+
 def set_tags_for_lang(tags, lang):
     return set_tags_for_model(tags, lang)
+
 
 def language_exists(name):
     slug = uslugify(name)
@@ -248,6 +263,7 @@ def language_exists(name):
     if not langs:
         return False
     return True
+
 
 @login_required
 def create_language(request, lang=None, fvlist=None, clone=False, *args, **kwargs):
@@ -337,6 +353,7 @@ def create_language(request, lang=None, fvlist=None, clone=False, *args, **kwarg
     }
     return render(request, 'language_form.html', data)
 
+
 @login_required
 def clone_language(request, *args, **kwargs):
     me = 'language'
@@ -388,6 +405,7 @@ def _change_editors_managers(request, manager_then, lang, langform):
         # change who can be manager
         lang.manager = manager_then
     return lang
+
 
 @login_required
 def change_language(request, *args, **kwargs):
@@ -475,25 +493,31 @@ def change_language(request, *args, **kwargs):
             'state': state,}
     return render(request, 'language_form.html', data)
 
+
 def list_natlangs(request, *args, **kwargs):
     return language_list(request, natlang=True, *args, **kwargs)
 
+
 def list_conlangs(request, *args, **kwargs):
     return language_list(request, natlang=False, *args, **kwargs)
+
 
 def show_random_conlang(request, *args, **kwargs):
     random = random_conlang()
     return redirect('/language/%s/' % random, *args, **kwargs)
 
+
 class LanguageList(LanguageViewMixin, ListView):
     template_name = 'cals/language_list.html'
 langauge_list_test = LanguageList.as_view()
+
 
 class LanguageHomepageList(LanguageList):
     queryset = conlangs_with_homes()
     template_name = 'cals/language/homepage_list.html'
     submenu = 'homepage'
 list_conlang_homepages = LanguageHomepageList.as_view()
+
 
 def list_languages(request, *args, **kwargs):
     """Select and dispatch to a view of the list of languages"""
@@ -521,6 +545,7 @@ def list_languages(request, *args, **kwargs):
     }
     return render(request, 'cals/language_index.html', data)
 
+
 class LanguageCloud(LanguageViewMixin, ListView):
     template_name = 'cals/language/cloud.html'
     queryset = Language.objects.conlangs().order_by('name')
@@ -538,11 +563,13 @@ class LanguageCloud(LanguageViewMixin, ListView):
         return context
 language_cloud = LanguageCloud.as_view()
 
+
 class ListJRKLanguageView(LanguageViewMixin, ListView):
     queryset = LanguageName.objects.filter(language__natlang=False).exclude(language__background='').order_by('name')
     template_name = 'cals/language/jrklist.html'
     submenu = 'jrk'
 language_jrklist = ListJRKLanguageView.as_view()
+
 
 def language_list(request, natlang=False, *args, **kwargs):
     if natlang or in_kwargs_or_get(request, kwargs, 'action', 'natlang'):
@@ -569,6 +596,7 @@ def language_list(request, natlang=False, *args, **kwargs):
 
     return render(request, 'cals/language_list.html', data)
 
+
 def page_in_kwargs_or_get(request, kwargs):
     """If an url has the key-value-pair page=<page> in kwargs or
     GET, return the value, else return False."""
@@ -579,6 +607,7 @@ def page_in_kwargs_or_get(request, kwargs):
         if page != 'last':
             page = False
     return page
+
 
 def in_kwargs_or_get2(request, kwargs, key, *values):
     assert values and values[0], 'At least one non-falsey value needed'
@@ -594,6 +623,7 @@ def in_kwargs_or_get2(request, kwargs, key, *values):
             return query
     return False
 
+
 def in_kwargs_or_get(request, kwargs, key, value):
     """If an url has the key-value-pair key=<value> in kwargs or
     the key <value> in GET, return the value, else return False."""
@@ -604,6 +634,7 @@ def in_kwargs_or_get(request, kwargs, key, value):
         return value
     return False
 
+
 def test(request, *args, **kwargs):
     template = 'test.html'
     data = {
@@ -613,6 +644,7 @@ def test(request, *args, **kwargs):
             'news': Entry.objects.latest('pub_date')
             }
     return render(request, template, data)
+
 
 def home(request, *args, **kwargs):
     _LOG.info('Homepage')

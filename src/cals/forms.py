@@ -22,8 +22,10 @@ from cals.language.models import Language
 from cals.languagefeature.models import LanguageFeature
 from cals.language.models import ExternalInfo
 
+
 def asciify(string):
     return unicodedata.normalize(string, 'NFKD').encode('ascii', 'ignore')
+
 
 class TruncCharField(forms.CharField):
     """A CharField that truncates input longer than max_length."""
@@ -37,6 +39,7 @@ class TruncCharField(forms.CharField):
         if value and len(value) > self.max_length:
             value = value[:self.max_length]
         return super(TruncCharField, self).clean(value)
+
 
 class EditorForm(forms.ModelForm):
     editors = forms.ModelMultipleChoiceField(
@@ -55,6 +58,7 @@ class EditorForm(forms.ModelForm):
     def save(self, commit=True, user=None):
         return super(EditorForm, self).save(commit)
 
+
 class SearchForm(forms.Form):
     """Generalized search-form"""
     LIMITS = (
@@ -67,6 +71,7 @@ class SearchForm(forms.Form):
     q = forms.CharField(max_length=64)
     anywhere = forms.BooleanField(required=False, initial=False)
     limit = forms.TypedChoiceField(choices=LIMITS, coerce=int, required=False, initial='10')
+
 
 class LanguageForm(forms.ModelForm):
     background = TruncCharField(required=False, max_length=256,
@@ -98,17 +103,21 @@ class LanguageForm(forms.ModelForm):
 #             _LOG.info('CALS new language #2: %s', self.cleaned_data)
         return super(LanguageForm, self).save(commit)
 
+
 class CompareTwoForm(forms.Form):
     lang2 = forms.ModelChoiceField(Language.objects.all())
 
+
 class CompareTwoFeaturesForm(forms.Form):
     feature2 = forms.ModelChoiceField(Feature.objects.active().all())
+
 
 class FeatureForm(forms.ModelForm):
 
     class Meta:
         model = Feature
         fields = '__all__'
+
 
 class FeatureValueForm(forms.Form):
     value = forms.ChoiceField(required=False, choices=())
@@ -123,12 +132,14 @@ class FeatureValueForm(forms.Form):
             if initial:
                 self.fields['value'].initial = initial.get('value', None)
 
+
 class DescriptionForm(forms.ModelForm):
     freetext = forms.CharField(widget=forms.Textarea(attrs={'rows': '20', 'cols':'66'}))
 
     class Meta:
         model = Description
         fields = ('freetext', 'freetext_link', 'freetext_type')
+
 
 class FeatureDescriptionForm(forms.ModelForm):
     description = forms.CharField(widget=forms.Textarea(attrs={'rows': '20', 'cols':'60'}))
@@ -137,11 +148,13 @@ class FeatureDescriptionForm(forms.ModelForm):
         model = Feature
         fields = ('description',)
 
+
 class LanguageFeatureForm(forms.ModelForm):
 
     class Meta:
         model = LanguageFeature
         fields = '__all__'
+
 
 class UserForm(forms.ModelForm):
     username = forms.CharField(max_length=16, min_length=3)
@@ -154,6 +167,7 @@ class UserForm(forms.ModelForm):
     class Meta:
         model = get_user_model()
         fields = ('username', 'first_name', 'email')
+
 
 class ProfileForm(forms.ModelForm):
     country = forms.ModelChoiceField(Country.objects.all(), required=False)
@@ -170,17 +184,20 @@ class ProfileForm(forms.ModelForm):
         exclude = ('user', 'is_visible', 'date_format', 'secret',
                 'altitude', 'show_username', 'seen_ipv6')
 
+
 class CategoryForm(forms.ModelForm):
 
     class Meta:
         model = Category
         fields = '__all__'
 
+
 class FeatureForm(forms.ModelForm):
 
     class Meta:
         model = Feature
         exclude = ('added_by',)
+
 
 class NewFeatureValueForm(forms.Form):
     name = forms.CharField(max_length=60)

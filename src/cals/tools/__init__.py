@@ -17,6 +17,7 @@ from django.http import HttpResponseNotFound, HttpResponseForbidden
 from django.shortcuts import get_object_or_404
 from django.template import Template, Context, loader
 
+
 class LANGTYPES(object):
     CONLANG = 1
     NATLANG = 2
@@ -24,14 +25,17 @@ class LANGTYPES(object):
 
     types = (ALL, NATLANG, CONLANG)
 
+
 def uslugify(value):
     "Strip diacritics then slugify"
     value = unidecode(value.strip()).lower()
     value = '-'.join(re.sub('[^\w\s-]', '', value).split())
     return value
 
+
 def asciify(string):
     return unidecode(string)
+
 
 def next_id(model):
     # postgres only
@@ -42,6 +46,7 @@ def next_id(model):
     cursor.execute(fetch_id)
     return cursor.fetchone()[0]
 
+
 def string_statistics(strings):
     """Counts how many times each string occurs and calculates percentages"""
     num_strings = float(len(strings))
@@ -49,6 +54,7 @@ def string_statistics(strings):
     for string in strings:
         outdict[string] = outdict.get(string, 0) + 1 
     return [(string, count, count/num_strings*100) for (string, count) in outdict.items()]
+
 
 class BetterHtmlDiff(difflib.HtmlDiff):
     _table_template = """
@@ -87,6 +93,7 @@ class BetterHtmlDiff(difflib.HtmlDiff):
         #return '<td class="diff_header"%s>%s</td><td %s nowrap="nowrap">%s</td>' \
         return '<td class="diff_header"%s>%s</td><td %s>%s</td>' \
                % (id, linenum, text_class, text)
+
 
 def description_diff(oldest, newest, link_prefix, may_revert=False, may_remove=False):
 
@@ -153,7 +160,7 @@ def description_diff(oldest, newest, link_prefix, may_revert=False, may_remove=F
         next_remove_button = remove_button % newest.id if may_remove else ''
         next_extra = next_use_this_button + next_remove_button
         #new_extra = use_this_button % newest.id if use_this_button else u''
-    
+
     next_version = Context({'prev_version': new_prev_url,
             'next_version': new_next_url,
             'extra': next_extra,
@@ -167,9 +174,10 @@ def description_diff(oldest, newest, link_prefix, may_revert=False, may_remove=F
             diff_header_template.render(next_version),
             )
 
+
 def compare_features(features, vfs):
     """Matrix comparing usage of two features.
-    
+
     TODO: links in gridpoints to list of languages having both
     values."""
 
@@ -199,4 +207,3 @@ def compare_features(features, vfs):
         matrix[v1][v2] = count
 
     return matrix
-

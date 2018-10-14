@@ -25,6 +25,7 @@ LOG = logging.getLogger(__name__)
 
 # Complex views
 
+
 class LanguageListView(WordlistMixin, ListView):
     template_name = 'wordlist/language_list.html'
     model = Language
@@ -34,6 +35,7 @@ class LanguageListView(WordlistMixin, ListView):
         context = super(LanguageListView, self).get_context_data(**kwargs)
         context['languages'] = Language.objects.filter(words__isnull=False).distinct()
         return context
+
 
 class LanguageWordListView(WordlistMixin, ListView):
     template_name = 'wordlist/language_word_list.html'
@@ -54,6 +56,7 @@ class LanguageWordListView(WordlistMixin, ListView):
         context['skipped_words'] = SkippedWord.objects.filter(language=self.language)
         context['may_edit'] = may_edit(self.language, self.user)
         return context
+
 
 class AddWordForLanguageView(WordlistMixin, TemplateResponseMixin, View):
     template_name = 'wordlist/language_add_word.html'
@@ -161,6 +164,7 @@ class AddWordForLanguageView(WordlistMixin, TemplateResponseMixin, View):
         self.context['form'] = form
         return self.render_to_response(self.get_context_data(**self.context))
 
+
 class SenseDetailView(WordlistMixin, DetailView):
     template_name = 'wordlist/sense_detail.html'
     model = Sense
@@ -177,6 +181,7 @@ class SenseDetailView(WordlistMixin, DetailView):
         context['sense'] = self.sense
         context['words'] = Word.objects.filter(senses=self.sense)
         return context
+
 
 class LanguageSenseDetailView(WordlistMixin, DetailView):
     template_name = 'wordlist/language_sense_detail.html'

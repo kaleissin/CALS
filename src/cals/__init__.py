@@ -6,6 +6,7 @@ from django.conf import settings
 
 default_app_config = 'cals.apps.CalsConfig'
 
+
 def markup_as_restructuredtext(value):
     try:
         from django.utils.encoding import smart_text, force_text
@@ -19,4 +20,3 @@ def markup_as_restructuredtext(value):
         docutils_settings = getattr(settings, "RESTRUCTUREDTEXT_FILTER_SETTINGS", {})
         parts = publish_parts(source=smart_text(value), writer=rst.CALSHTMLWriter(), settings_overrides=docutils_settings)
         return force_text(parts["fragment"])
-

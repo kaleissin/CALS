@@ -15,7 +15,7 @@ class Command(BaseCommand):
             type=str,
             default=DIR_DEFAULT,
             help='Directory to store CSV in',
-        ) 
+        )
 
     def handle(self, *args, **options):
         path = options['directory']

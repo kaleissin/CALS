@@ -74,6 +74,7 @@ class TranslationExerciseCategory(models.Model):
         data = {'category': self.pk}
         return reverse('translationexercise-category', kwargs=data)
 
+
 @python_2_unicode_compatible
 class TranslationExercise(models.Model):
     name = models.CharField(max_length=64, unique=True,

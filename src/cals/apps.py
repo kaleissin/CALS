@@ -18,6 +18,7 @@ class DjangoContribAuthConfig(AuthConfig):
         user_model_string = settings.AUTH_USER_MODEL.rsplit('.', 1)[1]
         registry.register(self.get_model(user_model_string))
 
+
 class CalsConfig(AppConfig):
     name = "cals"
     verbose_name = "CALS"

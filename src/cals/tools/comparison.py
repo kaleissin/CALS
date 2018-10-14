@@ -7,6 +7,7 @@ from django.http import HttpResponseRedirect
 
 from cals.forms import CompareTwoForm, CompareTwoFeaturesForm
 
+
 def _generate_comparison_type(comparison_type):
     same = None
     different = None
@@ -18,11 +19,13 @@ def _generate_comparison_type(comparison_type):
         different = False
     return same, different
 
+
 def _generate_comparison_url(langs, comparison_type=''):
     redirect_to = '/language/%s/' % '+'.join(langs)
     if comparison_type in ('same', 'different'):
         redirect_to += comparison_type
     return redirect_to
+
 
 def _compare(request, langs, comparison_type=None):
     # langs should be a non-string iterator/generator over strings
@@ -41,4 +44,3 @@ def _compare(request, langs, comparison_type=None):
     else:
         redirect_to = _generate_comparison_url(langs, comparison_type)
     return HttpResponseRedirect(redirect_to)
-

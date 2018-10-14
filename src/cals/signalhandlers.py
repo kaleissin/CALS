@@ -17,6 +17,7 @@ from nano.badge.models import Badge
 
 from cals.people.models import Profile
 
+
 def is_real_user(user):
     test_users = getattr(settings, 'NANO_USER_TEST_USERS', ())
     for test_user in test_users:
@@ -24,6 +25,7 @@ def is_real_user(user):
             return False
     else:
         return True
+
 
 def blog_new_user(new_user):
     test_users = getattr(settings, 'NANO_USER_TEST_USERS', ())
@@ -35,6 +37,7 @@ def blog_new_user(new_user):
         blog_template = 'blog/new_user.html'
         add_entry_to_blog(new_user, '%s just joined' % new_user.username, blog_template, date_field='date_joined')
 
+
 def blog_unlurked_user(unlurked_user):
     if is_real_user(unlurked_user):
         blog_template = 'blog/unlurked_user.html'
@@ -43,10 +46,12 @@ def blog_unlurked_user(unlurked_user):
 
 # signals
 
+
 def user_now_active(sender, **kwargs):
     _LOG.info('blogging unlurking')
     user = kwargs.get('user')
     blog_unlurked_user(user)
+
 
 def new_user_anywhere(sender, **kwargs):
     new = kwargs.get('created', False)
@@ -68,6 +73,7 @@ def new_user_anywhere(sender, **kwargs):
         except Profile.DoesNotExist:
             profile = Profile(user=new_user, display_name=new_user.username)
             profile.save()
+
 
 def new_or_changed_language(sender, **kwargs):
     "Signal handler for cals.Language.post_save"
@@ -104,6 +110,7 @@ def new_or_changed_language(sender, **kwargs):
             latest.pub_date = tznow()
             latest.save()
 
+
 def hidden_language(sender, **kwargs):
     languages = kwargs.get('languages', [])
     if languages:
@@ -117,4 +124,3 @@ def hidden_language(sender, **kwargs):
             title = 'Several languages dropped'
             add_entry_to_blog(languages, title,
                     'feeds/languages_multi_dropped_description.html', date_field='last_modified')
-

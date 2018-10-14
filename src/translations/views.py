@@ -25,14 +25,18 @@ from translations.models import TranslationExerciseCategory
 from translations.forms import TranslationForm
 from translations.tools import get_model_for_kwarg
 
+
 def get_translationexercise(**kwargs):
     return get_model_for_kwarg(TranslationExercise, 'exercise', 'slug', **kwargs)
+
 
 def get_language(**kwargs):
     return get_model_for_kwarg(Language, 'language', 'slug', **kwargs)
 
+
 def get_user(**kwargs):
     return get_model_for_kwarg(settings.AUTH_USER_MODEL, 'translator', 'username', **kwargs)
+
 
 def get_translationexercise_category(**kwargs):
     return get_model_for_kwarg(TranslationExerciseCategory, 'category', 'pk', **kwargs)

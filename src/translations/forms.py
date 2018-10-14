@@ -5,6 +5,7 @@ from django import forms
 
 from translations.models import Translation
 
+
 class TranslationForm(forms.ModelForm):
 
     class Meta:

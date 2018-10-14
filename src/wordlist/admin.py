@@ -5,12 +5,14 @@ from django.contrib import admin
 from wordlist.models import BuckCategory, Sense, Word
 from wordlist.models import SkippedWord
 
+
 class BuckCategoryAdmin(admin.ModelAdmin):
     model = BuckCategory
     #ordering = (id,)
     list_display = ('id', 'name')
 admin.site.register(BuckCategory, BuckCategoryAdmin)
- 
+
+
 class SenseAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("entry",)}
     model = Sense
@@ -25,6 +27,7 @@ class SenseAdmin(admin.ModelAdmin):
     list_editable = ('pos', 'uld2',)
 admin.site.register(Sense, SenseAdmin)
 
+
 class WordAdmin(admin.ModelAdmin):
     model = Word
     ordering = ('id',)
@@ -33,6 +36,7 @@ class WordAdmin(admin.ModelAdmin):
     list_display = ('word', 'not_applicable', 'notes', 'language',
             'added_by')
 admin.site.register(Word, WordAdmin)
+
 
 class SkippedWordAdmin(admin.ModelAdmin):
     list_display = ('sense', 'language', 'added_by')

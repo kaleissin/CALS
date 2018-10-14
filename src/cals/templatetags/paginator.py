@@ -5,6 +5,7 @@ from django import template
 
 register = template.Library()
 
+
 @register.inclusion_tag('paginator.html', takes_context=True)
 def paginator(context):
     return {
@@ -13,4 +14,3 @@ def paginator(context):
             'is_paginated': context['is_paginated'],
             'object_list': context['object_list'],
             }
-

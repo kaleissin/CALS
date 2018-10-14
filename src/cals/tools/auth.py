@@ -1,4 +1,6 @@
 from __future__ import unicode_literals
+
+
 def may_edit_lang(user, language):
     """May <user> edit <language>?
 

@@ -49,6 +49,7 @@ SOCIAL = {
 }
 
 
+
 def get_user_model_w_related():
     return get_user_model().objects.prefetch_related('badges', 'profile')
 
@@ -56,17 +57,22 @@ def get_user_model_w_related():
 class CALSError(Exception):
     pass
 
+
 class CALSUserExistsError(CALSError):
     pass
+
 
 def _get_profile(*args, **kwargs):
     return get_object_or_404(get_user_model(), id=kwargs.get('object_id', None))
 
+
 def show_people_map(request, *args, **kwargs):
     people = get_user_model().objects.filter(is_active=True)
 
+
 def all_people_map(request, *args, **kwargs):
     people = get_user_model().objects.filter(is_active=True)
+
 
 class ListPeopleView(ListView):
     queryset = get_user_model_w_related().filter(profile__is_lurker=False, profile__is_visible=True)
@@ -98,6 +104,7 @@ class ListPeopleView(ListView):
         context['lurk_count'] = self.lurk_count
         return context
 list_people = ListPeopleView.as_view()
+
 
 class DetailPeopleView(DetailView):
     queryset = get_user_model_w_related()
@@ -164,6 +171,7 @@ class DetailPeopleView(DetailView):
         return context
 show_profile = DetailPeopleView.as_view()
 
+
 @login_required
 def change_profile(request, *args, **kwargs):
     me = 'people'
@@ -196,6 +204,7 @@ def change_profile(request, *args, **kwargs):
             'me': me}
     return render(request, 'profile_form.html', data)
 
+
 def check_for_ipv6(request, profile):
     if ':' in request.META.get('REMOTE_ADDR'):
         if not profile.seen_ipv6:
@@ -204,6 +213,7 @@ def check_for_ipv6(request, profile):
             profile.save()
     else:
         messages.success(request, 'Welcome!')
+
 
 def auth_login(request, *args, **kwargs):
     me = 'people'

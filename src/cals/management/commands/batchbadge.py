@@ -51,10 +51,12 @@ FAQERS = (
 
 LEGACY_RESEARCH_LIBRARIANS = (1, 2, 37, 891)
 
+
 def batchbadge(badge, models):
     for model in models:
         if badge not in model.badges.all():
             model.badges.add(badge)
+
 
 def unlurk():
     Profile = get_profile_model()
@@ -67,12 +69,14 @@ def unlurk():
         user_unlurked.send(sender=ul, user=ul.user)
     return exlurker_count
 
+
 def developers():
     # Cannot use signal
     User = get_user_model()
     badge = Badge.objects.get(name='Developer')
     developers = User.objects.filter(id__in=(1, 2))
     batchbadge(badge, developers)
+
 
 def early_birds():
     # Pointless to use signal
@@ -81,6 +85,7 @@ def early_birds():
     badge = Badge.objects.get(name='Early bird')
     early_birds = User.objects.filter(date_joined__lt=magic_date)
     batchbadge(badge, early_birds)
+
 
 def conlangers():
     """Mark conlangers as just that.
@@ -93,11 +98,13 @@ def conlangers():
     managers = User.objects.filter(manages__isnull=False).distinct()
     batchbadge(badge, managers)
 
+
 def nudgers():
     User = get_user_model()
     badge = Badge.objects.get(name='Nudger')
     nudgers = [u for u in User.objects.all() if u.pms_sent.count()]
     batchbadge(badge, nudgers)
+
 
 def connoiseurs():
     User = get_user_model()
@@ -107,6 +114,7 @@ def connoiseurs():
     batchbadge(badge, connoiseurs)
 
 # -- by date
+
 
 def _active_year_ago(years):
     User = get_user_model()
@@ -124,11 +132,13 @@ def _active_year_ago(years):
             and u.date_joined <= x_years_ago
             and u.last_login > a_month_ago]
 
+
 # 1 year
 def yearlings():
     badge = Badge.objects.get(name='Yearling')
     yearlings = _active_year_ago(1)
     batchbadge(badge, yearlings)
+
 
 # 2 years
 def old_hands():
@@ -136,11 +146,13 @@ def old_hands():
     old_hands = _active_year_ago(2)
     batchbadge(badge, old_hands)
 
+
 # 3 years
 def regulars():
     badge = Badge.objects.get(name='Regular')
     old_hands = _active_year_ago(3)
     batchbadge(badge, old_hands)
+
 
 def boomerangs():
     User = get_user_model()
@@ -152,6 +164,7 @@ def boomerangs():
 
 # -- helpers
 
+
 def testbunnies():
     # Cannot use signal
     # tested fixes
@@ -160,6 +173,7 @@ def testbunnies():
     testbunny_ids = TESTBUNNIES
     testbunnies = User.objects.filter(id__in=testbunny_ids)
     batchbadge(badge, testbunnies)
+
 
 def bughunters():
     # Cannot use signal
@@ -170,6 +184,7 @@ def bughunters():
     bughunters = User.objects.filter(id__in=bughunter_ids)
     batchbadge(badge, bughunters)
 
+
 def ghostbusters():
     # Cannot use signal
     # dead links
@@ -179,12 +194,14 @@ def ghostbusters():
     ghostbusters = User.objects.filter(id__in=ghostbuster_ids)
     batchbadge(badge, ghostbusters)
 
+
 def research_librarians():
     User = get_user_model()
     badge = Badge.objects.get(name='Research Librarian')
     librarian_ids = LEGACY_RESEARCH_LIBRARIANS
     librarians = User.objects.filter(id__in=librarian_ids)
     batchbadge(badge, librarians)
+
 
 def dreamers():
     # Cannot use signal
@@ -195,6 +212,7 @@ def dreamers():
     dreamers = User.objects.filter(id__in=dreamer_ids)
     batchbadge(badge, dreamers)
 
+
 def autobiographers():
     User = get_user_model()
     Profile = get_profile_model()
@@ -202,6 +220,7 @@ def autobiographers():
     autobiographer_profiles = Profile.objects.autobiographers()
     autobiographers = User.objects.filter(id__in=[p.user_id for p in autobiographer_profiles])
     batchbadge(badge, autobiographers)
+
 
 # -- translating
 def translators():
@@ -212,6 +231,7 @@ def translators():
     translators = [trans.translator for trans in Translation.objects.exclude(exercise=1)]
     batchbadge(badge, translators)
 
+
 def civ4fans():
     User = get_user_model()
     badge = Badge.objects.get(name='CIV IV-fan')
@@ -220,11 +240,13 @@ def civ4fans():
             if u.translations.filter(exercise__category=4).count() == num_civ_exercises]
     batchbadge(badge, translators)
 
+
 # -- comments
 def critics():
     badge = Badge.objects.get(name='Critic')
     critics = [comment.user for comment in Comment.objects.all()]
     batchbadge(badge, critics)
+
 
 # -- tech
 def timetravellers():
@@ -233,6 +255,7 @@ def timetravellers():
     timetravellers = [profile.user for profile in Profile.objects.all()
             if profile.seen_ipv6]
     batchbadge(badge, timetravellers)
+
 
 # -- meetups
 def meetups():
@@ -263,6 +286,7 @@ _batch_jobs = {
         'meetups': meetups,
         'research_librarians': research_librarians,
 }
+
 
 def run_batch(verbose=True):
     for batch_name, batch_job in _batch_jobs.items():
