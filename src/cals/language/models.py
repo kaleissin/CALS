@@ -213,9 +213,7 @@ class Language(models.Model):
         pass
 
     # Managers
-    _default_manager = DefaultLanguageManager()
-    _base_manager = _default_manager
-    objects = _default_manager
+    objects = DefaultLanguageManager()
     natlangs = NaturalLanguageManager()
     all_langs = models.Manager()
 

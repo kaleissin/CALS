@@ -125,9 +125,7 @@ class Translation(Interlinear):
     added = models.DateTimeField(default=tznow, editable=False)
     last_modified = models.DateTimeField(default=tznow, editable=False)
 
-    _default_manager = TranslationManager()
-    _base_manager = _default_manager
-    objects = _default_manager
+    objects = TranslationManager()
     all_translations = models.Manager()
 
     class Meta:
