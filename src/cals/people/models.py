@@ -7,8 +7,6 @@ from django.db.models import Q
 from django.utils.encoding import python_2_unicode_compatible
 import django.dispatch
 
-from nano.countries.models import Country
-
 from cals.tools import uslugify
 
 # Signals defined here
@@ -49,7 +47,7 @@ class Profile(models.Model):
             "have been set.")
     homepage = models.URLField(blank=True, null=True)
     homepage_title = models.CharField(max_length=64, blank=True)
-    country = models.ForeignKey(Country, null=True, blank=True)
+    country = models.ForeignKey('countries.Country', null=True, blank=True)
     native_tongue = models.ForeignKey('Language', null=True, blank=True,
             help_text="If your L1 is not in the list, or you are multilingual, don't select anything.")
     latitude = models.FloatField(blank=True, null=True)

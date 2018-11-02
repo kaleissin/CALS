@@ -17,8 +17,6 @@ from interlinears.leipzig import InterlinearText, InterlinearError
 
 from cals.tools import uslugify
 
-from cals.language.models import Language
-
 
 def get_interlinear(model):
     if not model.interlinear.strip():
@@ -117,7 +115,7 @@ class TranslationManager(models.Manager):
 class Translation(Interlinear):
     translation = models.TextField()
     exercise = models.ForeignKey(TranslationExercise, related_name='translations')
-    language = models.ForeignKey(Language, related_name='translations')
+    language = models.ForeignKey('cals.Language', related_name='translations')
     translator = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name='translations'

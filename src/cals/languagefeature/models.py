@@ -13,7 +13,6 @@ from cals.tools.models import DescriptionMixin
 
 from cals.feature.models import FeatureValue, Feature
 
-from cals.language.models import Language
 
 __all__ = ['LanguageFeature']
 
@@ -55,7 +54,7 @@ class LanguageFeatureManager(models.Manager):
 
 @python_2_unicode_compatible
 class LanguageFeature(models.Model, DescriptionMixin):
-    language = models.ForeignKey(Language, related_name='features')
+    language = models.ForeignKey('cals.Language', related_name='features')
     feature = models.ForeignKey(Feature, related_name='languages')
     value = models.ForeignKey(FeatureValue, related_name='languages')
 
