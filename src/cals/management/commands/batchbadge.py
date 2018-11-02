@@ -3,10 +3,9 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from datetime import timedelta
-import sys
 
-from django.db.models import Q, F
-from django.core.management.base import NoArgsCommand, BaseCommand
+from django.db.models import F
+from django.core.management.base import BaseCommand
 from django.utils import timezone
 from django.contrib.auth import get_user_model
 
@@ -14,9 +13,8 @@ from translations.models import Translation
 from translations.models import TranslationExercise
 from nano.badge.models import Badge
 from nano.tools import get_profile_model
-from nano.privmsg.models import PM
 from nano.comments.models import Comment
-from verification.models import Key, KeyGroup
+from verification.models import Key
 from meetups.models import Meetup
 
 from cals.people.models import user_unlurked
