@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 from django import template
 from django.template import Library
 from django.template import RequestContext
-from django.template import resolve_variable
+from django.template import Variable
 
 GOOGLE_MAPS_API_KEY = {
     'cals': 'ABQIAAAA3l8AIG_4m32NOSjtfKVp3xQZmzhEy08TjSB7X9Gobsoh1Cu18hQl8di61W2RFoEnGnVplXrfXVu4TA',
@@ -51,7 +51,7 @@ class GMapNode (template.Node):
     def render (self, context):
         for k,v in self.params.items():
             try:
-                self.params[k] = resolve_variable(v, context)
+                self.params[k] = Variable(v).resolve(context)
             except:
                 pass
             if k == "view":
