@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 from django.core.management.base import NoArgsCommand
 from django.contrib.auth import get_user_model
 
-from cals.models import *
+from cals.people.models import Profile
 
 
 class Command(NoArgsCommand):

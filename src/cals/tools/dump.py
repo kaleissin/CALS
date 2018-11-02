@@ -2,7 +2,7 @@ import csv
 from io import StringIO
 from pathlib import Path
 
-from cals.models import Language
+from cals.language.models import Language
 from cals.feature.models import (
     Feature,
     FeatureValue

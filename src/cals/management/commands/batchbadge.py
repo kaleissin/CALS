@@ -10,12 +10,11 @@ from django.core.management.base import NoArgsCommand, BaseCommand
 from django.utils import timezone
 from django.contrib.auth import get_user_model
 
-from cals.models import *
-from translations.models import *
+from translations.models import Translation
+from translations.models import TranslationExercise
 from nano.badge.models import Badge
 from nano.tools import get_profile_model
 from nano.privmsg.models import PM
-from nano.mark.models import *
 from nano.comments.models import Comment
 from verification.models import Key, KeyGroup
 from meetups.models import Meetup

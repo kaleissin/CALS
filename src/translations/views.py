@@ -17,7 +17,7 @@ import logging
 _LOG = logging.getLogger(__name__)
 
 from cals.views import langs_for_user
-from cals.models import Language
+from cals.language.models import Language
 
 from translations.models import Translation
 from translations.models import TranslationExercise

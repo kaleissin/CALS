@@ -12,12 +12,6 @@ from django.utils.timezone import now as tznow
 
 from cals import markup_as_restructuredtext
 
-from cals.language.models import ExternalInfo
-
-from cals.people.models import Profile
-
-from cals.language.models import Language
-
 
 def add_filter(queryset, **kwargs):
     return queryset.filter(**kwargs)
