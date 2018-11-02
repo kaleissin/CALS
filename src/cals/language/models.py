@@ -21,10 +21,6 @@ from cals.tools import uslugify, asciify
 
 from cals.tools.models import FREETEXT_TYPES, DescriptionMixin
 
-from cals.feature.models import Feature, FeatureValue
-
-from cals.people.models import Profile
-
 language_hidden = django.dispatch.Signal(providing_args=["languages"])
 
 
@@ -289,6 +285,7 @@ class Language(models.Model):
         self.num_features = LanguageFeature.objects.filter(language=self).count()
 
     def can_change(self, profile):
+        from cals.people.models import Profile
         if not isinstance(profile, Profile):
             profile = profile.profile
         if self.manager == profile.user:
@@ -306,6 +303,7 @@ class Language(models.Model):
         return self.name
 
     def get_infodensity(self):
+        from cals.feature.models import Feature
         feature_weight = 0.95
         density = 0
         num_features = Feature.objects.active().count()
