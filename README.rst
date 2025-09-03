@@ -1,6 +1,10 @@
 CALS
 ====
 
+.. IMPORTANT:: This repo has moved to https://codeberg.org/Kaleissin/CALS/, this includes the issue tracker, now at https://codeberg.org/Kaleissin/CALS/issues
+
+----
+
 Now you are published, oh eater of my spare time!
 
 Note on code quality
